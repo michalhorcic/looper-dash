@@ -29,7 +29,7 @@
             650,
             25
           ],
-          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.6.2 beta",
+          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.7 beta",
           "fontsize": 18.0,
           "presentation": 1,
           "presentation_rect": [

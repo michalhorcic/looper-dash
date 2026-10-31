@@ -1,7 +1,7 @@
-MLD 0.6.2 beta, 2026-10-31
+MLD 0.7 beta, 2026-10-31
 User confirmed 0.3 works in Ableton Live 12 Suite; exact Max version unknown.
 PASS JS syntax, 15 discovery/read-only mock tests including track colors and A/B sends
-PASS UI: live view 2/4/6, colors, A/B sends, pagination, window size presets, scaled clicks, resize rollback
+PASS UI: live view 2/3/4/6, rounded cards, segmented controls, colors, A/B sends, pagination, window size presets, wide three-card scaled clicks, resize rollback
 PASS AMXD chunk sizes, exact source roundtrip, graph/dependencies, read-only contract
-PASS visual inspection of simulated 2/4/6-card layouts with sends
-NOT TESTED: 0.6.2 inside native Max/Live.
+PASS visual inspection of simulated 2/3/4/6-card layouts with sends
+NOT TESTED: 0.7 inside native Max/Live.
