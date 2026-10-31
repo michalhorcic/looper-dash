@@ -1,4 +1,4 @@
-# Build notes — 0.7 beta
+# Build notes — 0.7.1 beta
 
 Unfrozen Audio Effect AMXD: little-endian chunks `ampf` (payload `aaaa`), `meta` (four zero bytes), `ptch` (UTF-8 patcher JSON + null byte). Adjacent JS dependencies resolve relative to the device directory. No code signing, Node for Max, native externals or manual Max editing is required by this package.
 
@@ -35,7 +35,7 @@ Track color reference: https://docs.cycling74.com/apiref/lom/track/#color
 
 Core/UI tests cover dynamic colors, nested/return/master tracks, absent colors, layout switching, pagination, scaled click coordinates and the read-only contract. `node tests/test_ui.cjs /tmp/mld-preview` optionally writes simulated SVG previews for all layouts (square export canvas for Quick Look compatibility); these are not native Max screenshots.
 
-The user confirmed 0.3 works in Live 12 Suite. Version 0.7 still needs native Live verification.
+The user confirmed 0.3 works in Live 12 Suite. Version 0.7.1 still needs native Live verification.
 
 0.5 adds read-only A/B send monitoring for each Looper's host track. Only the first two `mixer_device sends` parameters are read/observed, shared once per host track. Return names/IDs and send parameter IDs participate in topology comparison, while send value changes use existing parameter observers without rescanning. No send C parameter is accessed. Missing returns, missing mixers and unavailable values have a neutral display.
 
@@ -60,3 +60,5 @@ UI tests cover every preset, canvas/window dimensions, preserved pagination/layo
 The new three-card layout uses three full-width rows: state on the left, reference and A/B sends on the right. Geometry, rendering and hit testing share `cardLayout`; pagination preserves the previously visible device when switching 2/3/4/6. Tests exercise three-card pagination and full-width strip clicks at 0.5x/1x/2x, missing/stale sends, unknown states, long names, rounded geometry and invalid layouts.
 
 Drawing API reference: https://docs.cycling74.com/apiref/js/mgraphics/
+
+0.7.1 improves reference-bar legibility: brighter 2px boundaries, bold 14px numbers in compact layouts / 16px in larger cards, and a subtle state-tinted badge under the current reference bar number. Timing semantics and interaction remain unchanged.

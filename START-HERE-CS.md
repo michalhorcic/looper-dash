@@ -1,4 +1,4 @@
-# Multi Looper Dashboard 0.7 beta
+# Multi Looper Dashboard 0.7.1 beta
 
 ## Spuštění — bez úprav v Maxu
 
@@ -6,13 +6,13 @@
 2. V Live 12 Suite přetáhni **`MultiLooperDashboard.amxd` na libovolnou audio stopu**, například novou prázdnou stopu Dashboard.
 3. Na zařízení klikni **OPEN DASHBOARD**. Monitor si Loopery najde sám. Není potřeba přejmenovávat stopy, otevírat editor ani měnit MIDI nastavení.
 
-Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.7 zatím nebyly přímo v Live ověřeny.
+Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.7.1 zatím nebyly přímo v Live ověřeny.
 
-## Co je nové v 0.7
+## Co je nové v 0.7.1
 
 - Jemně zaoblené karty a tlačítka, spojené přepínače CARDS a SIZE s jasně označenou volbou.
 - Klidnější záhlaví s jemným tónováním, výrazným proužkem barvy stopy a sjednocenými pomocnými popisky. Velký stav zůstává dominantní.
-- Lehčí transportní reference: tenčí hranice taktů, vystředěná čísla a výraznější aktuální pozice.
+- Čitelnější transportní reference: kontrastnější 2px hranice taktů, tučná čísla 14/16 px a jemné podbarvení aktuálního taktu. Výrazná čára dál ukazuje aktuální referenční pozici.
 - Nová volba **3 karty** zobrazuje tři široké řádky: stav vlevo, reference a sendy vpravo. Rozložení 2/4/6 má nadále dva sloupce.
 - Dlouhé názvy se zkracují podle skutečně změřené šířky textu, aby nepřekrývaly ostatní údaje.
 

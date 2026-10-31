@@ -16,7 +16,7 @@ assert.equal(c.pageSize(),4);
 assert.ok(texts.find(t=>t.text==='RECORD').size>30);
 assert.ok(!texts.some(t=>t.text==='LIVE VIEW'||t.text==='CLASSIC'));
 assert.ok(texts.some(t=>t.text==='CARDS'));
-assert.equal(shapes.filter(s=>s.includes('width="1" height="20"')).length,28,'thin 4/8-bar boundaries on four cards');
+assert.equal(shapes.filter(s=>s.includes('width="2" height="22"')).length,28,'visible 4/8-bar boundaries on four cards');
 assert.ok(!texts.some(t=>String(t.text).includes('Raw:')||String(t.text).includes('Loop position:')),'technical details removed from cards');
 assert.ok(texts.some(t=>t.text==='8')&&texts.some(t=>t.text==='4'),'individual bars have numeric labels');
 function render(suffix){if(process.argv[2])fs.writeFileSync(process.argv[2]+suffix+'.svg',`<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="1040" viewBox="0 0 1040 1040" font-family="Arial">${shapes.join('')}${texts.map(t=>t.svg).join('')}</svg>`);}
@@ -38,7 +38,7 @@ texts=[];shapes=[];c.paint();render('-3');assert.equal(texts.filter(t=>t.text===
 assert.ok([0,1,2].every(i=>c.cardLayout(i).w===996&&c.cardLayout(i).x===22));
 layout=c.cardLayout(2);c.onclick(layout.x+layout.progressX+layout.progressWidth-10,layout.y+layout.progressY+8);assert.deepEqual(out.at(-1),[0,'gridlength',105,4]);
 c.onclick(530,25);assert.equal(c.pageSize(),6);assert.equal(c.page,0);
-texts=[];shapes=[];c.paint();render('-6');assert.equal(shapes.filter(s=>s.includes('width="1" height="16"')).length,42);
+texts=[];shapes=[];c.paint();render('-6');assert.equal(shapes.filter(s=>s.includes('width="2" height="18"')).length,42);
 c.onclick(300,25);assert.equal(c.pageSize(),6,'removed view toggle has no action');
 c.onclick(490,25);assert.equal(c.pageSize(),4);
 assert.equal(out.length,before+2,'layout changes send no messages to Live or core');

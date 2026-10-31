@@ -56,9 +56,14 @@ function progress(x,y,bars,frac,valid,col,width,compact){
     rounded(x,y,width,height,4,[.085,.12,.15]);
     for(var b=0;b<bars;b++)if(b===current)rounded(x+b*segment+2,y+1,segment-4,height-2,3,[.14,.19,.23]);
     if(valid&&frac>0)rounded(x,y,width*frac,height,Math.min(4,width*frac/2),[col[0]*.5,col[1]*.5,col[2]*.5]);
-    for(b=0;b<=bars;b++)rect(x+Math.min(width-1,b*segment),y-2,1,height+4,[.24,.31,.36]);
+    for(b=0;b<=bars;b++)rect(x+Math.min(width-2,b*segment),y-3,2,height+6,[.48,.58,.65]);
     if(valid)rounded(x+Math.min(width-3,width*frac),y-4,3,height+8,1.5,col);
-    for(b=0;b<bars;b++)txt(x+(b+.5)*segment-textWidth(b+1,12,b===current)/2,y+(compact?30:38),b+1,12,b===current?col:[.42,.51,.57],b===current);
+    var labelSize=compact?14:16,labelY=y+(compact?32:38);
+    for(b=0;b<bars;b++){
+        var center=x+(b+.5)*segment;
+        if(b===current)rounded(center-13,labelY-labelSize-2,26,labelSize+6,5,[.085+col[0]*.13,.12+col[1]*.13,.15+col[2]*.13]);
+        txt(center-textWidth(b+1,labelSize,true)/2,labelY,b+1,labelSize,b===current?col:[.7,.77,.82],true);
+    }
 }
 function drawSends(x,y,sends,stale,width){
     width=width||448;var cell=(width-20)/2;
