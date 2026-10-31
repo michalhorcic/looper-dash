@@ -1,6 +1,6 @@
 autowatch=1;inlets=1;outlets=1;
 mgraphics.init();mgraphics.relative_coords=0;mgraphics.autofill=0;
-var model={rows:[],status:"Loading Live API",count:0}, page=0, performanceMode=true, performanceCards=4, lastReceived=0;
+var model={rows:[],status:"Loading Live API",count:0}, page=0, performanceCards=4, lastReceived=0;
 var beatColors={STOP:[.55,.62,.7],PLAY:[.24,.84,.62],RECORD:[1,.31,.37],OVERDUB:[1,.66,.22]};
 var windowScale=1, windowScales=[.5,1,2];
 function windowscale(value){
@@ -16,7 +16,7 @@ function windowscale(value){
         post("MLD window resize: ",e,"\n");
     }
 }
-function pageSize(){return performanceMode?performanceCards:6;}
+function pageSize(){return performanceCards;}
 function pageCount(){return Math.max(1,Math.ceil(model.rows.length/pageSize()));}
 function snapshot(){try{model=JSON.parse(arrayfromargs(arguments).join(" "));lastReceived=Date.now();page=Math.min(page,pageCount()-1);mgraphics.redraw();}catch(e){post("MLD UI: ",e,"\n");}}
 function rgba(c){mgraphics.set_source_rgba(c[0],c[1],c[2],c.length>3?c[3]:1);}
@@ -32,8 +32,8 @@ function cardLayout(i){
     var rows=pageSize()/2,step=546/rows,height=step-14;
     return {x:22+(i%2)*510,y:120+Math.floor(i/2)*step,h:height,progressY:height-(rows===3?68:86)};
 }
-function changeLayout(mode,count){
-    var firstVisible=page*pageSize();performanceMode=mode;performanceCards=count;
+function changeLayout(count){
+    var firstVisible=page*pageSize();performanceCards=count;
     page=Math.min(Math.floor(firstVisible/pageSize()),pageCount()-1);mgraphics.redraw();
 }
 function progress(x,y,bars,frac,valid,col){
@@ -58,8 +58,8 @@ function drawSends(x,y,sends,stale){
 function paint(){
     var w=box.rect[2]-box.rect[0],h=box.rect[3]-box.rect[1];mgraphics.save();mgraphics.scale(w/1040,h/780);
     rect(0,0,1040,780,[.025,.04,.055]);txt(22,32,"MULTI LOOPER",24);
-    button(240,10,130,performanceMode?"LIVE VIEW":"CLASSIC",performanceMode);
-    var counts=[2,4,6];for(var n=0;n<counts.length;n++)button(390+n*48,10,38,String(counts[n]),performanceMode&&performanceCards===counts[n]);
+    txt(330,31,"CARDS",12,[.62,.7,.76]);
+    var counts=[2,4,6];for(var n=0;n<counts.length;n++)button(390+n*48,10,38,String(counts[n]),performanceCards===counts[n]);
     button(675,10,90,"RESCAN");button(777,10,100,"REPORT");button(889,10,128,"MARK");
     var t=model.transport,stale=lastReceived&&Date.now()-lastReceived>2000;
     if(t){txt(22,76,(t.playing?"RUNNING":"STOPPED")+"   "+(t.bpm!==null?Number(t.bpm).toFixed(1):"?")+" BPM   "+t.numerator+"/"+t.denominator,21);
@@ -72,15 +72,15 @@ function paint(){
         rect(x,y,488,layout.h,[.065,.09,.115]);
         rect(x,y,488,54,[.065+track[0]*.12,.09+track[1]*.12,.115+track[2]*.12]);
         rect(x,y,5,54,track);
-        txt(x+16,y+29,trim(row.track,performanceMode?26:29),performanceMode?23:20);
+        txt(x+16,y+29,trim(row.track,26),23);
         txt(x+395,y+27,row.grid_bars+" BARS",12,[.65,.75,.82]);
         // Distinguish Loopers sharing a track or track name.
         var duplicates=0;for(var r=0;r<model.rows.length;r++)if(model.rows[r].track===row.track)duplicates++;
         if(duplicates>1||row.name!=="Looper")txt(x+16,y+48,trim(row.name+(duplicates>1?"  #"+(start+i+1):"")+(row.trail.length?" / "+row.trail.join(" > "):""),63),11,[.62,.7,.76]);
         var label=stale?"STALE DATA":row.state;
-        var font=performanceMode?(pageSize()===2?84:pageSize()===4?60:34):30;
+        var font=pageSize()===2?84:pageSize()===4?60:34;
         font=Math.min(font,440/(Math.max(1,String(label).length)*.72));
-        var baseline=performanceMode&&pageSize()!==6?54+(layout.progressY-54)/2+font*.32:84;
+        var baseline=pageSize()!==6?54+(layout.progressY-54)/2+font*.32:84;
         txt(x+16,y+baseline,trim(label,25),font,col);
         if(row.active===0)txt(x+421,y+layout.progressY-12,"OFF",12,[1,.65,.3]);
         var valid=t&&t.grid_valid&&!stale,frac=valid?(row.grid_bars===8?t.grid8:t.grid4):0;
@@ -97,8 +97,7 @@ function paint(){
 function onclick(x,y){
     x=x*1040/(box.rect[2]-box.rect[0]);y=y*780/(box.rect[3]-box.rect[1]);
     if(y>=10&&y<=40){
-        if(x>=240&&x<370)changeLayout(!performanceMode,performanceCards);
-        else if(x>=390&&x<524){var n=Math.floor((x-390)/48);if(x<390+n*48+38)changeLayout(true,[2,4,6][n]);}
+        if(x>=390&&x<524){var n=Math.floor((x-390)/48);if(x<390+n*48+38)changeLayout([2,4,6][n]);}
         else if(x>=675&&x<765)outlet(0,"scan");else if(x>=777&&x<877)outlet(0,"report");else if(x>=889&&x<=1017)outlet(0,"mark","USER_MARK");return;
     }
     if(y>=684&&y<=714){

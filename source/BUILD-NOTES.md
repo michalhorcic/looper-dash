@@ -1,4 +1,4 @@
-# Build notes — 0.6.1 beta
+# Build notes — 0.6.2 beta
 
 Unfrozen Audio Effect AMXD: little-endian chunks `ampf` (payload `aaaa`), `meta` (four zero bytes), `ptch` (UTF-8 patcher JSON + null byte). Adjacent JS dependencies resolve relative to the device directory. No code signing, Node for Max, native externals or manual Max editing is required by this package.
 
@@ -14,7 +14,7 @@ Primary references:
 - https://docs.cycling74.com/apiref/lom/song/
 - https://docs.cycling74.com/apiref/js/liveapi/
 
-State labels are parsed only from explicit API display strings; no numeric enum assumptions. All parameter values are observed for diagnostic export. Topology observers ignore their initial notification by comparing it with the initial property value. Changes trigger a debounced rediscovery; a five-second full topology comparison is the fallback. Runtime IDs are never persisted across Live sessions. Performance mode defaults to four cards, with two/four/six-card layouts and a classic six-card view. Layout changes preserve the first previously visible device on the selected page. View preferences remain local to the current JS UI instance.
+State labels are parsed only from explicit API display strings; no numeric enum assumptions. All parameter values are observed for diagnostic export. Topology observers ignore their initial notification by comparing it with the initial property value. Changes trigger a debounced rediscovery; a five-second full topology comparison is the fallback. Runtime IDs are never persisted across Live sessions. Performance mode defaults to four cards, with two/four/six-card layouts. Layout changes preserve the first previously visible device on the selected page. View preferences remain local to the current JS UI instance.
 
 The 4/8-bar strips remain transport-origin references, not measured or inferred buffer playheads. Pending recording is not inferred. `DeviceParameter.state` is not read as Looper transport state. The build never invokes Looper functions, Live setters, or MIDI routing.
 
@@ -35,11 +35,11 @@ Track color reference: https://docs.cycling74.com/apiref/lom/track/#color
 
 Core/UI tests cover dynamic colors, nested/return/master tracks, absent colors, layout switching, pagination, scaled click coordinates and the read-only contract. `node tests/test_ui.cjs /tmp/mld-preview` optionally writes simulated SVG previews for all layouts (square export canvas for Quick Look compatibility); these are not native Max screenshots.
 
-The user confirmed 0.3 works in Live 12 Suite. Version 0.6.1 still needs native Live verification.
+The user confirmed 0.3 works in Live 12 Suite. Version 0.6.2 still needs native Live verification.
 
 0.5 adds read-only A/B send monitoring for each Looper's host track. Only the first two `mixer_device sends` parameters are read/observed, shared once per host track. Return names/IDs and send parameter IDs participate in topology comparison, while send value changes use existing parameter observers without rescanning. No send C parameter is accessed. Missing returns, missing mixers and unavailable values have a neutral display.
 
-Text values come from `DeviceParameter.str_for_value`; bars show normalized parameter position, not audio level. Sends are not interactive. No meters, MIDI objects, routing changes or Live writes were added. The UI reserves a footer for sends in 2/4/6-card and classic layouts, with compact reference strips in six-card views.
+Text values come from `DeviceParameter.str_for_value`; bars show normalized parameter position, not audio level. Sends are not interactive. No meters, MIDI objects, routing changes or Live writes were added. The UI reserves a footer for sends in 2/4/6-card layouts, with compact reference strips in six-card views.
 
 Reference: https://docs.cycling74.com/apiref/lom/mixerdevice/#sends
 
@@ -52,3 +52,5 @@ References: https://docs.cycling74.com/legacy/max8/vignettes/jswindobj and https
 UI tests cover every preset, canvas/window dimensions, preserved pagination/layout, scaled reference-strip and pagination clicks, invalid preset rejection and resize failure rollback. Core monitoring and the patch graph are unchanged.
 
 0.6.1 removes the 3x preset. Only 0.5x/1x/2x are accepted; the former 3x hit area is inactive. Tests cover both invalid 3x requests and the removed button.
+
+0.6.2 removes Classic mode and the LIVE VIEW toggle. Performance view is now the only rendering path, with a static CARDS label and the existing 2/4/6 selectors. No monitoring or MIDI behavior changed.
