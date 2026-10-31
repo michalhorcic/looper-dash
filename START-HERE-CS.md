@@ -1,4 +1,4 @@
-# Multi Looper Dashboard 0.6 beta
+# Multi Looper Dashboard 0.6.1 beta
 
 ## Spuštění — bez úprav v Maxu
 
@@ -6,12 +6,13 @@
 2. V Live 12 Suite přetáhni **`MultiLooperDashboard.amxd` na libovolnou audio stopu**, například novou prázdnou stopu Dashboard.
 3. Na zařízení klikni **OPEN DASHBOARD**. Monitor si Loopery najde sám. Není potřeba přejmenovávat stopy, otevírat editor ani měnit MIDI nastavení.
 
-Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.6 zatím nebyly přímo v Live ověřeny.
+Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.6.1 zatím nebyly přímo v Live ověřeny.
 
-## Co je nové v 0.6
+## Co je nové v 0.6.1
 
-- Přepínač **SIZE 0.5x / 1x / 2x / 3x** v dolní liště mění velikost celého okna i obsahu dashboardu.
-- Výchozí 1× odpovídá ploše 1040 × 780; další volby jsou 520 × 390, 2080 × 1560 a 3120 × 2340. Jde o rozměry plochy dashboardu, bez systémového rámečku okna. Velká měřítka vyžadují odpovídající prostor na obrazovce a mohou být omezena správcem oken.
+- Volba 3× byla odstraněna; maximální velikost je nyní 2×.
+- Přepínač **SIZE 0.5x / 1x / 2x** v dolní liště mění velikost celého okna i obsahu dashboardu.
+- Výchozí 1× odpovídá ploše 1040 × 780; další volby jsou 520 × 390 a 2080 × 1560. Jde o rozměry plochy dashboardu, bez systémového rámečku okna. Velká měřítka vyžadují odpovídající prostor na obrazovce a mohou být omezena správcem oken.
 - Rozložení 2/4/6, aktuální stránka a reference 4/8 taktů se při změně velikosti zachovají. Nastavení velikosti je lokální pro aktuální běh dashboardu.
 
 ## Sendy A/B (od 0.5)
@@ -52,7 +53,7 @@ Zařízení pouze čte Live API. Neobsahuje MIDI příjem/výstup, zásahy do ma
 2. Ovládej Loopery původními tlačítky LCXL3 a porovnej texty s nativním UI. Přidej nebo odeber jeden Looper; monitor má změnu sám zachytit.
 3. Přepni 2 / 4 / 6 a CLASSIC, vyzkoušej stránkování i volbu 4/8 taktů na jiné stránce. Změň barvu stopy v Live a ověř záhlaví všech jejích Looperů.
 4. Porovnej A/B na kartě s příslušnou stopou v Live. Změň oba sendy, přejmenuj return a ověř průběžnou aktualizaci. Send C nadále používej pro své směrování audia.
-5. Vyzkoušej SIZE 0.5x / 1x / 2x / 3x podle dostupné plochy obrazovky. Ověř velikost celého okna i obsahu, stránkování a klikání na reference 4/8 taktů.
+5. Vyzkoušej SIZE 0.5x / 1x / 2x podle dostupné plochy obrazovky. Ověř velikost celého okna i obsahu, stránkování a klikání na reference 4/8 taktů.
 6. Vyzkoušej současný Play, Record, Overdub a Stop na různých Looperech. Proužky posuzuj pouze jako transportní vodítka.
 
 Pokud něco nesedí, klikni **REPORT**, ulož soubor s příponou `.json` a pošli jej s přesnou verzí Live a Maxu a jednou větou, co nefunguje. Report obsahuje metadata a parametry nalezených Looperů a jejich umístění, nikoliv audio. Limit historie je 6 000 událostí; při delším běhu se nejstarší přepisují a zvyšuje se `dropped_events`.

@@ -49,19 +49,21 @@ const resizeCalls=[],windowSizes=[];let nativeSize=[1040,780],failResize=false;
 c.box.message=function(message,w,h){assert.equal(message,'size');resizeCalls.push([w,h]);this.rect=[0,0,w,h];this.presentation_rect=[0,0,w,h];};
 c.patcher={wind:{get size(){return nativeSize;},set size(value){if(failResize){failResize=false;throw Error('Window resize failed');}nativeSize=Array.from(value);windowSizes.push(nativeSize);}}};
 let resizeOut=out.length;c.page=1;const chosenLayout=c.performanceCards;
-for(const factor of [.5,1,2,3]){
- const oldFactor=c.windowScale;c.onclick((390+[.5,1,2,3].indexOf(factor)*70+15)*oldFactor,700*oldFactor);
+for(const factor of [.5,1,2]){
+ const oldFactor=c.windowScale;c.onclick((390+[.5,1,2].indexOf(factor)*70+15)*oldFactor,700*oldFactor);
  assert.deepEqual(Array.from(c.box.rect),[0,0,1040*factor,780*factor]);
  assert.deepEqual(Array.from(c.box.presentation_rect),[0,0,1040*factor,780*factor]);assert.deepEqual(nativeSize,[1040*factor,780*factor]);
  assert.equal(c.windowScale,factor);assert.equal(c.page,1);assert.equal(c.performanceCards,chosenLayout);
- texts=[];shapes=[];c.paint();for(const label of ['0.5x','1x','2x','3x'])assert.ok(texts.some(t=>t.text===label));
+ texts=[];shapes=[];c.paint();for(const label of ['0.5x','1x','2x'])assert.ok(texts.some(t=>t.text===label));
+ assert.ok(!texts.some(t=>t.text==='3x'),'3x preset removed');
  const l=c.cardLayout(0);c.onclick((l.x+30)*factor,(l.y+l.progressY+10)*factor);assert.deepEqual(out.at(-1),[0,'gridlength',104,8]);
  const previousPage=c.page;c.onclick(950*factor,700*factor);assert.equal(c.page,previousPage);c.onclick(800*factor,700*factor);assert.equal(c.page,0);c.onclick(950*factor,700*factor);assert.equal(c.page,1);
 }
-assert.equal(out.length,resizeOut+4,'only reference-strip clicks emit messages; resizing stays local');
-assert.equal(resizeCalls.length,4);assert.equal(windowSizes.length,4);
-for(const bad of [0,-1,.75,4,NaN,Infinity,'invalid'])c.windowscale(bad);assert.equal(resizeCalls.length,4);
-failResize=true;c.windowscale(.5);assert.equal(c.windowScale,3);assert.deepEqual(nativeSize,[3120,2340]);assert.deepEqual(Array.from(c.box.rect),[0,0,3120,2340]);
+assert.equal(out.length,resizeOut+3,'only reference-strip clicks emit messages; resizing stays local');
+assert.equal(resizeCalls.length,3);assert.equal(windowSizes.length,3);
+c.onclick(620*2,700*2);assert.equal(resizeCalls.length,3,'former 3x button area is inert');
+for(const bad of [0,-1,.75,3,4,NaN,Infinity,'invalid'])c.windowscale(bad);assert.equal(resizeCalls.length,3);
+failResize=true;c.windowscale(.5);assert.equal(c.windowScale,2);assert.deepEqual(nativeSize,[2080,1560]);assert.deepEqual(Array.from(c.box.rect),[0,0,2080,1560]);
 c.windowscale(1);c.page=0;
 // Missing, unavailable and stale send values never appear as active settings.
 texts=[];shapes=[];c.drawSends(30,200,null,false);assert.equal(texts.filter(t=>t.text==='—').length,2);

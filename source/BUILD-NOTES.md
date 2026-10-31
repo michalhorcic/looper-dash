@@ -1,4 +1,4 @@
-# Build notes — 0.6 beta
+# Build notes — 0.6.1 beta
 
 Unfrozen Audio Effect AMXD: little-endian chunks `ampf` (payload `aaaa`), `meta` (four zero bytes), `ptch` (UTF-8 patcher JSON + null byte). Adjacent JS dependencies resolve relative to the device directory. No code signing, Node for Max, native externals or manual Max editing is required by this package.
 
@@ -35,7 +35,7 @@ Track color reference: https://docs.cycling74.com/apiref/lom/track/#color
 
 Core/UI tests cover dynamic colors, nested/return/master tracks, absent colors, layout switching, pagination, scaled click coordinates and the read-only contract. `node tests/test_ui.cjs /tmp/mld-preview` optionally writes simulated SVG previews for all layouts (square export canvas for Quick Look compatibility); these are not native Max screenshots.
 
-The user confirmed 0.3 works in Live 12 Suite. Version 0.6 still needs native Live verification.
+The user confirmed 0.3 works in Live 12 Suite. Version 0.6.1 still needs native Live verification.
 
 0.5 adds read-only A/B send monitoring for each Looper's host track. Only the first two `mixer_device sends` parameters are read/observed, shared once per host track. Return names/IDs and send parameter IDs participate in topology comparison, while send value changes use existing parameter observers without rescanning. No send C parameter is accessed. Missing returns, missing mixers and unavailable values have a neutral display.
 
@@ -45,8 +45,10 @@ Reference: https://docs.cycling74.com/apiref/lom/mixerdevice/#sends
 
 Tests additionally cover native send labels, zero settings, A/B-only subscriptions, missing returns/parameters, return renaming/reordering/removal, fallback discovery, shared observers for nested Loopers and stale/unavailable UI values.
 
-0.6 adds local window-size presets 0.5/1/2/3 (default 1). The jsui sends its own box the `size` message (both patching and presentation dimensions), then assigns its containing `Patcher.wind.size`. Painting and hit testing continue to use the actual box rectangle. Only the dashboard subpatcher window is resized; the parent Live device strip is untouched. A failed resize restores the previous dimensions and leaves the selected preset unchanged. OS window-size limits require native testing, especially at 2x/3x.
+0.6 adds local window-size presets 0.5/1/2 (default 1). The jsui sends its own box the `size` message (both patching and presentation dimensions), then assigns its containing `Patcher.wind.size`. Painting and hit testing continue to use the actual box rectangle. Only the dashboard subpatcher window is resized; the parent Live device strip is untouched. A failed resize restores the previous dimensions and leaves the selected preset unchanged. OS window-size limits require native testing, especially at 2x.
 
 References: https://docs.cycling74.com/legacy/max8/vignettes/jswindobj and https://docs.cycling74.com/reference/jsui/#size
 
 UI tests cover every preset, canvas/window dimensions, preserved pagination/layout, scaled reference-strip and pagination clicks, invalid preset rejection and resize failure rollback. Core monitoring and the patch graph are unchanged.
+
+0.6.1 removes the 3x preset. Only 0.5x/1x/2x are accepted; the former 3x hit area is inactive. Tests cover both invalid 3x requests and the removed button.

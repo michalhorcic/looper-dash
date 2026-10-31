@@ -2,7 +2,7 @@ autowatch=1;inlets=1;outlets=1;
 mgraphics.init();mgraphics.relative_coords=0;mgraphics.autofill=0;
 var model={rows:[],status:"Loading Live API",count:0}, page=0, performanceMode=true, performanceCards=4, lastReceived=0;
 var beatColors={STOP:[.55,.62,.7],PLAY:[.24,.84,.62],RECORD:[1,.31,.37],OVERDUB:[1,.66,.22]};
-var windowScale=1, windowScales=[.5,1,2,3];
+var windowScale=1, windowScales=[.5,1,2];
 function windowscale(value){
     value=Number(value);if(windowScales.indexOf(value)<0)return;
     var previous=box.rect.slice(0),wind=null,oldSize=null;
@@ -102,7 +102,7 @@ function onclick(x,y){
         else if(x>=675&&x<765)outlet(0,"scan");else if(x>=777&&x<877)outlet(0,"report");else if(x>=889&&x<=1017)outlet(0,"mark","USER_MARK");return;
     }
     if(y>=684&&y<=714){
-        if(x>=390&&x<662){var z=Math.floor((x-390)/70);if(x<390+z*70+62)windowscale(windowScales[z]);}
+        if(x>=390&&x<390+(windowScales.length-1)*70+62){var z=Math.floor((x-390)/70);if(x<390+z*70+62)windowscale(windowScales[z]);}
         else if(x>=735&&x<865)page=Math.max(0,page-1);else if(x>=877&&x<=1017)page=Math.min(pageCount()-1,page+1);mgraphics.redraw();return;
     }
     for(var i=0;i<Math.min(pageSize(),model.rows.length-page*pageSize());i++){
