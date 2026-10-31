@@ -1,4 +1,4 @@
-/* MLD 0.3 beta. ES5 for stock Max js. All Live interaction is read-only. */
+/* MLD 0.4 beta. ES5 for stock Max js. All Live interaction is read-only. */
 autowatch=1; inlets=1; outlets=1;
 var song=null, timer=null, refs=[], slots=[], queue=[], events=[], scans=0;
 var ready=false, epoch=0, dirty=false, scanAt=0, lastFallback=0, lastContext=0;
@@ -52,7 +52,7 @@ function candidate(s){
     }return matches.length===1?matches[0]:null;
 }
 function readLooper(d,track,trail,path,old){
-    var key=String(id(d)), s={id:id(d),path:path,track_id:track.id,track:track.name,
+    var key=String(id(d)), s={id:id(d),path:path,track_id:track.id,track:track.name,track_color:track.color,
         name:str(d,"name"),trail:trail,active:number(d,"is_active",null),properties:{},parameters:[],info:info(d),
         class_name:str(d,"class_name"),class_display_name:str(d,"class_display_name"),available:true};
     if(referenceBars[key]===undefined)referenceBars[key]=old?old.grid_bars:4;
@@ -84,7 +84,7 @@ function discover(bind){
             if(++visits>10000)throw new Error("Device scan limit (10000)");
             var path=base+" devices "+j,d=obj(path),cn=str(d,"class_name"),dn=str(d,"class_display_name");
             if(cn==="Looper"||dn==="Looper"){
-                result.push(bind?readLooper(d,track,trail,path,old[String(id(d))]):{id:id(d),track_id:track.id,track:track.name,name:str(d,"name"),path:path,trail:trail});
+                result.push(bind?readLooper(d,track,trail,path,old[String(id(d))]):{id:id(d),track_id:track.id,track:track.name,track_color:track.color,name:str(d,"name"),path:path,trail:trail});
             }
             if(number(d,"can_have_chains",0)){
                 if(bind)observe(d,"name","topology");
@@ -106,15 +106,15 @@ function discover(bind){
     for(var k=0;k<kinds.length;k++){
         var count=song.getcount(kinds[k]);
         for(var t=0;t<count;t++){
-            var tp="live_set "+kinds[k]+" "+t,tr=obj(tp),track={id:id(tr),name:str(tr,"name")};
-            if(bind)observe(tr,"name","topology");walk(tp,track,[],0);
+            var tp="live_set "+kinds[k]+" "+t,tr=obj(tp),track={id:id(tr),name:str(tr,"name"),color:number(tr,"color",null)};
+            if(bind){observe(tr,"name","topology");if(has(tr,"property","color"))observe(tr,"color","topology");}walk(tp,track,[],0);
         }
     }
     var master=obj("live_set master_track");
-    if(id(master)){if(bind)observe(master,"name","topology");walk("live_set master_track",{id:id(master),name:str(master,"name")||"Master"},[],0);}
+    if(id(master)){if(bind){observe(master,"name","topology");if(has(master,"property","color"))observe(master,"color","topology");}walk("live_set master_track",{id:id(master),name:str(master,"name")||"Master",color:number(master,"color",null)},[],0);}
     return result;
 }
-function fingerprint(ss){var out=[];for(var i=0;i<ss.length;i++)out.push([ss[i].id,ss[i].track_id,ss[i].track,ss[i].name,ss[i].path,ss[i].trail]);return JSON.stringify(out);}
+function fingerprint(ss){var out=[];for(var i=0;i<ss.length;i++)out.push([ss[i].id,ss[i].track_id,ss[i].track,ss[i].track_color,ss[i].name,ss[i].path,ss[i].trail]);return JSON.stringify(out);}
 function rescan(){
     if(!ready)return;
     var old=slots;detach();
@@ -160,19 +160,19 @@ function publish(){
     var rows=[];
     for(var i=0;i<slots.length;i++){
         var s=slots[i],p=candidate(s);
-        rows.push({id:s.id,track:s.track,name:s.name,trail:s.trail,active:s.active,
+        rows.push({id:s.id,track:s.track,track_color:s.track_color,name:s.name,trail:s.trail,active:s.active,
             available:s.available&&!dirty,state:s.available&&!dirty?statusLabel(p):"RECONNECTING",
             raw:p?{name:p.name,value:p.value,display:p.display}:null,grid_bars:referenceBars[String(s.id)]||4,
             parameter_count:s.parameters.length});
     }
-    outlet(0,"snapshot",JSON.stringify({version:"0.3 beta",status:message,rows:rows,transport:transportData,
+    outlet(0,"snapshot",JSON.stringify({version:"0.4 beta",status:message,rows:rows,transport:transportData,
         count:rows.length,scans:scans,dropped:dropped,wall_ms:Date.now(),pending:"unknown",phase:"unavailable"}));
 }
 function gridlength(deviceId,bars){bars=Number(bars);if(bars!==4&&bars!==8)return;for(var i=0;i<slots.length;i++)if(slots[i].id===Number(deviceId)){referenceBars[String(deviceId)]=bars;publish();return;}}
 function mark(){log({kind:"marker",label:arrayfromargs(arguments).join(" ")||"User marker",transport:transportData});}
 function export_report(){
     var path=arrayfromargs(arguments).join(" ");if(!path)return;
-    var r={schema:"mld-diagnostic-2",version:"0.3 beta",created_at:new Date().toISOString(),
+    var r={schema:"mld-diagnostic-2",version:"0.4 beta",created_at:new Date().toISOString(),
         status:message,transport:transportData,loopers:slots,initial_inventory:inventory,events:events,dropped_events:dropped,
         timing:"Observer wall times; transport sampled later in a low-priority Task. Not sample accurate.",
         state_semantics:"Native parameter text, not validated as active versus requested state.",

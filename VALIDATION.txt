@@ -1,7 +1,6 @@
-MLD 0.3 beta, 2026-10-31
-Core logic unchanged from user-tested 0.2; version metadata only.
-PASS JS syntax, 9 discovery/read-only mock tests
-PASS UI smoke: per-bar ticks, labels, 6-card pagination, removal of per-card diagnostic text
-PASS AMXD chunk sizes, exact source roundtrip, graph and dependencies
-PASS visual inspection of simulated UI drawing
-NOT TESTED: new UI inside native Max/Live.
+MLD 0.4 beta, 2026-10-31
+User confirmed 0.3 works in Ableton Live 12 Suite; exact Max version unknown.
+PASS JS syntax, 11 discovery/read-only mock tests including live track colors
+PASS UI: performance 2/4/6, classic, track/state colors, pagination, scaled clicks
+PASS AMXD chunk sizes, exact source roundtrip, graph/dependencies, read-only contract
+NOT TESTED: 0.4 inside native Max/Live.

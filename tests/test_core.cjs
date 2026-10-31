@@ -46,6 +46,22 @@ test('add/remove/name changes trigger debounce and rediscovery without a button'
 test('5-second fallback catches topology updates even without a callback',()=>{
  const {song}=setup(),t=track('Bass');song.children.tracks.push(t);c.init();flush();t.children.devices.push(looper());clock+=5100;c.tick();flush();assert.equal(c.slots.length,1);
 });
+test('track colors include nested, return and master loopers and follow live color changes',()=>{
+ const {song,master}=setup(),t=track('Synth'),r=track('Return A');
+ t.props.color=0xff8040;r.props.color=0x0088ff;master.props.color=0;
+ const chain=node('Chain',{name:'Nested'},{devices:[looper()]});
+ t.children.devices=[looper(),node('Rack',{name:'FX',can_have_chains:1},{chains:[chain]})];
+ r.children.devices=[looper()];master.children.devices=[looper()];song.children.tracks=[t];song.children.return_tracks=[r];
+ c.init();flush();assert.equal(c.dirty,false);c.tick();
+ assert.deepEqual(JSON.parse(outputs.at(-1)[2]).rows.map(s=>s.track_color),[0xff8040,0xff8040,0x0088ff,0]);
+ c.gridlength(c.slots[0].id,8);t.props.color=0x12ab34;changed(t,'color');clock+=300;c.tick();flush();
+ assert.equal(c.slots[0].track_color,0x12ab34);assert.equal(c.slots[1].track_color,0x12ab34);assert.equal(c.referenceBars[c.slots[0].id],8);
+ t.props.color=0x334455;clock+=5100;c.tick();flush();assert.equal(c.slots[0].track_color,0x334455);
+});
+test('missing track color remains available with a neutral color fallback',()=>{
+ const {song}=setup(),t=track('No color');t.children.devices=[looper()];song.children.tracks=[t];c.init();flush();c.tick();
+ const row=JSON.parse(outputs.at(-1)[2]).rows[0];assert.equal(row.track_color,null);assert.equal(row.available,true);
+});
 test('state derives from explicit API text and local 8-bar reference never changes device',()=>{
  const {song}=setup(),t=track('Mic'),l=looper();t.children.devices.push(l);song.children.tracks.push(t);c.init();flush();c.tick();const p=l.children.parameters[1];p.props.value=1;changed(p,'value');clock+=50;c.tick();
  const view=JSON.parse(outputs.at(-1)[2]);assert.equal(view.rows[0].state,'RECORD');assert.equal(view.pending,'unknown');assert.equal(view.phase,'unavailable');c.gridlength(l.id,8);assert.equal(c.referenceBars[l.id],8);assert.equal(p.props.value,1);
