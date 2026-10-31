@@ -1,4 +1,4 @@
-/* MLD 0.4 beta. ES5 for stock Max js. All Live interaction is read-only. */
+/* MLD 0.6 beta. ES5 for stock Max js. All Live interaction is read-only. */
 autowatch=1; inlets=1; outlets=1;
 var song=null, timer=null, refs=[], slots=[], queue=[], events=[], scans=0;
 var ready=false, epoch=0, dirty=false, scanAt=0, lastFallback=0, lastContext=0;
@@ -51,8 +51,27 @@ function candidate(s){
         var p=s.parameters[i];if(/^(state|looper state)$/i.test(p.name)||/^(state|looper state)$/i.test(p.original_name))matches.push(p);
     }return matches.length===1?matches[0]:null;
 }
+function readSends(track,returns,bind){
+    var sends=[],mixer=obj(track.path+" mixer_device"),count=0;
+    if(id(mixer)&&has(mixer,"children","sends")){
+        count=mixer.getcount("sends");if(bind)observe(mixer,"sends","topology");
+    }
+    for(var i=0;i<2;i++){
+        var target=returns[i],s={letter:i===0?"A":"B",return_id:target?target.id:null,
+            name:target?target.name:"",id:null,available:false,value:null,min:null,max:null,display:"",track_id:track.id};
+        if(target&&i<count){
+            var p=obj(track.path+" mixer_device sends "+i);
+            s.id=id(p);s.value=number(p,"value",null);s.min=number(p,"min",null);s.max=number(p,"max",null);
+            s.available=!!s.id&&s.value!==null;display(s);
+            if(bind&&s.id)observe(p,"value","parameter",s,"value");
+        }
+        sends.push(s);
+    }
+    return sends;
+}
 function readLooper(d,track,trail,path,old){
     var key=String(id(d)), s={id:id(d),path:path,track_id:track.id,track:track.name,track_color:track.color,
+        sends:track.sends,
         name:str(d,"name"),trail:trail,active:number(d,"is_active",null),properties:{},parameters:[],info:info(d),
         class_name:str(d,"class_name"),class_display_name:str(d,"class_display_name"),available:true};
     if(referenceBars[key]===undefined)referenceBars[key]=old?old.grid_bars:4;
@@ -73,7 +92,10 @@ function readLooper(d,track,trail,path,old){
     return s;
 }
 function discover(bind){
-    var result=[], visits=0, old={};
+    var result=[], visits=0, old={},returns=[];
+    for(var r=0;r<Math.min(2,song.getcount("return_tracks"));r++){
+        var rt=obj("live_set return_tracks "+r);returns.push({id:id(rt),name:str(rt,"name")});
+    }
     for(var i=0;i<slots.length;i++)old[String(slots[i].id)]=slots[i];
     function walk(base,track,trail,depth){
         if(depth>24)throw new Error("Rack nesting limit (24)");
@@ -84,7 +106,8 @@ function discover(bind){
             if(++visits>10000)throw new Error("Device scan limit (10000)");
             var path=base+" devices "+j,d=obj(path),cn=str(d,"class_name"),dn=str(d,"class_display_name");
             if(cn==="Looper"||dn==="Looper"){
-                result.push(bind?readLooper(d,track,trail,path,old[String(id(d))]):{id:id(d),track_id:track.id,track:track.name,track_color:track.color,name:str(d,"name"),path:path,trail:trail});
+                if(!track.sends)track.sends=readSends(track,returns,bind);
+                result.push(bind?readLooper(d,track,trail,path,old[String(id(d))]):{id:id(d),track_id:track.id,track:track.name,track_color:track.color,sends:track.sends,name:str(d,"name"),path:path,trail:trail});
             }
             if(number(d,"can_have_chains",0)){
                 if(bind)observe(d,"name","topology");
@@ -106,15 +129,15 @@ function discover(bind){
     for(var k=0;k<kinds.length;k++){
         var count=song.getcount(kinds[k]);
         for(var t=0;t<count;t++){
-            var tp="live_set "+kinds[k]+" "+t,tr=obj(tp),track={id:id(tr),name:str(tr,"name"),color:number(tr,"color",null)};
+            var tp="live_set "+kinds[k]+" "+t,tr=obj(tp),track={id:id(tr),path:tp,name:str(tr,"name"),color:number(tr,"color",null)};
             if(bind){observe(tr,"name","topology");if(has(tr,"property","color"))observe(tr,"color","topology");}walk(tp,track,[],0);
         }
     }
     var master=obj("live_set master_track");
-    if(id(master)){if(bind){observe(master,"name","topology");if(has(master,"property","color"))observe(master,"color","topology");}walk("live_set master_track",{id:id(master),name:str(master,"name")||"Master",color:number(master,"color",null)},[],0);}
+    if(id(master)){if(bind){observe(master,"name","topology");if(has(master,"property","color"))observe(master,"color","topology");}walk("live_set master_track",{id:id(master),path:"live_set master_track",name:str(master,"name")||"Master",color:number(master,"color",null)},[],0);}
     return result;
 }
-function fingerprint(ss){var out=[];for(var i=0;i<ss.length;i++)out.push([ss[i].id,ss[i].track_id,ss[i].track,ss[i].track_color,ss[i].name,ss[i].path,ss[i].trail]);return JSON.stringify(out);}
+function fingerprint(ss){var out=[];for(var i=0;i<ss.length;i++)out.push([ss[i].id,ss[i].track_id,ss[i].track,ss[i].track_color,ss[i].name,ss[i].path,ss[i].trail,ss[i].sends.map(function(s){return [s.id,s.return_id,s.name];})]);return JSON.stringify(out);}
 function rescan(){
     if(!ready)return;
     var old=slots;detach();
@@ -160,19 +183,25 @@ function publish(){
     var rows=[];
     for(var i=0;i<slots.length;i++){
         var s=slots[i],p=candidate(s);
+        var sends=s.sends.map(function(send){
+            var valid=send.available&&s.available&&!dirty&&typeof send.value==="number"&&isFinite(send.value);
+            return {letter:send.letter,name:send.name,available:valid,display:valid?send.display:"",
+                position:valid&&send.max>send.min?Math.max(0,Math.min(1,(send.value-send.min)/(send.max-send.min))):null};
+        });
         rows.push({id:s.id,track:s.track,track_color:s.track_color,name:s.name,trail:s.trail,active:s.active,
+            sends:sends,
             available:s.available&&!dirty,state:s.available&&!dirty?statusLabel(p):"RECONNECTING",
             raw:p?{name:p.name,value:p.value,display:p.display}:null,grid_bars:referenceBars[String(s.id)]||4,
             parameter_count:s.parameters.length});
     }
-    outlet(0,"snapshot",JSON.stringify({version:"0.4 beta",status:message,rows:rows,transport:transportData,
+    outlet(0,"snapshot",JSON.stringify({version:"0.6 beta",status:message,rows:rows,transport:transportData,
         count:rows.length,scans:scans,dropped:dropped,wall_ms:Date.now(),pending:"unknown",phase:"unavailable"}));
 }
 function gridlength(deviceId,bars){bars=Number(bars);if(bars!==4&&bars!==8)return;for(var i=0;i<slots.length;i++)if(slots[i].id===Number(deviceId)){referenceBars[String(deviceId)]=bars;publish();return;}}
 function mark(){log({kind:"marker",label:arrayfromargs(arguments).join(" ")||"User marker",transport:transportData});}
 function export_report(){
     var path=arrayfromargs(arguments).join(" ");if(!path)return;
-    var r={schema:"mld-diagnostic-2",version:"0.4 beta",created_at:new Date().toISOString(),
+    var r={schema:"mld-diagnostic-2",version:"0.6 beta",created_at:new Date().toISOString(),
         status:message,transport:transportData,loopers:slots,initial_inventory:inventory,events:events,dropped_events:dropped,
         timing:"Observer wall times; transport sampled later in a low-priority Task. Not sample accurate.",
         state_semantics:"Native parameter text, not validated as active versus requested state.",

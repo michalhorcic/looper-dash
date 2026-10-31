@@ -2,6 +2,20 @@ autowatch=1;inlets=1;outlets=1;
 mgraphics.init();mgraphics.relative_coords=0;mgraphics.autofill=0;
 var model={rows:[],status:"Loading Live API",count:0}, page=0, performanceMode=true, performanceCards=4, lastReceived=0;
 var beatColors={STOP:[.55,.62,.7],PLAY:[.24,.84,.62],RECORD:[1,.31,.37],OVERDUB:[1,.66,.22]};
+var windowScale=1, windowScales=[.5,1,2,3];
+function windowscale(value){
+    value=Number(value);if(windowScales.indexOf(value)<0)return;
+    var previous=box.rect.slice(0),wind=null,oldSize=null;
+    try{
+        wind=this.patcher.wind;oldSize=wind.size;
+        box.message("size",1040*value,780*value);
+        wind.size=[1040*value,780*value];
+        windowScale=value;mgraphics.redraw();
+    }catch(e){
+        try{box.message("size",previous[2]-previous[0],previous[3]-previous[1]);if(wind&&oldSize)wind.size=oldSize;}catch(ignored){}
+        post("MLD window resize: ",e,"\n");
+    }
+}
 function pageSize(){return performanceMode?performanceCards:6;}
 function pageCount(){return Math.max(1,Math.ceil(model.rows.length/pageSize()));}
 function snapshot(){try{model=JSON.parse(arrayfromargs(arguments).join(" "));lastReceived=Date.now();page=Math.min(page,pageCount()-1);mgraphics.redraw();}catch(e){post("MLD UI: ",e,"\n");}}
@@ -16,20 +30,30 @@ function trackColor(value){
 }
 function cardLayout(i){
     var rows=pageSize()/2,step=546/rows,height=step-14;
-    return {x:22+(i%2)*510,y:120+Math.floor(i/2)*step,h:height,progressY:height-62};
+    return {x:22+(i%2)*510,y:120+Math.floor(i/2)*step,h:height,progressY:height-(rows===3?68:86)};
 }
 function changeLayout(mode,count){
     var firstVisible=page*pageSize();performanceMode=mode;performanceCards=count;
     page=Math.min(Math.floor(firstVisible/pageSize()),pageCount()-1);mgraphics.redraw();
 }
 function progress(x,y,bars,frac,valid,col){
+    var compact=pageSize()===6,height=compact?16:22;
     var width=456,segment=width/bars,current=valid?Math.min(bars-1,Math.floor(frac*bars)):-1;
-    for(var b=0;b<bars;b++)rect(x+b*segment,y,segment,22,b===current?[.17,.23,.28]:(b%2?[.11,.15,.19]:[.085,.125,.16]));
-    if(valid&&frac>0)rect(x,y,width*frac,22,[col[0]*.68,col[1]*.68,col[2]*.68]);
+    for(var b=0;b<bars;b++)rect(x+b*segment,y,segment,height,b===current?[.17,.23,.28]:(b%2?[.11,.15,.19]:[.085,.125,.16]));
+    if(valid&&frac>0)rect(x,y,width*frac,height,[col[0]*.68,col[1]*.68,col[2]*.68]);
     // Full-height bar boundaries, plus a moving transport-reference line.
     for(b=0;b<=bars;b++)rect(x+Math.min(width-2,b*segment),y-4,2,30,[.36,.44,.5]);
     if(valid)rect(x+Math.min(width-2,width*frac),y-4,2,30,col);
-    for(b=0;b<bars;b++)txt(x+b*segment+8,y+44,b+1,14,b===current?col:[.44,.53,.6]);
+    for(b=0;b<bars;b++)txt(x+b*segment+8,y+(compact?32:44),b+1,14,b===current?col:[.44,.53,.6]);
+}
+function drawSends(x,y,sends,stale){
+    for(var i=0;i<2;i++){
+        var send=sends&&sends[i],valid=send&&send.available&&!stale,sx=x+i*234;
+        txt(sx,y,(i===0?"A":"B")+": "+trim(send&&send.name?send.name:"—",17),12,[.62,.7,.76]);
+        txt(sx+148,y,valid?trim(send.display||"—",10):"—",12,valid?[.85,.9,.95]:[.44,.53,.6]);
+        rect(sx,y+4,220,3,[.12,.17,.22]);
+        if(valid&&typeof send.position==="number"&&isFinite(send.position))rect(sx,y+4,220*Math.max(0,Math.min(1,send.position)),3,[.42,.61,.69]);
+    }
 }
 function paint(){
     var w=box.rect[2]-box.rect[0],h=box.rect[3]-box.rect[1];mgraphics.save();mgraphics.scale(w/1040,h/780);
@@ -54,15 +78,18 @@ function paint(){
         var duplicates=0;for(var r=0;r<model.rows.length;r++)if(model.rows[r].track===row.track)duplicates++;
         if(duplicates>1||row.name!=="Looper")txt(x+16,y+48,trim(row.name+(duplicates>1?"  #"+(start+i+1):"")+(row.trail.length?" / "+row.trail.join(" > "):""),63),11,[.62,.7,.76]);
         var label=stale?"STALE DATA":row.state;
-        var font=performanceMode?(pageSize()===2?84:pageSize()===4?60:40):30;
+        var font=performanceMode?(pageSize()===2?84:pageSize()===4?60:34):30;
         font=Math.min(font,440/(Math.max(1,String(label).length)*.72));
-        var baseline=performanceMode?54+(layout.progressY-54)/2+font*.32:83;
+        var baseline=performanceMode&&pageSize()!==6?54+(layout.progressY-54)/2+font*.32:84;
         txt(x+16,y+baseline,trim(label,25),font,col);
         if(row.active===0)txt(x+421,y+layout.progressY-12,"OFF",12,[1,.65,.3]);
         var valid=t&&t.grid_valid&&!stale,frac=valid?(row.grid_bars===8?t.grid8:t.grid4):0;
         progress(x+16,y+layout.progressY,row.grid_bars,frac,valid,col);
+        drawSends(x+16,y+layout.h-14,row.sends,stale);
     }
     txt(22,705,model.count+" LOOPERS  /  Page "+(page+1)+" of "+pageCount(),16);button(735,684,130,"< PREVIOUS");button(877,684,140,"NEXT >");
+    txt(340,705,"SIZE",12,[.62,.7,.76]);
+    for(var z=0;z<windowScales.length;z++)button(390+z*70,684,62,windowScales[z]+"x",windowScale===windowScales[z]);
     if(/error|failed|not ready/i.test(model.status||""))txt(22,738,trim(model.status,130),12,[1,.65,.3]);
     txt(22,762,"Transport reference only  ·  Click a bar to switch 4 / 8  ·  API state may include a requested action",12,[.48,.57,.65]);
     mgraphics.restore();
@@ -74,7 +101,10 @@ function onclick(x,y){
         else if(x>=390&&x<524){var n=Math.floor((x-390)/48);if(x<390+n*48+38)changeLayout(true,[2,4,6][n]);}
         else if(x>=675&&x<765)outlet(0,"scan");else if(x>=777&&x<877)outlet(0,"report");else if(x>=889&&x<=1017)outlet(0,"mark","USER_MARK");return;
     }
-    if(y>=684&&y<=714){if(x>=735&&x<865)page=Math.max(0,page-1);else if(x>=877&&x<=1017)page=Math.min(pageCount()-1,page+1);mgraphics.redraw();return;}
+    if(y>=684&&y<=714){
+        if(x>=390&&x<662){var z=Math.floor((x-390)/70);if(x<390+z*70+62)windowscale(windowScales[z]);}
+        else if(x>=735&&x<865)page=Math.max(0,page-1);else if(x>=877&&x<=1017)page=Math.min(pageCount()-1,page+1);mgraphics.redraw();return;
+    }
     for(var i=0;i<Math.min(pageSize(),model.rows.length-page*pageSize());i++){
         var layout=cardLayout(i),bx=layout.x,by=layout.y+layout.progressY;
         if(x>=bx+16&&x<=bx+472&&y>=by&&y<=by+44){var row=model.rows[page*pageSize()+i];outlet(0,"gridlength",row.id,row.grid_bars===4?8:4);return;}
