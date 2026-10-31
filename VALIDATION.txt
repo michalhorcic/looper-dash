@@ -1,0 +1,7 @@
+MLD 0.3 beta, 2026-10-31
+Core logic unchanged from user-tested 0.2; version metadata only.
+PASS JS syntax, 9 discovery/read-only mock tests
+PASS UI smoke: per-bar ticks, labels, 6-card pagination, removal of per-card diagnostic text
+PASS AMXD chunk sizes, exact source roundtrip, graph and dependencies
+PASS visual inspection of simulated UI drawing
+NOT TESTED: new UI inside native Max/Live.
