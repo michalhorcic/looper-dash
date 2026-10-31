@@ -2,6 +2,20 @@ autowatch=1;inlets=1;outlets=1;
 mgraphics.init();mgraphics.relative_coords=0;mgraphics.autofill=0;
 var model={rows:[],status:"Loading Live API",count:0}, page=0, performanceMode=true, performanceCards=4, lastReceived=0;
 var beatColors={STOP:[.55,.62,.7],PLAY:[.24,.84,.62],RECORD:[1,.31,.37],OVERDUB:[1,.66,.22]};
+var windowScale=1, windowScales=[.5,1,2,3];
+function windowscale(value){
+    value=Number(value);if(windowScales.indexOf(value)<0)return;
+    var previous=box.rect.slice(0),wind=null,oldSize=null;
+    try{
+        wind=this.patcher.wind;oldSize=wind.size;
+        box.message("size",1040*value,780*value);
+        wind.size=[1040*value,780*value];
+        windowScale=value;mgraphics.redraw();
+    }catch(e){
+        try{box.message("size",previous[2]-previous[0],previous[3]-previous[1]);if(wind&&oldSize)wind.size=oldSize;}catch(ignored){}
+        post("MLD window resize: ",e,"\n");
+    }
+}
 function pageSize(){return performanceMode?performanceCards:6;}
 function pageCount(){return Math.max(1,Math.ceil(model.rows.length/pageSize()));}
 function snapshot(){try{model=JSON.parse(arrayfromargs(arguments).join(" "));lastReceived=Date.now();page=Math.min(page,pageCount()-1);mgraphics.redraw();}catch(e){post("MLD UI: ",e,"\n");}}
@@ -74,6 +88,8 @@ function paint(){
         drawSends(x+16,y+layout.h-14,row.sends,stale);
     }
     txt(22,705,model.count+" LOOPERS  /  Page "+(page+1)+" of "+pageCount(),16);button(735,684,130,"< PREVIOUS");button(877,684,140,"NEXT >");
+    txt(340,705,"SIZE",12,[.62,.7,.76]);
+    for(var z=0;z<windowScales.length;z++)button(390+z*70,684,62,windowScales[z]+"x",windowScale===windowScales[z]);
     if(/error|failed|not ready/i.test(model.status||""))txt(22,738,trim(model.status,130),12,[1,.65,.3]);
     txt(22,762,"Transport reference only  ·  Click a bar to switch 4 / 8  ·  API state may include a requested action",12,[.48,.57,.65]);
     mgraphics.restore();
@@ -85,7 +101,10 @@ function onclick(x,y){
         else if(x>=390&&x<524){var n=Math.floor((x-390)/48);if(x<390+n*48+38)changeLayout(true,[2,4,6][n]);}
         else if(x>=675&&x<765)outlet(0,"scan");else if(x>=777&&x<877)outlet(0,"report");else if(x>=889&&x<=1017)outlet(0,"mark","USER_MARK");return;
     }
-    if(y>=684&&y<=714){if(x>=735&&x<865)page=Math.max(0,page-1);else if(x>=877&&x<=1017)page=Math.min(pageCount()-1,page+1);mgraphics.redraw();return;}
+    if(y>=684&&y<=714){
+        if(x>=390&&x<662){var z=Math.floor((x-390)/70);if(x<390+z*70+62)windowscale(windowScales[z]);}
+        else if(x>=735&&x<865)page=Math.max(0,page-1);else if(x>=877&&x<=1017)page=Math.min(pageCount()-1,page+1);mgraphics.redraw();return;
+    }
     for(var i=0;i<Math.min(pageSize(),model.rows.length-page*pageSize());i++){
         var layout=cardLayout(i),bx=layout.x,by=layout.y+layout.progressY;
         if(x>=bx+16&&x<=bx+472&&y>=by&&y<=by+44){var row=model.rows[page*pageSize()+i];outlet(0,"gridlength",row.id,row.grid_bars===4?8:4);return;}

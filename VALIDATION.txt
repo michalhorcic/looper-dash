@@ -1,7 +1,7 @@
-MLD 0.5 beta, 2026-10-31
+MLD 0.6 beta, 2026-10-31
 User confirmed 0.3 works in Ableton Live 12 Suite; exact Max version unknown.
 PASS JS syntax, 15 discovery/read-only mock tests including track colors and A/B sends
-PASS UI: performance 2/4/6, classic, colors, A/B sends, pagination, scaled clicks
+PASS UI: performance 2/4/6, classic, colors, A/B sends, pagination, window size presets, scaled clicks, resize rollback
 PASS AMXD chunk sizes, exact source roundtrip, graph/dependencies, read-only contract
 PASS visual inspection of simulated 2/4/6-card and classic layouts with sends
-NOT TESTED: 0.5 inside native Max/Live.
+NOT TESTED: 0.6 inside native Max/Live.
