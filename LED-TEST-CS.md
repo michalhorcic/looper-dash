@@ -1,50 +1,36 @@
-# LCXL3 — RGB SysEx experiment (0.9 beta)
+# LCXL3 — Custom CC ON/OFF test (0.10 beta)
 
-Cíl: změnit barvu **prvního tlačítka horní řady pod fadery** při zachování **Custom Mode 2** a původního mapování **channel 15 / CC37 / momentary**. Launchpad X už není k dispozici; tento experiment používá pouze LCXL3.
+Cíl: přepnout dvě barvy prvního tlačítka horní řady pod fadery v **Custom Mode 2**, při zachování mapování **channel 15 / CC37 / momentary**. Zatím bez automatického sledování Looperu.
 
-Předchozí výsledek: v 0.8.1 fungovala paletová CC zpráva přes DAW In v DAW režimu, ale ne při zobrazeném Custom Mode 2. Teď testujeme jiný formát zprávy — přímou RGB SysEx. Podporu v Custom Mode 2 Novation nepotvrzuje; jde o ohraničený experiment, ne hotové řešení.
+## Postup
 
-## Příprava
+1. Nahraď předchozí instanci novým **MultiLooperDashboard.amxd 0.10 beta**. Všechny tři JS soubory musí zůstat vedle `.amxd`; samotná výměna JS nestačí.
+2. LCXL3 nech v **Custom Mode 2**. Původní mapování a nastavení Control Surface ponech.
+3. Otevři **LED TEST**. Vypni **LED OUTPUT** i **FOLLOW A**.
+4. V nabídce protokolu vyber **Custom CC15/37 - ON/OFF**.
+5. Vyber výstup **LCXL3 1 (MIDI In)** a kanál **15 / Ch. 15**. Nepoužívej DAW In ani DIN.
+6. Pole **On value / Off value** mají výchozí hodnoty **127 / 0**. Pokud má stejné tlačítko v Components jiné hodnoty, zadej je sem. Přiřazení CC, kanál ani momentary neměň. Výsledné barvy odpovídají On/Off barvám uloženým v Custom Mode; pokud jsou stejné, nebude přepnutí viditelné.
+7. Zapni **LED OUTPUT**. Stav musí začínat **ARMED CUSTOM CC**. FOLLOW A zůstává vypnuté.
+8. Klikni **TEST ON**, pak **TEST OFF** a sleduj fyzickou LED. Zkus to nejprve bez dotyku kontroleru. Stav obsahuje **TEST CUSTOM ON/OFF**, hodnotu CC37, MIDI In a channel 15. To potvrzuje předání zprávy z modulu, nikoliv její přijetí hardwarem.
+9. Pokud se barvy mění, klikni znovu TEST ON, pak fyzické tlačítko stiskni/uvolni. Sleduj, zda tím zvolenou LED barvu přepíše a zda původní ovládání Looperu dál funguje.
+10. Nakonec vypni **LED OUTPUT**. Modul při platném směrování odešle nakonfigurovanou hodnotu Off. Off znamená barvu nastavenou v Components, nemusí znamenat zhasnutí.
 
-1. Odstraň předchozí instanci dashboardu a načti nové `MultiLooperDashboard.amxd` verze **0.9 beta**. Vedle zařízení musí zůstat všechny tři JS soubory včetně nového `mld2_led.js`. Opravené je i zapojení a nabídka v `.amxd`, samotná výměna JS nestačí.
-2. Na LCXL3 nech **Custom Mode 2**. Neměň Components, původní MIDI mapování ani nastavení Control Surface.
-3. Otevři **LED TEST**. Nech **LED OUTPUT** a **FOLLOW A** vypnuté.
-4. V nové spodní nabídce vyber **RGB SysEx - manual test**. Protokol jde změnit pouze při vypnutém LED OUTPUT.
+Pošli výsledek: **mění TEST ON/OFF barvu**, **jaké jsou On/Off hodnoty** a **co se stane po stisku/uvolnění fyzického tlačítka**. Pokud nereaguje ani nyní, přidej přesný stavový text a ověř, zda On/Off barvy v Components nejsou stejné.
 
-## Test A — DAW In
+Pokud by samotný TEST ON/OFF ovládal Looper, vypni LED OUTPUT a napiš to — přiřazení ani MIDI mapování kvůli testu neměň.
 
-1. Vyber výstup **LCXL3 1 (DAW In)**, případně jeho dříve použitý alias **Launch_Control_XL_3 Output (LCXL3 1 …)**. Zvol kanál **1 / Ch. 1**. SysEx nemá MIDI kanál, ale pro toto směrování necháváme volbu 1.
-2. Zapni **LED OUTPUT**, FOLLOW A nech vypnuté. Stav má začínat **ARMED RGB**.
-3. Stiskni postupně **RED**, **GREEN**, **ORANGE**, **WHITE**. Vždy počkej na pozorování výsledku, nemačkej tlačítka rychle za sebou. Zůstávej v Custom Mode 2.
-4. Stavový řádek musí obsahovat **TEST RGB**, barvu, výstup a **13 SysEx bytes**. To potvrzuje předání zprávy výstupu modulu, nikoliv její přijetí kontrolerem.
-5. Sleduj správné tlačítko a zda barva zůstane i po jeho stisku/uvolnění.
+## Co se posílá
 
-## Test B — MIDI In
+Jediná zpráva tohoto protokolu je **CC37 na MIDI kanálu 15**, s nakonfigurovanou hodnotou On nebo Off. Výchozí bajty jsou `BE 25 7F` a `BE 25 00` (hex). Nejsou to paletové indexy barev.
 
-1. Vypni **LED OUTPUT**. Nech zvolený protokol **RGB SysEx - manual test** a vypnuté FOLLOW A.
-2. Přepni výstup na **LCXL3 1 (MIDI In)** a znovu vyber **1 / Ch. 1**. Nepoužívej To DIN Out / To DIN Out 2.
-3. Zapni LED OUTPUT a zopakuj RED / GREEN / ORANGE / WHITE, stále v **Custom Mode 2**.
-4. Na MIDI In modul povoluje pouze tento RGB SysEx test. Původní paletové CC zprávy jsou zde blokované; automatické FOLLOW je pro RGB blokované na obou portech.
+Novation/Focusrite odpověď v diskusi o XL3 uvádí, že v Custom Mode aktualizují LED příchozí zprávy shodné s přiřazením i kanálem, přes **první USB MIDI port**, a že pro On barvu musí přijít nakonfigurovaná On hodnota. Podmínkou je aktuální firmware. To je podklad pro tento experiment; v uživatelově konfiguraci ještě není potvrzený.
 
-Při dokončení vypni LED OUTPUT. Modul odešle pouze RGB zhasnutí stejné LED. Nevysílá změny režimu, nahrání Custom Mode ani CC na kanálu 15. Nezapisuje do Looperu, transportu, audio routingu nebo původního MIDI mapování.
+Zdroj: [diskuse Launchcontrol XL3 customization, odpovědi TomFocusrite](https://www.reddit.com/r/Novation/comments/1lz4kez/launchcontrol_xl3_customization/).
 
-## Výsledek testu
+## Předchozí experimenty
 
-Pošli prosím:
+- Paletové CC přes DAW In funguje v DAW režimu; v Custom Mode 2 nemělo viditelný účinek.
+- Uživatel nezaznamenal změnu LED ani při RGB SysEx experimentu v Custom Mode.
+- Starší protokoly zůstávají v nabídce pro srovnání. Palette používá DAW In / kanál 1; RGB používá DAW In nebo MIDI In / kanál 1 a je ruční. Jejich WHITE/GREEN/RED/ORANGE tlačítka v novém Custom CC protokolu nevysílají.
 
-| Port v Custom Mode 2 | Správná LED změnila barvu? | Drží po stisku/uvolnění? |
-|---|---|---|
-| DAW In, RGB SysEx | ano / ne | ano / ne |
-| MIDI In, RGB SysEx | ano / ne | ano / ne |
-
-Pokud stav neukazuje ARMED RGB nebo TEST RGB, pošli přesný text. Pokud se objeví chyba v Max Console, pošli ji také. Pokud nejde ani jedna cesta, nic nepřemapovávej: výsledek zapíšeme jako nefunkční RGB experiment pro tuto konfiguraci.
-
-## Formát zprávy
-
-Používá se jediný dokumentovaný RGB příkaz pro LED 37:
-
-`F0 00 20 29 02 15 01 53 25 R G B F7`
-
-`25` je hexadecimální adresa 37. RED = 127/0/0, GREEN = 0/127/0, ORANGE = 127/40/0, WHITE = 32/32/32. Všechna RGB data jsou 7bitová. Žádné jiné SysEx příkazy experiment neposílá.
-
-Zdroj: https://userguides.novationmusic.com/hc/en-gb/articles/27840466544402-Launch-Control-XL-3-programmer-s-DAW-mode
+Zařízení nepřijímá MIDI, nezapisuje Live API, nemění mapování ani neposílá změnu režimu nebo konfigurace kontroleru. Launchpad X není součástí řešení.

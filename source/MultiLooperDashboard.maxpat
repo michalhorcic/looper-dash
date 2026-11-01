@@ -29,7 +29,7 @@
             650,
             25
           ],
-          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.9 beta",
+          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.10 beta",
           "fontsize": 18.0,
           "presentation": 1,
           "presentation_rect": [
@@ -618,7 +618,7 @@
               140,
               120,
               580,
-              250
+              300
             ],
             "openinpresentation": 1,
             "default_fontname": "Arial",
@@ -685,7 +685,7 @@
                     550,
                     22
                   ],
-                  "text": "LCXL3 / LOOPER A / CUSTOM MODE 2 / RGB EXPERIMENT",
+                  "text": "LCXL3 / LOOPER A / CUSTOM MODE 2 / LED EXPERIMENT",
                   "presentation": 1,
                   "presentation_rect": [
                     12,
@@ -707,7 +707,7 @@
                     22
                   ],
                   "items": [
-                    "Select LCXL3 DAW In"
+                    "Select LCXL3 output"
                   ],
                   "parameter_enable": 0,
                   "presentation": 1,
@@ -730,7 +730,7 @@
                     22
                   ],
                   "items": [
-                    "Select channel 1"
+                    "Select protocol channel"
                   ],
                   "parameter_enable": 0,
                   "presentation": 1,
@@ -1191,16 +1191,16 @@
                     20,
                     1000,
                     550,
-                    42
+                    44
                   ],
-                  "text": "RGB: test DAW In, then MIDI In. Channel 1. No mode changes, template writes or CC15/37. Read the test guide before enabling output.",
+                  "text": "Custom CC: MIDI In / channel 15 / CC37. Match On/Off values to Components; colours come from the Custom Mode. Keep FOLLOW off. Palette/RGB use channel 1 and the colour buttons above.",
                   "fontsize": 11.0,
                   "presentation": 1,
                   "presentation_rect": [
                     12,
-                    194,
+                    242,
                     556,
-                    44
+                    48
                   ]
                 }
               },
@@ -1217,7 +1217,9 @@
                   "items": [
                     "Palette CC - DAW only",
                     ",",
-                    "RGB SysEx - manual test"
+                    "RGB SysEx - manual test",
+                    ",",
+                    "Custom CC15/37 - ON/OFF"
                   ],
                   "parameter_enable": 0,
                   "presentation": 1,
@@ -1261,6 +1263,238 @@
                     244,
                     22
                   ]
+                }
+              },
+              {
+                "box": {
+                  "id": "customon",
+                  "maxclass": "textbutton",
+                  "patching_rect": [
+                    12,
+                    1120,
+                    90,
+                    26
+                  ],
+                  "text": "TEST ON",
+                  "texton": "TEST ON",
+                  "mode": 0,
+                  "parameter_enable": 0,
+                  "numoutlets": 3,
+                  "outlettype": [
+                    "bang",
+                    "",
+                    "int"
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    12,
+                    202,
+                    90,
+                    26
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "customonmsg",
+                  "maxclass": "message",
+                  "patching_rect": [
+                    12,
+                    1160,
+                    100,
+                    22
+                  ],
+                  "text": "testvalue ON"
+                }
+              },
+              {
+                "box": {
+                  "id": "customoff",
+                  "maxclass": "textbutton",
+                  "patching_rect": [
+                    112,
+                    1120,
+                    90,
+                    26
+                  ],
+                  "text": "TEST OFF",
+                  "texton": "TEST OFF",
+                  "mode": 0,
+                  "parameter_enable": 0,
+                  "numoutlets": 3,
+                  "outlettype": [
+                    "bang",
+                    "",
+                    "int"
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    112,
+                    202,
+                    90,
+                    26
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "customoffmsg",
+                  "maxclass": "message",
+                  "patching_rect": [
+                    112,
+                    1160,
+                    100,
+                    22
+                  ],
+                  "text": "testvalue OFF"
+                }
+              },
+              {
+                "box": {
+                  "id": "onvaluelabel",
+                  "maxclass": "comment",
+                  "patching_rect": [
+                    218,
+                    1200,
+                    78,
+                    22
+                  ],
+                  "text": "On value",
+                  "fontsize": 11.0,
+                  "presentation": 1,
+                  "presentation_rect": [
+                    218,
+                    204,
+                    78,
+                    22
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "onvalue",
+                  "maxclass": "number",
+                  "patching_rect": [
+                    218,
+                    1240,
+                    70,
+                    22
+                  ],
+                  "minimum": 0,
+                  "maximum": 127,
+                  "parameter_enable": 0,
+                  "numoutlets": 2,
+                  "outlettype": [
+                    "int",
+                    "bang"
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    298,
+                    204,
+                    70,
+                    22
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "onvalueinit",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    218,
+                    1280,
+                    100,
+                    22
+                  ],
+                  "text": "loadmess 127"
+                }
+              },
+              {
+                "box": {
+                  "id": "onvaluemsg",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    218,
+                    1320,
+                    120,
+                    22
+                  ],
+                  "text": "prepend onvalue"
+                }
+              },
+              {
+                "box": {
+                  "id": "offvaluelabel",
+                  "maxclass": "comment",
+                  "patching_rect": [
+                    394,
+                    1200,
+                    78,
+                    22
+                  ],
+                  "text": "Off value",
+                  "fontsize": 11.0,
+                  "presentation": 1,
+                  "presentation_rect": [
+                    394,
+                    204,
+                    78,
+                    22
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "offvalue",
+                  "maxclass": "number",
+                  "patching_rect": [
+                    394,
+                    1240,
+                    70,
+                    22
+                  ],
+                  "minimum": 0,
+                  "maximum": 127,
+                  "parameter_enable": 0,
+                  "numoutlets": 2,
+                  "outlettype": [
+                    "int",
+                    "bang"
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    474,
+                    204,
+                    70,
+                    22
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "offvalueinit",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    394,
+                    1280,
+                    100,
+                    22
+                  ],
+                  "text": "loadmess 0"
+                }
+              },
+              {
+                "box": {
+                  "id": "offvaluemsg",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    394,
+                    1320,
+                    120,
+                    22
+                  ],
+                  "text": "prepend offvalue"
                 }
               }
             ],
@@ -1741,6 +1975,126 @@
                   ],
                   "destination": [
                     "ledprotocol",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "customon",
+                    0
+                  ],
+                  "destination": [
+                    "customonmsg",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "customonmsg",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "customoff",
+                    0
+                  ],
+                  "destination": [
+                    "customoffmsg",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "customoffmsg",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "onvalueinit",
+                    0
+                  ],
+                  "destination": [
+                    "onvalue",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "onvalue",
+                    0
+                  ],
+                  "destination": [
+                    "onvaluemsg",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "onvaluemsg",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "offvalueinit",
+                    0
+                  ],
+                  "destination": [
+                    "offvalue",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "offvalue",
+                    0
+                  ],
+                  "destination": [
+                    "offvaluemsg",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "offvaluemsg",
+                    0
+                  ],
+                  "destination": [
+                    "led",
                     0
                   ]
                 }

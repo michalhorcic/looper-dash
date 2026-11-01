@@ -47,17 +47,18 @@ assert all(src[0]=='audioin' for src,dst in rootedges if dst[0]=='audioout')
 led=(root/'mld2_led.js').read_text()
 assert 'LiveAPI' not in re.sub(r'/\*.*?\*/','',led,flags=re.S)
 assert 'packet=[176,37,colour]' in led
+assert 'packet=[190,37,colour===1?onValue:offValue]' in led
 assert 'packet=[240,0,32,41,2,21,1,83,37,rgb[0],rgb[1],rgb[2],247]' in led
 assert len(re.findall(r'outlet\(0,',led))==1
 assert 'mld2_led.js' in [d['name'] for d in p['patcher']['dependency_cache']]
-print('PASS isolated optional LED MIDI path, palette channel 1 / fixed LED 37 / RGB SysEx, unchanged stereo path')
+print('PASS isolated optional LED MIDI path, palette / RGB / manual Custom CC15/37, unchanged stereo path')
 
 for b in boxes.values():
  if b.get('presentation'):
   x,y,w,h=b['presentation_rect'];assert x>=0 and y>=0 and x+w<=580 and y+h<=169
 for b in ledboxes.values():
  if b.get('presentation'):
-  x,y,w,h=b['presentation_rect'];assert x>=0 and y>=0 and x+w<=580 and y+h<=250
+  x,y,w,h=b['presentation_rect'];assert x>=0 and y>=0 and x+w<=580 and y+h<=300
 assert ledboxes['ledarm']['mode']==1 and ledboxes['ledfollow']['mode']==1
 assert ledboxes['ledarm']['parameter_enable']==0 and ledboxes['ledfollow']['parameter_enable']==0
 print('PASS LED setup fits its own window; Live device strip stays within 169px')
@@ -74,3 +75,17 @@ assert (('ledprotocol',0),('ledprotocolmsg',0)) in edges
 assert ledboxes['ledprotocolmsg']['text']=='prepend protocol'
 assert (('led',5),('ledprotocol',0)) in edges
 print('PASS native protocol selector uses numeric outlet and non-outputting display updates')
+
+assert ledboxes['ledprotocol']['items'][-1]=='Custom CC15/37 - ON/OFF'
+for ident,command in [('customon','ON'),('customoff','OFF')]:
+ assert ((ident,0),(ident+'msg',0)) in edges
+ assert ((ident+'msg',0),('led',0)) in edges
+ assert ledboxes[ident+'msg']['text']=='testvalue '+command
+for ident,initial in [('onvalue',127),('offvalue',0)]:
+ assert ledboxes[ident]['minimum']==0 and ledboxes[ident]['maximum']==127
+ assert ledboxes[ident+'init']['text']=='loadmess '+str(initial)
+ assert ledboxes[ident+'msg']['text']=='prepend '+ident
+ assert ((ident+'init',0),(ident,0)) in edges
+ assert ((ident,0),(ident+'msg',0)) in edges
+ assert ((ident+'msg',0),('led',0)) in edges
+print('PASS native Custom ON/OFF test controls, 7-bit values and initialization')

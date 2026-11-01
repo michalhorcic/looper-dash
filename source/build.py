@@ -20,16 +20,16 @@ def box(p,ident,cls,rect,text=None,**kw):
 def wire(p,src,out,dst,inlet=0):p["lines"].append({"patchline":{"source":[src,out],"destination":[dst,inlet]}})
 
 def build_led_panel():
-    p=patch([140,120,580,250],1)
+    p=patch([140,120,580,300],1)
     box(p,"in","inlet",[20,950,25,25])
     box(p,"commands","newobj",[70,950,95,22],"route front init")
     box(p,"frontmsg","message",[190,950,170,22],"front, topmost 1, presentation 1")
     box(p,"window","newobj",[390,950,85,22],"thispatcher")
     wire(p,"in",0,"commands");wire(p,"commands",0,"frontmsg");wire(p,"frontmsg",0,"window")
     # Optional MIDI output bus: selected manually through Live's own routing UI.
-    box(p,"ledtitle","comment",[20,650,550,22],"LCXL3 / LOOPER A / CUSTOM MODE 2 / RGB EXPERIMENT",presentation=1,presentation_rect=[12,166,550,22],fontsize=12.0)
-    box(p,"ledport","umenu",[20,680,340,22],items=["Select LCXL3 DAW In"],parameter_enable=0,presentation=1,presentation_rect=[12,192,340,22])
-    box(p,"ledchannel","umenu",[370,680,190,22],items=["Select channel 1"],parameter_enable=0,presentation=1,presentation_rect=[364,192,204,22])
+    box(p,"ledtitle","comment",[20,650,550,22],"LCXL3 / LOOPER A / CUSTOM MODE 2 / LED EXPERIMENT",presentation=1,presentation_rect=[12,166,550,22],fontsize=12.0)
+    box(p,"ledport","umenu",[20,680,340,22],items=["Select LCXL3 output"],parameter_enable=0,presentation=1,presentation_rect=[12,192,340,22])
+    box(p,"ledchannel","umenu",[370,680,190,22],items=["Select protocol channel"],parameter_enable=0,presentation=1,presentation_rect=[364,192,204,22])
     for ident,label,x,w,mode in [("ledarm","LED OUTPUT",12,112,1),("ledfollow","FOLLOW A",130,96,1),("white","WHITE",238,72,0),("green","GREEN",316,72,0),("red","RED",394,72,0),("orange","ORANGE",472,96,0)]:
         box(p,ident,"textbutton",[x,720,w,26],text=label,texton=label+" ON" if mode else label,mode=mode,parameter_enable=0,
             numoutlets=3,outlettype=["int" if mode else "bang","","int"],presentation=1,presentation_rect=[x,224,w,26])
@@ -56,17 +56,27 @@ def build_led_panel():
     for item in p["boxes"]:
         b=item["box"]
         if "presentation_rect" in b:b["presentation_rect"][1]-=154
-    box(p,"hint","comment",[20,1000,550,42],"RGB: test DAW In, then MIDI In. Channel 1. No mode changes, template writes or CC15/37. Read the test guide before enabling output.",fontsize=11.0,presentation=1,presentation_rect=[12,194,556,44])
-    box(p,"ledprotocol","umenu",[20,1040,300,22],items=["Palette CC - DAW only",",","RGB SysEx - manual test"],parameter_enable=0,presentation=1,presentation_rect=[12,164,300,22])
+    box(p,"hint","comment",[20,1000,550,44],"Custom CC: MIDI In / channel 15 / CC37. Match On/Off values to Components; colours come from the Custom Mode. Keep FOLLOW off. Palette/RGB use channel 1 and the colour buttons above.",fontsize=11.0,presentation=1,presentation_rect=[12,242,556,48])
+    box(p,"ledprotocol","umenu",[20,1040,300,22],items=["Palette CC - DAW only",",","RGB SysEx - manual test",",","Custom CC15/37 - ON/OFF"],parameter_enable=0,presentation=1,presentation_rect=[12,164,300,22])
     box(p,"ledprotocolmsg","newobj",[340,1040,125,22],"prepend protocol")
     wire(p,"ledprotocol",0,"ledprotocolmsg");wire(p,"ledprotocolmsg",0,"led");wire(p,"led",5,"ledprotocol")
     box(p,"protocolhint","comment",[20,1080,556,22],"Change protocol with LED OUTPUT off.",fontsize=11.0,presentation=1,presentation_rect=[324,164,244,22])
+    for ident,label,x in [("customon","TEST ON",12),("customoff","TEST OFF",112)]:
+        box(p,ident,"textbutton",[x,1120,90,26],text=label,texton=label,mode=0,parameter_enable=0,numoutlets=3,outlettype=["bang","","int"],presentation=1,presentation_rect=[x,202,90,26])
+        box(p,ident+"msg","message",[x,1160,100,22],"testvalue "+("ON" if ident=="customon" else "OFF"))
+        wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"led")
+    for ident,label,x,initial in [("onvalue","On value",218,127),("offvalue","Off value",394,0)]:
+        box(p,ident+"label","comment",[x,1200,78,22],label,fontsize=11.0,presentation=1,presentation_rect=[x,204,78,22])
+        box(p,ident,"number",[x,1240,70,22],minimum=0,maximum=127,parameter_enable=0,numoutlets=2,outlettype=["int","bang"],presentation=1,presentation_rect=[x+80,204,70,22])
+        box(p,ident+"init","newobj",[x,1280,100,22],"loadmess "+str(initial))
+        box(p,ident+"msg","newobj",[x,1320,120,22],"prepend "+ident)
+        wire(p,ident+"init",0,ident);wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"led")
     return p
 
 def build():
     p=patch([100,100,940,650],1)
     p.update({"devicewidth":580.0,"amxdtype":1633771873,"description":"Read-only Live monitoring with optional experimental LCXL3 LED feedback."})
-    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.9 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
+    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.10 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
     box(p,"note","comment",[20,45,800,35],"Automatically finds all Loopers.",presentation=1,presentation_rect=[12,36,560,36])
     for ident,label,x,w in [("open","OPEN DASHBOARD",12,160),("scan","RESCAN",184,90),("report","EXPORT REPORT",286,150),("ledopen","LED TEST",448,120)]:
         box(p,ident,"textbutton",[x,100,w,30],numinlets=1,numoutlets=3,outlettype=["","int",""],text=label,texton=label,

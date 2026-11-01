@@ -89,7 +89,7 @@ test('RGB SysEx on DAW output encodes only the documented single LED command',()
  c.arm(0);assert.deepEqual(midi().at(-1),[240,0,32,41,2,21,1,83,37,0,0,0,247]);
  assert.ok(midi().every(p=>p.length===13&&p[0]===240&&p.at(-1)===247&&p.slice(1,-1).every(v=>Number.isInteger(v)&&v>=0&&v<=127)));
 });
-test('MIDI In permits manual RGB only, never palette CC, follow or repeated snapshot output',()=>{
+test('RGB protocol on MIDI In never sends palette CC, follow or repeated snapshot output',()=>{
  route('LCXL3 1 (MIDI In)');c.arm(1);c.testcolour('RED');assert.deepEqual(midi(),[]);
  c.arm(0);c.protocol(1);c.arm(1);c.testcolour('RED');assert.equal(midi().length,1);assert.equal(midi()[0][0],240);
  c.follow(1);const n=midi().length;for(let i=0;i<5;i++){now+=600;snapshot('RECORD');c.check();}assert.equal(midi().length,n);
@@ -103,5 +103,40 @@ test('RGB transport rejects other devices, channel 15, invalid protocols and cha
  route('LCXL3 1 (MIDI In)','15');c.arm(1);c.testcolour('RED');assert.deepEqual(midi(),[]);c.arm(0);
  c.protocol(7);assert.equal(c.ledProtocol,1);route();c.arm(1);c.protocol(0);assert.equal(c.ledProtocol,1);assert.ok(out.some(x=>x[0]===5&&x[1]==='set'&&x[2]===1));
  c.testcolour('RED');assert.equal(midi().at(-1)[0],240);c.arm(0);c.protocol(0);assert.equal(c.ledProtocol,0);
+});
+test('Custom feedback sends matching CC15/37 On/Off values only on the main MIDI port',()=>{
+ c.protocol(2);route('LCXL3 1 (MIDI In)','Ch. 15');c.testvalue('ON');assert.deepEqual(midi(),[]);
+ c.arm(1);assert.deepEqual(midi(),[],'arming does not send');
+ c.testvalue('ON');assert.deepEqual(midi(),[[190,37,127]]);
+ c.testvalue('OFF');assert.deepEqual(midi().at(-1),[190,37,0]);
+ const n=midi().length;c.testcolour('RED');c.testvalue('GREEN');assert.equal(midi().length,n,'palette names cannot send custom CC');
+ c.onvalue(80);c.offvalue(12);assert.equal(midi().length,n,'editing values does not send');
+ c.testvalue('ON');assert.deepEqual(midi().at(-1),[190,37,80]);
+ c.arm(0);assert.deepEqual(midi().at(-1),[190,37,12],'disable uses configured Off');
+ out=[];c.testvalue('ON');assert.deepEqual(midi(),[]);
+ c.arm(1);c.testvalue('ON');c.notifydeleted();assert.deepEqual(midi().at(-1),[190,37,12]);
+});
+test('Custom feedback blocks DAW, DIN, unrelated devices and every channel except 15',()=>{
+ c.protocol(2);
+ for(const port of ['LCXL3 1 (DAW In)','Launch_Control_XL_3 Output (LCXL3 1)','LCXL3 1 (To DIN Out)','LCXL3 2 (MIDI In)','Other']){
+  route(port,'15');c.arm(1);c.testvalue('ON');c.arm(0);assert.deepEqual(midi(),[]);
+ }
+ for(const channel of ['1','All Channels','14','16','115']){
+  route('LCXL3 1 (MIDI In)',channel);c.arm(1);c.testvalue('ON');c.arm(0);assert.deepEqual(midi(),[]);
+ }
+ c.routingtypes('<none>','LCXL3 1 (MIDI In)');c.routingchannels('All Channels','Ch. 1','Ch. 15');
+ c.routingtype(1);c.routingchannel(2);c.arm(1);c.testvalue('ON');assert.deepEqual(midi(),[[190,37,127]]);
+ c.protocol(0);assert.equal(c.ledProtocol,2);assert.ok(out.some(x=>x[0]===5&&x[1]==='set'&&x[2]===2));
+ out=[];c.choose_channel(0);c.testvalue('OFF');c.arm(0);assert.deepEqual(midi(),[],'unresolved route cannot send cleanup');
+});
+test('Custom feedback is strictly manual, with valid 7-bit values and no snapshot/watchdog output',()=>{
+ c.protocol(2);route('LCXL3 1 (MIDI In)','Channel 15');c.arm(1);
+ for(const invalid of [-1,128,1.5,NaN,Infinity,'invalid']){c.onvalue(invalid);c.offvalue(invalid);}
+ assert.equal(c.onValue,127);assert.equal(c.offValue,0);assert.deepEqual(midi(),[]);
+ c.follow(1);c.testvalue('ON');
+ for(let i=0;i<4;i++){now+=2000;snapshot('RECORD');c.check();}c.snapshot('invalid');assert.deepEqual(midi(),[]);
+ c.follow(0);c.onvalue(0);c.offvalue(127);c.testvalue('ON');c.testvalue('OFF');assert.deepEqual(midi(),[[190,37,0],[190,37,127]]);
+ out=[];snapshot();c.check();assert.deepEqual(midi(),[]);
+ c.follow(1);c.arm(0);assert.deepEqual(midi(),[[190,37,127]],'blocked FOLLOW must preserve cleanup of a previous manual test');
 });
 console.log(passed+' LED isolation/protocol tests passed; Custom Mode 2 hardware behavior remains unverified.');

@@ -1,4 +1,4 @@
-# Build notes — 0.9 beta
+# Build notes — 0.10 beta
 
 Unfrozen Audio Effect AMXD: little-endian chunks `ampf` (payload `aaaa`), `meta` (four zero bytes), `ptch` (UTF-8 patcher JSON + null byte). Adjacent JS dependencies resolve relative to the device directory. No code signing, Node for Max, native externals or manual Max editing is required by this package.
 
@@ -89,6 +89,13 @@ Three regression tests cover native numeric routing and ordering plus simulated 
 
 Protocol may change only with LED OUTPUT off; attempted changes while armed restore the visible selector. RGB is manual-only; FOLLOW and watchdog never emit RGB automatically. The exact `LCXL3 1 (MIDI In)` destination is additionally accepted ONLY for RGB, never for palette CC. Channel selector 1 remains required for consistent routing, although SysEx itself has no MIDI channel. DIN/other devices remain blocked. No generic SysEx sender, CC15/37, device-mode commands, configuration writes or template uploads are exposed. Disable/deletion may submit a matching RGB off frame.
 
-User hardware result with 0.8.1: DAW palette CC successfully changes LED in DAW mode, and has no visible effect in Custom Mode 2. RGB on either port is unverified. This tests whether the RGB command is treated differently; documentation does not guarantee it. Launchpad X is no longer available to the user and is not a target.
+User hardware result with 0.8.1: DAW palette CC successfully changes LED in DAW mode, and has no visible effect in Custom Mode 2. The user subsequently reported no visible LED change with the RGB experiment in Custom Mode. This tests whether the RGB command is treated differently; documentation does not guarantee it. Launchpad X is no longer available to the user and is not a target.
 
 Three additional tests validate complete SysEx framing, RGB values, MIDI-port isolation, manual-only behavior, channel restrictions and native protocol selector reset. Total LED tests: 13.
+
+
+0.10 adds a third protocol, `Custom CC15/37 - ON/OFF`, based on TomFocusrite's first-hand XL3 support replies: https://www.reddit.com/r/Novation/comments/1lz4kez/launchcontrol_xl3_customization/ . Incoming feedback must match the control assignment AND channel on the first USB MIDI port, using the configured On value for the On colour. This uses Custom Mode colours, not DAW palette indices. Native firmware behavior is still unverified in this configuration.
+
+The new protocol permits only exact `LCXL3 1 (MIDI In)` / channel 15. Its fixed packet is `190 37 value`, where value is the configured On or Off value (defaults 127/0). Two native 7-bit number boxes initialize via loadmess and modify only local JS settings; editing them sends no MIDI. Manual TEST ON/OFF requires armed output and FOLLOW off. Palette colour buttons, snapshot updates and watchdog output are blocked in this protocol. Disabling/deleting after a test submits the configured Off value if the selected route is still valid. Off may be a colour, not darkness.
+
+Protocol changes still require output off. Existing palette and RGB routes remain isolated. No MIDI input, assignment edits, automatic output selection, mode/configuration commands or LiveAPI writes are added. LED panel height grows from 250 to 300; the parent device remains 169px. Version metadata advances to 0.10 beta; core monitoring/UI behavior is unchanged. Three additional mock tests cover custom packets, default/configured values, cleanup, native routing indices, blocked routes/channels, manual-only behavior and invalid value rejection. Build validation checks native control wiring and defaults. Total LED tests: 16. Physical button release may overwrite feedback; this test deliberately does not add automatic refresh or blinking.
