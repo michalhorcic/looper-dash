@@ -32,7 +32,7 @@ def build_led_panel():
     box(p,"ledchannel","umenu",[370,680,190,22],items=["Select channel 1"],parameter_enable=0,presentation=1,presentation_rect=[364,192,204,22])
     for ident,label,x,w,mode in [("ledarm","LED OUTPUT",12,112,1),("ledfollow","FOLLOW A",130,96,1),("white","WHITE",238,72,0),("green","GREEN",316,72,0),("red","RED",394,72,0),("orange","ORANGE",472,96,0)]:
         box(p,ident,"textbutton",[x,720,w,26],text=label,texton=label+" ON" if mode else label,mode=mode,parameter_enable=0,
-            numoutlets=3,outlettype=["","int",""],presentation=1,presentation_rect=[x,224,w,26])
+            numoutlets=3,outlettype=["int" if mode else "bang","","int"],presentation=1,presentation_rect=[x,224,w,26])
     box(p,"ledstatus","comment",[20,760,550,50],"LED output OFF. Select the DAW output and channel 1; enable LED OUTPUT to test.",fontsize=11.0,presentation=1,presentation_rect=[12,260,556,50])
     box(p,"led","newobj",[20,830,150,22],"js mld2_led.js",numinlets=1,numoutlets=5,outlettype=["","","","",""])
     box(p,"ledbytes","newobj",[20,870,40,22],"iter")
@@ -42,7 +42,7 @@ def build_led_panel():
     box(p,"ledroutingdefer","newobj",[650,680,65,22],"deferlow")
     for ident,command in [("ledport","choose_type"),("ledchannel","choose_channel"),("ledarm","arm"),("ledfollow","follow")]:
         box(p,ident+"msg","newobj",[220,830,170,22],"prepend "+command)
-        wire(p,ident,1 if ident in ("ledarm","ledfollow") else 0,ident+"msg");wire(p,ident+"msg",0,"led")
+        wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"led")
     for ident in ("white","green","red","orange"):
         box(p,ident+"msg","message",[400,830,140,22],"testcolour "+ident.upper())
         wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"led")
@@ -62,7 +62,7 @@ def build_led_panel():
 def build():
     p=patch([100,100,940,650],1)
     p.update({"devicewidth":580.0,"amxdtype":1633771873,"description":"Read-only Live monitoring with optional experimental LCXL3 LED feedback."})
-    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.8 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
+    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.8.1 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
     box(p,"note","comment",[20,45,800,35],"Automatically finds all Loopers.",presentation=1,presentation_rect=[12,36,560,36])
     for ident,label,x,w in [("open","OPEN DASHBOARD",12,160),("scan","RESCAN",184,90),("report","EXPORT REPORT",286,150),("ledopen","LED TEST",448,120)]:
         box(p,ident,"textbutton",[x,100,w,30],numinlets=1,numoutlets=3,outlettype=["","int",""],text=label,texton=label,

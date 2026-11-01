@@ -1,7 +1,8 @@
-MLD 0.8 beta, 2026-11-01
+MLD 0.8.1 beta, 2026-11-01
 User confirmed 0.3 works in Ableton Live 12 Suite; exact Max/LCXL3 firmware versions unknown.
-PASS JS syntax; 15 discovery/read-only mock tests; 7 LED isolation/protocol tests
+PASS JS syntax; 15 discovery/read-only mock tests; 10 LED isolation/protocol/integration tests
 PASS UI: live view 2/3/4/6, colors, A/B sends, pagination, zoom, reference-strip legibility
 PASS AMXD chunks/source roundtrip, graph/dependencies, isolated LED MIDI path and unchanged stereo passthrough
-NOT TESTED: 0.8 native Max/Live routing selectors or LCXL3 hardware.
+NOT TESTED: 0.8.1 native Max/Live routing selectors or LCXL3 hardware.
 NOT VERIFIED: DAW LED commands while Custom Mode 2 is visible; possible overwrite by Live's control-surface script.
+USER TEST 0.8: no LED response and status stayed OFF; confirmed software defects fixed in 0.8.1. Hardware compatibility remains undetermined.

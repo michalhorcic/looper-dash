@@ -50,4 +50,35 @@ test('routing lists populate selectors without sending MIDI or selecting a desti
  c.routingtypes('<none>','LCXL3 1 (DAW In)');c.routingchannels('1','2');
  assert.ok(out.some(x=>x[0]===2&&x[1]==='append'&&x[2]==='LCXL3 1 (DAW In)'));assert.ok(!out.some(x=>x[0]===4));assert.deepEqual(midi(),[]);
 });
+test('native routing indices resolve through their lists rather than being mistaken for names',()=>{
+ c.routingtypes('<none>','LCXL3 1 (MIDI In)','LCXL3 1 (DAW In)');c.routingchannels('All Channels','Ch. 1','Ch. 2');
+ c.routingtype(2);c.routingchannel(1);assert.equal(c.portName,'LCXL3 1 (DAW In)');assert.equal(c.channelName,'Ch. 1');
+ c.arm(1);c.testcolour('RED');assert.deepEqual(midi().at(-1),[176,37,5]);
+ out=[];c.routingtype(1);c.testcolour('RED');assert.deepEqual(midi(),[],'index 1 is the MIDI port, not DAW');
+ c.routingtype(2);c.routingchannel(0);c.testcolour('RED');assert.deepEqual(midi(),[],'index 0 is All Channels, not channel 1');
+ c.routingchannel(2);c.testcolour('RED');assert.deepEqual(midi(),[]);c.routingchannel(1);c.testcolour('GREEN');assert.deepEqual(midi().at(-1),[176,37,21]);
+});
+test('routing selection may arrive before its list and resolves only once metadata is available',()=>{
+ c.arm(1);c.routingtype(2);c.routingchannel(0);c.testcolour('GREEN');assert.deepEqual(midi(),[]);
+ c.routingtypes('<none>','LCXL3 1 (MIDI In)','LCXL3 1 (DAW In)');c.testcolour('GREEN');assert.deepEqual(midi(),[]);
+ c.routingchannels('1','2');c.testcolour('GREEN');assert.deepEqual(midi().at(-1),[176,37,21]);
+ assert.ok(out.some(x=>x[0]===2&&x[1]==='set'&&x[2]===2));assert.ok(out.some(x=>x[0]===3&&x[1]==='set'&&x[2]===0));
+ out=[];c.routingtype(99);c.testcolour('RED');assert.deepEqual(midi(),[]);c.routingtype(-1);c.testcolour('RED');assert.deepEqual(midi(),[]);
+});
+test('built patch connects numeric textbutton output to arm/follow and updates status',()=>{
+ const root=JSON.parse(fs.readFileSync(path.join(__dirname,'../source/MultiLooperDashboard.maxpat'),'utf8')).patcher;
+ const panel=root.boxes.find(x=>x.box.id==='ledwindow').box.patcher;
+ const boxes=Object.fromEntries(panel.boxes.map(x=>[x.box.id,x.box]));
+ function clickToggle(id,value){
+  const button=boxes[id];assert.equal(button.mode,1);
+  // Native textbutton: numeric 0/1 on outlet 0; label on outlet 1.
+  for(const l of panel.lines){const e=l.patchline;if(e.source[0]!==id)continue;
+   const msg=boxes[e.destination[0]].text,command=msg.replace('prepend ','');
+   c[command](e.source[1]===0?value:(value?button.texton:button.text));
+  }
+ }
+ route();out=[];clickToggle('ledarm',1);assert.equal(c.armed,true);assert.ok(out.some(x=>x[0]===1&&x[2].startsWith('ARMED:')));
+ snapshot();clickToggle('ledfollow',1);assert.equal(c.following,true);assert.deepEqual(midi().at(-1),[176,37,21]);
+ clickToggle('ledarm',0);assert.equal(c.armed,false);assert.deepEqual(midi().at(-1),[176,37,0]);
+});
 console.log(passed+' LED isolation/protocol tests passed; Custom Mode 2 hardware behavior remains unverified.');

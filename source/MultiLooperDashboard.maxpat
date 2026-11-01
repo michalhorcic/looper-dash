@@ -29,7 +29,7 @@
             650,
             25
           ],
-          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.8 beta",
+          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.8.1 beta",
           "fontsize": 18.0,
           "presentation": 1,
           "presentation_rect": [
@@ -758,9 +758,9 @@
                   "parameter_enable": 0,
                   "numoutlets": 3,
                   "outlettype": [
-                    "",
                     "int",
-                    ""
+                    "",
+                    "int"
                   ],
                   "presentation": 1,
                   "presentation_rect": [
@@ -787,9 +787,9 @@
                   "parameter_enable": 0,
                   "numoutlets": 3,
                   "outlettype": [
-                    "",
                     "int",
-                    ""
+                    "",
+                    "int"
                   ],
                   "presentation": 1,
                   "presentation_rect": [
@@ -816,9 +816,9 @@
                   "parameter_enable": 0,
                   "numoutlets": 3,
                   "outlettype": [
+                    "bang",
                     "",
-                    "int",
-                    ""
+                    "int"
                   ],
                   "presentation": 1,
                   "presentation_rect": [
@@ -845,9 +845,9 @@
                   "parameter_enable": 0,
                   "numoutlets": 3,
                   "outlettype": [
+                    "bang",
                     "",
-                    "int",
-                    ""
+                    "int"
                   ],
                   "presentation": 1,
                   "presentation_rect": [
@@ -874,9 +874,9 @@
                   "parameter_enable": 0,
                   "numoutlets": 3,
                   "outlettype": [
+                    "bang",
                     "",
-                    "int",
-                    ""
+                    "int"
                   ],
                   "presentation": 1,
                   "presentation_rect": [
@@ -903,9 +903,9 @@
                   "parameter_enable": 0,
                   "numoutlets": 3,
                   "outlettype": [
+                    "bang",
                     "",
-                    "int",
-                    ""
+                    "int"
                   ],
                   "presentation": 1,
                   "presentation_rect": [
@@ -1293,7 +1293,7 @@
                 "patchline": {
                   "source": [
                     "ledarm",
-                    1
+                    0
                   ],
                   "destination": [
                     "ledarmmsg",
@@ -1317,7 +1317,7 @@
                 "patchline": {
                   "source": [
                     "ledfollow",
-                    1
+                    0
                   ],
                   "destination": [
                     "ledfollowmsg",

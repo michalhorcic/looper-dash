@@ -60,3 +60,10 @@ for b in ledboxes.values():
 assert ledboxes['ledarm']['mode']==1 and ledboxes['ledfollow']['mode']==1
 assert ledboxes['ledarm']['parameter_enable']==0 and ledboxes['ledfollow']['parameter_enable']==0
 print('PASS LED setup fits its own window; Live device strip stays within 169px')
+
+for control,command in [('ledarm','arm'),('ledfollow','follow')]:
+ assert ledboxes[control+'msg']['text']=='prepend '+command
+ assert ((control,0),(control+'msg',0)) in edges
+ assert not any(src==(control,1) for src,dst in edges)
+ assert ledboxes[control]['outlettype'][0]=='int'
+print('PASS LED toggles use numeric textbutton outlet 0, not text outlet 1')

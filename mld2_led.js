@@ -2,6 +2,7 @@
 autowatch=1;inlets=1;outlets=5;
 var armed=false,following=false,portName="",channelName="",latest=null,received=0;
 var lastColour=null,lastSent=0,watchdog=null,lastStatus="";
+var typeNames=[],channelNames=[],typeChoice=null,channelChoice=null;
 var colours={STOP:1,PLAY:21,RECORD:5,OVERDUB:9};
 function argsText(args){return arrayfromargs(args).join(" ");}
 function status(s){if(s!==lastStatus){lastStatus=s;outlet(1,"set",s);}}
@@ -19,15 +20,32 @@ function sendColour(colour,force){
     outlet(0,[176,37,colour]);lastColour=colour;lastSent=now;return true;
 }
 function reset(){lastColour=null;lastSent=0;}
-function routingtypes(){var values=arrayfromargs(arguments);outlet(2,"clear");for(var i=0;i<values.length;i++)outlet(2,"append",values[i]);}
-function routingchannels(){var values=arrayfromargs(arguments);outlet(3,"clear");for(var i=0;i<values.length;i++)outlet(3,"append",values[i]);}
-function routingtype(){portName=argsText(arguments);reset();show();}
-function routingchannel(){channelName=argsText(arguments);reset();show();}
-function choose_type(n){portName="";channelName="";reset();outlet(4,"type",Number(n));show();}
-function choose_channel(n){channelName="";reset();outlet(4,"channel",Number(n));show();}
+// live.routing reports current selections as zero-based indices; tolerate names too.
+function selection(args){var values=arrayfromargs(args);return values.length===1&&typeof values[0]==="number"?values[0]:values.join(" ");}
+function selectionName(choice,names){
+    if(typeof choice==="number")return isFinite(choice)&&choice>=0&&Math.floor(choice)===choice&&choice<names.length?String(names[choice]):"";
+    return typeof choice==="string"?choice:"";
+}
+function refreshNames(){portName=selectionName(typeChoice,typeNames);channelName=selectionName(channelChoice,channelNames);}
+function routingtypes(){
+    typeNames=arrayfromargs(arguments);outlet(2,"clear");
+    for(var i=0;i<typeNames.length;i++)outlet(2,"append",typeNames[i]);
+    if(typeof typeChoice==="number"&&typeChoice>=0&&typeChoice<typeNames.length)outlet(2,"set",typeChoice);
+    refreshNames();reset();show();
+}
+function routingchannels(){
+    channelNames=arrayfromargs(arguments);outlet(3,"clear");
+    for(var i=0;i<channelNames.length;i++)outlet(3,"append",channelNames[i]);
+    if(typeof channelChoice==="number"&&channelChoice>=0&&channelChoice<channelNames.length)outlet(3,"set",channelChoice);
+    refreshNames();reset();show();
+}
+function routingtype(){typeChoice=selection(arguments);refreshNames();reset();if(typeof typeChoice==="number")outlet(2,"set",typeChoice);show();}
+function routingchannel(){channelChoice=selection(arguments);refreshNames();reset();if(typeof channelChoice==="number")outlet(3,"set",channelChoice);show();}
+function choose_type(n){typeChoice=null;channelChoice=null;portName="";channelName="";channelNames=[];reset();outlet(4,"type",Number(n));show();}
+function choose_channel(n){channelChoice=null;channelName="";reset();outlet(4,"channel",Number(n));show();}
 function show(){
     if(!armed){status("LED output OFF. Select the LCXL3 DAW In output and channel 1.");return;}
-    if(!ready()){status("BLOCKED: choose LCXL3 1 (DAW In), channel 1. MIDI In / DIN outputs are blocked.");return;}
+    if(!ready()){status("BLOCKED: output="+(portName||"unresolved")+", channel="+(channelName||"unresolved")+". Choose LCXL3 DAW In / channel 1.");return;}
     if(!following){status("ARMED: test WHITE / GREEN / RED / ORANGE. Then enable FOLLOW A. Custom Mode 2 is experimental.");return;}
     update();
 }

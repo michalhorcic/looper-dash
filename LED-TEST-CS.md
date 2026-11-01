@@ -1,4 +1,4 @@
-# LCXL3 LED — první experiment pro Looper A (0.8 beta)
+# LCXL3 LED — první experiment pro Looper A (0.8.1 beta)
 
 Modul je součástí stejného `MultiLooperDashboard.amxd`. Vedle zařízení musí zůstat `mld2_core.js`, `mld2_ui.js` a nový `mld2_led.js`. Používá stejný stav Looperu jako dashboard; nezjišťuje dodatečně skutečný začátek záznamu ani čekající Record.
 
@@ -10,13 +10,19 @@ Modul je součástí stejného `MultiLooperDashboard.amxd`. Vedle zařízení mu
 - Stávající Control Surface, vstupní porty, MIDI mapování, send C a audio průchod se nemění.
 - Modul neposílá žádný příkaz pro přepnutí DAW/Custom režimu. Nereaguje na stisk tlačítka; pouze zobrazuje stav přečtený z Live.
 
+## Oprava verze 0.8.1
+
+Původní 0.8 měla chybně zapojené přepínače a nerozlišovala číselné indexy MIDI routingu. Proto zůstával stav OFF. Tento test tedy zatím nic neprokázal o podpoře barev v Custom Mode 2.
+
+Načti znovu **nové `.amxd`**, nestačí pouze aktualizovat JavaScript: opravené je i zapojení uvnitř zařízení. Před opakováním testu starou instanci odstraň, aby nebyly v Setu dva LED výstupy.
+
 ## Nejdřív test barev
 
 1. Načti nové `.amxd` a zkontroluj běžný dashboard. Klikni na **LED TEST** na zařízení; otevře se samostatné malé okno.
 2. Nech **LED OUTPUT** i **FOLLOW A** zatím vypnuté.
 3. V prvním menu vyber **LCXL3 1 (DAW In)**. Pokud Live používá alias **Launch_Control_XL_3 Output (LCXL3 1 …)** pro tento stejný DAW port, vyber jej. Ve druhém menu zvol **1 / Ch. 1**. Nevybírej `LCXL3 1 (MIDI In)` ani To DIN Out.
 4. Pokud DAW výstup v nabídce chybí, v Live → Settings → Link, Tempo & MIDI zapni **Track pouze u výstupu odpovídajícího DAW In**. Na dodaném screenshotu jde o druhý výstup `Launch_Control_XL_3 Output (LCXL3 …)`; je přiřazen také jako Output vestavěného Control Surface. Názvy se mohou lišit podle aliasů. Neměň vstupy, mapování ani přiřazení Control Surface. Potom nové zařízení znovu načti pro obnovení seznamu.
-5. Nech na LCXL3 aktivní **Custom Mode 2**. Zapni **LED OUTPUT**, FOLLOW A nech vypnuté. Stiskni postupně **WHITE**, **GREEN**, **RED**, **ORANGE** v testovacím okně.
+5. Nech na LCXL3 aktivní **Custom Mode 2**. Zapni **LED OUTPUT**, FOLLOW A nech vypnuté. Stav se musí změnit z OFF na **ARMED**. Pokud ukazuje **BLOCKED**, obsahuje nyní vyhodnocený port a kanál; pošli tento text. Teprve při ARMED stiskni postupně **WHITE**, **GREEN**, **RED**, **ORANGE** v testovacím okně.
 6. Sleduj výhradně první tlačítko horní řady pod fadery. Má změnit barvu. Stavový řádek „TEST … sent“ potvrzuje pouze odeslání, nikoli reakci hardwaru.
 
 Pokud se barvy nezmění, změní se jiná LED, nebo se barva hned přepíše, vypni LED OUTPUT a napiš výsledek. Zatím nepřepínej kontroler do jiného režimu a nic nepřemapovávej. Podpora této kombinace DAW barevných zpráv a viditelného Custom Mode 2 není dokumentací potvrzená; první test ji právě ověřuje. DAW port již používá skript Live, který může LED přepisovat.

@@ -1,4 +1,4 @@
-# Multi Looper Dashboard 0.8 beta
+# Multi Looper Dashboard 0.8.1 beta
 
 ## Spuštění — bez úprav v Maxu
 
@@ -6,9 +6,14 @@
 2. V Live 12 Suite přetáhni **`MultiLooperDashboard.amxd` na libovolnou audio stopu**, například novou prázdnou stopu Dashboard.
 3. Na zařízení klikni **OPEN DASHBOARD**. Monitor si Loopery najde sám. Není potřeba přejmenovávat stopy, otevírat editor ani měnit MIDI nastavení.
 
-Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.8 zatím nebyly přímo v Live ověřeny.
+Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.8.1 zatím nebyly přímo v Live ověřeny.
 
-## Co je nové v 0.8
+## Co je nové v 0.8.1
+
+- Opravené zapojení LED OUTPUT / FOLLOW A: přepínače teď předávají číselné 0/1 místo textového popisku.
+- Opravené rozlišení portu/kanálu z číselných indexů vracených `live.routing`. Původní neúspěšný test verze 0.8 kvůli těmto chybám nepotvrzuje omezení hardwaru.
+
+## LED experiment (od 0.8)
 
 - Nové tlačítko **LED TEST** otevře experimentální test jediné LED LCXL3 pro stopu **Looper A**. Výchozí stav je vypnutý; běžný dashboard se chová stejně.
 - Nejprve se ručně ověří barvy WHITE / GREEN / RED / ORANGE na DAW výstupu, kanál 1. Teprve pak se zapne FOLLOW A.
