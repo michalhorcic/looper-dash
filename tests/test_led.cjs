@@ -129,14 +129,58 @@ test('Custom feedback blocks DAW, DIN, unrelated devices and every channel excep
  c.protocol(0);assert.equal(c.ledProtocol,2);assert.ok(out.some(x=>x[0]===5&&x[1]==='set'&&x[2]===2));
  out=[];c.choose_channel(0);c.testvalue('OFF');c.arm(0);assert.deepEqual(midi(),[],'unresolved route cannot send cleanup');
 });
-test('Custom feedback is strictly manual, with valid 7-bit values and no snapshot/watchdog output',()=>{
+test('Custom manual mode validates values and never refreshes without FOLLOW',()=>{
  c.protocol(2);route('LCXL3 1 (MIDI In)','Channel 15');c.arm(1);
  for(const invalid of [-1,128,1.5,NaN,Infinity,'invalid']){c.onvalue(invalid);c.offvalue(invalid);}
  assert.equal(c.onValue,127);assert.equal(c.offValue,0);assert.deepEqual(midi(),[]);
- c.follow(1);c.testvalue('ON');
- for(let i=0;i<4;i++){now+=2000;snapshot('RECORD');c.check();}c.snapshot('invalid');assert.deepEqual(midi(),[]);
- c.follow(0);c.onvalue(0);c.offvalue(127);c.testvalue('ON');c.testvalue('OFF');assert.deepEqual(midi(),[[190,37,0],[190,37,127]]);
- out=[];snapshot();c.check();assert.deepEqual(midi(),[]);
- c.follow(1);c.arm(0);assert.deepEqual(midi(),[[190,37,127]],'blocked FOLLOW must preserve cleanup of a previous manual test');
+ c.onvalue(0);c.offvalue(127);c.testvalue('ON');c.testvalue('OFF');assert.deepEqual(midi(),[[190,37,0],[190,37,127]]);
+ out=[];for(let i=0;i<4;i++){now+=2000;snapshot('RECORD');tasks.at(-1).fn();}assert.deepEqual(midi(),[]);
 });
-console.log(passed+' LED isolation/protocol tests passed; Custom Mode 2 hardware behavior remains unverified.');
+test('Custom FOLLOW uses Components colours and refreshes steady state after local button release',()=>{
+ c.protocol(2);route('LCXL3 1 (MIDI In)','15');c.onvalue(80);c.offvalue(12);snapshot('PLAY');c.arm(1);c.follow(1);
+ assert.deepEqual(midi(),[[190,37,80]]);assert.equal(tasks.at(-1).interval,25);
+ out=[];now+=99;c.check();assert.deepEqual(midi(),[]);
+ now++;tasks.at(-1).fn();assert.deepEqual(midi(),[[190,37,80]],'refresh restores On after hardware overwrites it');
+ const n=midi().length;c.testvalue('OFF');c.testcolour('RED');assert.equal(midi().length,n,'manual buttons cannot compete with FOLLOW');
+ snapshot('STOP');assert.deepEqual(midi().at(-1),[190,37,12]);
+ now+=100;tasks.at(-1).fn();assert.deepEqual(midi().at(-1),[190,37,12],'STOP is also refreshed');
+ assert.ok(midi().every(p=>p[0]===190&&p[1]===37&&[12,80].includes(p[2])));
+});
+test('RECORD and OVERDUB blink at distinct rates without phase restart on repeated snapshots',()=>{
+ c.protocol(2);route('LCXL3 1 (MIDI In)','15');c.arm(1);c.follow(1);out=[];
+ snapshot('RECORD');assert.deepEqual(midi().at(-1),[190,37,127]);
+ now+=499;snapshot('RECORD');assert.deepEqual(midi().at(-1),[190,37,127]);
+ now++;tasks.at(-1).fn();assert.deepEqual(midi().at(-1),[190,37,0]);
+ now+=499;snapshot('RECORD');assert.deepEqual(midi().at(-1),[190,37,0]);
+ now++;tasks.at(-1).fn();assert.deepEqual(midi().at(-1),[190,37,127]);
+ snapshot('OVERDUB');assert.deepEqual(midi().at(-1),[190,37,127],'new blink state starts On immediately');
+ now+=124;snapshot('OVERDUB');assert.deepEqual(midi().at(-1),[190,37,127]);
+ now++;tasks.at(-1).fn();assert.deepEqual(midi().at(-1),[190,37,0]);
+ now+=125;tasks.at(-1).fn();assert.deepEqual(midi().at(-1),[190,37,127]);
+ now+=125;tasks.at(-1).fn();assert.deepEqual(midi().at(-1),[190,37,0]);
+ snapshot('PLAY');assert.deepEqual(midi().at(-1),[190,37,127],'PLAY overrides current Off blink phase immediately');
+ now+=250;tasks.at(-1).fn();assert.deepEqual(midi().at(-1),[190,37,127]);
+});
+test('Custom FOLLOW fails to Off on stale, missing, ambiguous, disabled or unknown Looper and restarts cleanly',()=>{
+ c.protocol(2);route('LCXL3 1 (MIDI In)','15');c.offvalue(9);c.arm(1);c.follow(1);snapshot('RECORD');
+ now+=1501;tasks.at(-1).fn();assert.deepEqual(midi().at(-1),[190,37,9]);
+ snapshot('RECORD');assert.deepEqual(midi().at(-1),[190,37,127],'fresh data restarts On phase');
+ for(const extra of [{track:'Other'},{available:false},{active:0},{state:'UNKNOWN'}]){
+  snapshot('RECORD',extra);assert.deepEqual(midi().at(-1),[190,37,9]);snapshot('RECORD');assert.deepEqual(midi().at(-1),[190,37,127]);
+ }
+ const row={track:'Looper A',available:true,active:1,state:'PLAY'};
+ c.snapshot(JSON.stringify({rows:[row,row]}));assert.deepEqual(midi().at(-1),[190,37,9]);
+ snapshot();c.snapshot('invalid');assert.deepEqual(midi().at(-1),[190,37,9]);
+});
+test('Custom FOLLOW stops blinking on follow-off, route loss, disable and deletion',()=>{
+ c.protocol(2);route('LCXL3 1 (MIDI In)','15');c.arm(1);c.follow(1);snapshot('OVERDUB');
+ c.follow(0);assert.deepEqual(midi().at(-1),[190,37,0]);out=[];now+=125;c.check();snapshot('RECORD');assert.deepEqual(midi(),[]);
+ c.testvalue('ON');assert.deepEqual(midi().at(-1),[190,37,127],'manual test window remains usable');
+ c.follow(1);out=[];c.routingtype('LCXL3 1 (DAW In)');now+=125;c.check();snapshot();assert.deepEqual(midi(),[]);
+ route('LCXL3 1 (MIDI In)','15');assert.deepEqual(midi().at(-1),[190,37,127]);
+ c.arm(0);assert.deepEqual(midi().at(-1),[190,37,0]);assert.ok(tasks.at(-1).cancelled&&tasks.at(-1).freed);
+ out=[];now+=125;c.check();snapshot('OVERDUB');assert.deepEqual(midi(),[]);
+ c.arm(1);c.notifydeleted();assert.deepEqual(midi().at(-1),[190,37,0]);assert.ok(tasks.at(-1).cancelled&&tasks.at(-1).freed);
+ out=[];now+=125;c.check();snapshot();assert.deepEqual(midi(),[]);
+});
+console.log(passed+' LED isolation/protocol tests passed; automatic Custom FOLLOW needs hardware validation.');

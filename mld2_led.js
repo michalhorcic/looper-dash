@@ -6,6 +6,7 @@ var typeNames=[],channelNames=[],typeChoice=null,channelChoice=null;
 var colours={STOP:1,PLAY:21,RECORD:5,OVERDUB:9};
 var ledProtocol=0, rgbColours={0:[0,0,0],1:[32,32,32],21:[0,127,0],5:[127,0,0],9:[127,40,0]};
 var onValue=127,offValue=0;
+var followState=null,phaseStarted=0;
 function argsText(args){return arrayfromargs(args).join(" ");}
 function status(s){if(s!==lastStatus){lastStatus=s;outlet(1,"set",s);}}
 function dawPort(){
@@ -25,10 +26,10 @@ function offvalue(n){n=Number(n);if(isFinite(n)&&Math.floor(n)===n&&n>=0&&n<=127
 function ready(){return validPort()&&validChannel();}
 function sendColour(colour,force){
     if(!ready())return false;
-    var now=Date.now();if(!force&&colour===lastColour&&now-lastSent<500)return true;
+    var now=Date.now();if(!force&&colour===lastColour&&now-lastSent<(ledProtocol===2?100:500))return true;
     // DAW LED address 37 is upper fader-button row, first from left.
     // Custom feedback uses the existing assignment and its Components On/Off values.
-    // It does not use DAW palette indices. Only manual testvalue / cleanup may send it.
+    // It does not use DAW palette indices. Follow sends only the same On/Off values.
     var packet;
     if(ledProtocol===2){
         if(colour!==0&&colour!==1)return false;
@@ -40,7 +41,7 @@ function sendColour(colour,force){
     }else packet=[176,37,colour];
     outlet(0,packet);lastColour=colour;lastSent=now;return true;
 }
-function reset(){lastColour=null;lastSent=0;}
+function reset(){lastColour=null;lastSent=0;followState=null;phaseStarted=0;}
 // live.routing reports current selections as zero-based indices; tolerate names too.
 function selection(args){var values=arrayfromargs(args);return values.length===1&&typeof values[0]==="number"?values[0]:values.join(" ");}
 function selectionName(choice,names){
@@ -68,7 +69,8 @@ function show(){
     if(ledProtocol===2){
         if(!armed){status("LED output OFF. Custom CC: select LCXL3 MIDI In / channel 15. ON="+onValue+" OFF="+offValue+".");return;}
         if(!ready()){status("BLOCKED: Custom CC requires LCXL3 1 (MIDI In) / channel 15. Output="+(portName||"unresolved")+", channel="+(channelName||"unresolved")+".");return;}
-        status(following?"Custom CC TEST BLOCKED: turn FOLLOW A off. Manual-only test.":"ARMED CUSTOM CC: TEST ON / TEST OFF; values "+onValue+" / "+offValue+". Colours come from Components.");return;
+        if(following){update();return;}
+        status("ARMED CUSTOM CC: TEST ON / TEST OFF, or enable FOLLOW A. Values "+onValue+" / "+offValue+" from Components.");return;
     }
     if(!armed){status("LED output OFF. "+(ledProtocol===1?"RGB SysEx: select LCXL3 DAW In or MIDI In; keep FOLLOW off.":"Palette CC: select LCXL3 DAW In and channel 1."));return;}
     if(!ready()){status("BLOCKED: output="+(portName||"unresolved")+", channel="+(channelName||"unresolved")+". "+(ledProtocol===1?"RGB allows LCXL3 DAW In or MIDI In / channel 1.":"Palette requires LCXL3 DAW In / channel 1."));return;}
@@ -78,14 +80,19 @@ function show(){
     if(!following){status("ARMED: test WHITE / GREEN / RED / ORANGE. Then enable FOLLOW A. Custom Mode 2 is experimental.");return;}
     update();
 }
-function startWatchdog(){if(!watchdog){watchdog=new Task(check,this);watchdog.interval=500;watchdog.repeat();}}
+function startWatchdog(){if(!watchdog){watchdog=new Task(check,this);watchdog.interval=ledProtocol===2?25:500;watchdog.repeat();}}
 function arm(n){
     var next=Number(n)===1;
     if(!next&&armed&&lastColour!==null)sendColour(0,true);
     armed=next;reset();if(armed)startWatchdog();else if(watchdog){watchdog.cancel();watchdog.freepeer();watchdog=null;}
     show();
 }
-function follow(n){following=Number(n)===1;if(ledProtocol===0)reset();show();}
+function follow(n){
+    var next=Number(n)===1;
+    if(ledProtocol===2&&following&&!next&&armed&&ready())sendColour(0,true);
+    if(ledProtocol===0||next!==following){followState=null;phaseStarted=0;if(next){lastColour=null;lastSent=0;}}
+    following=next;show();
+}
 function testcolour(name){
     name=String(name).toUpperCase();var palette={WHITE:1,GREEN:21,RED:5,ORANGE:9};
     if(!armed||!ready()){show();return;}
@@ -110,15 +117,24 @@ function snapshot(){
     catch(e){latest=null;received=0;if(armed&&following)update();}
 }
 function update(){
-    if(!armed||!following||!ready()||ledProtocol!==0)return;
-    if(!latest||Date.now()-received>1500){sendColour(0,false);status("FOLLOW: dashboard data unavailable / stale; LED off.");return;}
+    if(!armed||!following||!ready()||ledProtocol===1)return;
+    if(!latest||Date.now()-received>1500){unavailable("dashboard data unavailable / stale");return;}
     var matches=[],rows=latest.rows||[];
     for(var i=0;i<rows.length;i++)if(rows[i].track==="Looper A")matches.push(rows[i]);
-    if(matches.length!==1){sendColour(0,false);status("FOLLOW: expected exactly one Looper on track Looper A; found "+matches.length+". LED off.");return;}
+    if(matches.length!==1){unavailable("expected exactly one Looper on track Looper A; found "+matches.length);return;}
     var row=matches[0],colour=colours[row.state];
-    if(!row.available||row.active===0||colour===undefined){sendColour(0,false);status("FOLLOW: Looper A unavailable / off / unknown state. LED off.");return;}
+    if(!row.available||row.active===0||colour===undefined){unavailable("Looper A unavailable / off / unknown state");return;}
+    if(ledProtocol===2){
+        var now=Date.now();
+        if(followState!==row.state){followState=row.state;phaseStarted=now;lastColour=null;}
+        var halfPeriod=row.state==="RECORD"?500:row.state==="OVERDUB"?125:0;
+        var on=row.state!=="STOP"&&(!halfPeriod||Math.floor(Math.max(0,now-phaseStarted)/halfPeriod)%2===0);
+        sendColour(on?1:0,false);
+        status("FOLLOW CUSTOM Looper A: "+row.state+" / "+(halfPeriod?(row.state==="RECORD"?"slow blink 1 Hz":"fast blink 4 Hz"):(on?"On colour":"Off colour"))+" / MIDI In ch15 CC37.");return;
+    }
     sendColour(colour,false);status("FOLLOW Looper A: "+row.state+" -> LED 37. Hardware / Custom Mode 2 not yet validated.");
 }
+function unavailable(reason){followState=null;phaseStarted=0;sendColour(0,false);status("FOLLOW: "+reason+". "+(ledProtocol===2?"Components Off colour.":"LED off."));}
 function check(){if(armed&&following)update();}
 function notifydeleted(){
     if(armed&&lastColour!==null)sendColour(0,true);

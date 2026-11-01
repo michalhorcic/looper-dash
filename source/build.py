@@ -56,7 +56,7 @@ def build_led_panel():
     for item in p["boxes"]:
         b=item["box"]
         if "presentation_rect" in b:b["presentation_rect"][1]-=154
-    box(p,"hint","comment",[20,1000,550,44],"Custom CC: MIDI In / channel 15 / CC37. Match On/Off values to Components; colours come from the Custom Mode. Keep FOLLOW off. Palette/RGB use channel 1 and the colour buttons above.",fontsize=11.0,presentation=1,presentation_rect=[12,242,556,48])
+    box(p,"hint","comment",[20,1000,550,44],"Custom CC: MIDI In / channel 15 / CC37. Match On/Off values to Components; colours come from the Custom Mode. FOLLOW: STOP Off, PLAY On, RECORD slow blink, OVERDUB fast blink. Palette/RGB use channel 1 and the colour buttons above.",fontsize=11.0,presentation=1,presentation_rect=[12,242,556,48])
     box(p,"ledprotocol","umenu",[20,1040,300,22],items=["Palette CC - DAW only",",","RGB SysEx - manual test",",","Custom CC15/37 - ON/OFF"],parameter_enable=0,presentation=1,presentation_rect=[12,164,300,22])
     box(p,"ledprotocolmsg","newobj",[340,1040,125,22],"prepend protocol")
     wire(p,"ledprotocol",0,"ledprotocolmsg");wire(p,"ledprotocolmsg",0,"led");wire(p,"led",5,"ledprotocol")
@@ -76,7 +76,7 @@ def build_led_panel():
 def build():
     p=patch([100,100,940,650],1)
     p.update({"devicewidth":580.0,"amxdtype":1633771873,"description":"Read-only Live monitoring with optional experimental LCXL3 LED feedback."})
-    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.10 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
+    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.11 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
     box(p,"note","comment",[20,45,800,35],"Automatically finds all Loopers.",presentation=1,presentation_rect=[12,36,560,36])
     for ident,label,x,w in [("open","OPEN DASHBOARD",12,160),("scan","RESCAN",184,90),("report","EXPORT REPORT",286,150),("ledopen","LED TEST",448,120)]:
         box(p,ident,"textbutton",[x,100,w,30],numinlets=1,numoutlets=3,outlettype=["","int",""],text=label,texton=label,

@@ -1,4 +1,4 @@
-# Multi Looper Dashboard 0.10 beta
+# Multi Looper Dashboard 0.11 beta
 
 ## Spuštění — bez úprav v Maxu
 
@@ -8,14 +8,16 @@
 
 Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.9 zatím nebyly přímo v Live ověřeny.
 
-## Co je nové v 0.10
+## Co je nové v 0.11
 
-- Nový ruční protokol **Custom CC15/37 - ON/OFF** posílá zpětnou vazbu přes **LCXL3 1 (MIDI In), kanál 15**. Používá stávající přiřazení tlačítka a hodnoty On/Off z Components, výchozí **127/0**.
-- Barvy určuje nastavení Custom Mode v Components. Nejde o čtyři paletové barvy podle stavu Looperu. Zatím ověřujeme pouze přepnutí dvou nakonfigurovaných barev.
-- Tlačítka **TEST ON / TEST OFF** fungují pouze se zapnutým LED OUTPUT a vypnutým FOLLOW A. Změna číselných hodnot sama nic neposílá. Automatické sledování v tomto protokolu zatím není povolené.
-- Původní mapování channel 15 / CC37 / momentary se nemění. Dashboard zůstává monitorovací.
-- Předchozí paletový CC test fungoval jen v DAW režimu. Uživatel nezaznamenal změnu LED v Custom Mode ani při RGB experimentu.
-- Postup nového testu a zdroj informace jsou v [LED-TEST-CS.md](LED-TEST-CS.md).
+- **FOLLOW A** nyní funguje i v protokolu **Custom CC15/37 - ON/OFF**, přes **LCXL3 1 (MIDI In), kanál 15**, pro jediný Looper na stopě **Looper A**.
+- **STOP = Off barva, PLAY = On barva, RECORD = pomalé blikání (1 Hz), OVERDUB = rychlé blikání (4 Hz)**. Obě barvy určuje Components; hodnoty On/Off zůstávají nastavitelné, výchozí 127/0.
+- Pravidelná obnova po 100 ms vrací stav LED po uvolnění fyzického tlačítka. Rychlost v praxi závisí na plánovači Maxu a doručení MIDI.
+- Ruční ON/OFF test byl uživatelem potvrzen v Custom Mode 2. Automatické sledování a blikání v 0.11 ještě potřebují test v Live.
+- Testovací okno i **TEST ON / TEST OFF** zůstávají; ruční tlačítka používej s vypnutým FOLLOW A. Vypnutí FOLLOW A odešle Off barvu a zastaví obnovování.
+- Při chybějícím, nejednoznačném, neznámém nebo neaktivním Looperu a při datech starších než 1,5 s se vysílá Off barva.
+- Mapování channel 15 / CC37 / momentary zůstává stejné. Dlouhé a dvojité stisky zatím nepřidáváme.
+- Postup je v [LED-TEST-CS.md](LED-TEST-CS.md).
 
 ## Opravy 0.8.1
 
@@ -25,9 +27,9 @@ Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včet
 ## LED experiment (od 0.8)
 
 - Nové tlačítko **LED TEST** otevře experimentální test jediné LED LCXL3 pro stopu **Looper A**. Výchozí stav je vypnutý; běžný dashboard se chová stejně.
-- Nejprve se ručně ověří barvy WHITE / GREEN / RED / ORANGE na DAW výstupu, kanál 1. Teprve pak se zapne FOLLOW A.
+- Pro Custom Mode použij ověřený protokol Custom CC15/37 přes MIDI In / kanál 15. Starší paletový a RGB experiment zůstávají pro srovnání.
 - Horní tlačítko pod fadery, první zleva, má dokumentovanou DAW LED adresu 37. Původní mapování **channel 15 / CC37 / momentary** se nemění.
-- Chování barev při aktivním **Custom Mode 2** není ověřené. Modul nepřepíná režimy a nesnaží se přebírat vestavěný skript Live. Přesný postup je v [LED-TEST-CS.md](LED-TEST-CS.md).
+- Ruční On/Off v **Custom Mode 2** už uživatel ověřil; automatické blikání čeká na test. Modul nepřepíná režimy a nesnaží se přebírat vestavěný skript Live. Přesný postup je v [LED-TEST-CS.md](LED-TEST-CS.md).
 
 ## Grafika (od 0.7.1)
 
@@ -74,7 +76,7 @@ Skutečné čekání na nahrávání a čtecí hlava nejsou tímto buildem měř
 
 **Bar / Beat / Next bar** jsou vypočtené z transportu pro pevné 4/4. Next bar odpočítává čtvrťové doby k další hranici jednoho taktu; na hranici ukáže 4. Není to odpočet konkrétního požadavku Record. Při zastavení transportu mřížka stojí, i kdyby Looper hrál samostatně. Pro proměnlivé metrum, posunutý začátek skladby, opačný směr nebo změněnou rychlost Looperu není tato mřížka jeho pozicí.
 
-Zařízení pouze čte Live API. Neobsahuje MIDI příjem, zásahy do mapování LCXL3, ovládání transportu ani zápisy do parametrů Looperu. Volitelný LED modul má samostatný MIDI výstup pro jedinou LED LCXL3 a ve výchozím stavu je vypnutý. DAW In slouží pro paletové CC a RGB; MIDI In je povolený pro ruční RGB experiment a ruční Custom CC15/37 ON/OFF test. Audio na hostitelské stopě prochází stereo beze změny úrovně. Pro běžný dashboard nic nenastavuješ na MIDI portech ani v Custom Mode Launch Controlu. LED test vyžaduje ruční výběr výstupu podle protokolu; postup je v LED-TEST-CS.md.
+Zařízení pouze čte Live API. Neobsahuje MIDI příjem, zásahy do mapování LCXL3, ovládání transportu ani zápisy do parametrů Looperu. Volitelný LED modul má samostatný MIDI výstup pro jedinou LED LCXL3 a ve výchozím stavu je vypnutý. DAW In slouží pro paletové CC a RGB; MIDI In je povolený pro ruční RGB experiment a Custom CC15/37 ON/OFF test a FOLLOW A. Audio na hostitelské stopě prochází stereo beze změny úrovně. Pro běžný dashboard nic nenastavuješ na MIDI portech ani v Custom Mode Launch Controlu. LED test vyžaduje ruční výběr výstupu podle protokolu; postup je v LED-TEST-CS.md.
 
 ## Rychlé vyzkoušení
 

@@ -1,10 +1,10 @@
-# LCXL3 — Custom CC ON/OFF test (0.10 beta)
+# LCXL3 — Custom CC ON/OFF test (0.11 beta)
 
-Cíl: přepnout dvě barvy prvního tlačítka horní řady pod fadery v **Custom Mode 2**, při zachování mapování **channel 15 / CC37 / momentary**. Zatím bez automatického sledování Looperu.
+Cíl: přepnout dvě barvy prvního tlačítka horní řady pod fadery v **Custom Mode 2**, při zachování mapování **channel 15 / CC37 / momentary**. FOLLOW A nově sleduje jediný Looper na stopě **Looper A**.
 
 ## Postup
 
-1. Nahraď předchozí instanci novým **MultiLooperDashboard.amxd 0.10 beta**. Všechny tři JS soubory musí zůstat vedle `.amxd`; samotná výměna JS nestačí.
+1. Nahraď předchozí instanci novým **MultiLooperDashboard.amxd 0.11 beta**. Všechny tři JS soubory musí zůstat vedle `.amxd`; samotná výměna JS nestačí.
 2. LCXL3 nech v **Custom Mode 2**. Původní mapování a nastavení Control Surface ponech.
 3. Otevři **LED TEST**. Vypni **LED OUTPUT** i **FOLLOW A**.
 4. V nabídce protokolu vyber **Custom CC15/37 - ON/OFF**.
@@ -15,7 +15,27 @@ Cíl: přepnout dvě barvy prvního tlačítka horní řady pod fadery v **Custo
 9. Pokud se barvy mění, klikni znovu TEST ON, pak fyzické tlačítko stiskni/uvolni. Sleduj, zda tím zvolenou LED barvu přepíše a zda původní ovládání Looperu dál funguje.
 10. Nakonec vypni **LED OUTPUT**. Modul při platném směrování odešle nakonfigurovanou hodnotu Off. Off znamená barvu nastavenou v Components, nemusí znamenat zhasnutí.
 
-Pošli výsledek: **mění TEST ON/OFF barvu**, **jaké jsou On/Off hodnoty** a **co se stane po stisku/uvolnění fyzického tlačítka**. Pokud nereaguje ani nyní, přidej přesný stavový text a ověř, zda On/Off barvy v Components nejsou stejné.
+## Automatické sledování
+
+Po nastavení stejného protokolu, portu a kanálu zapni **LED OUTPUT** a **FOLLOW A**. Stav začíná **FOLLOW CUSTOM Looper A** a uvádí stav Looperu i způsob svícení.
+
+| Stav | LED |
+|---|---|
+| STOP | Off barva z Components |
+| PLAY | On barva z Components |
+| RECORD | 500 ms On / 500 ms Off (1 Hz) |
+| OVERDUB | 125 ms On / 125 ms Off (4 Hz) |
+
+Blikání začíná On fází při vstupu do nového stavu; běžné aktualizace dashboardu ho nerestartují. Blikání je časové, není synchronizované s tempem Live. Stejná fáze se obnovuje po 100 ms, aby fyzický stisk/uvolnění nemohl LED trvale přepsat. Plánovač Maxu a MIDI mohou přidat zpoždění; nejde o přesný audio časovač.
+
+1. Projdi STOP → RECORD → PLAY → OVERDUB a porovnej LED se stavem dashboardu.
+2. V PLAY fyzicky stiskni/uvolni původní tlačítko a ověř, že LED brzy odpovídá aktuálnímu stavu. Původní ovládání Looperu musí zůstat stejné.
+3. Vypni FOLLOW A: odešle se Off a přestane blikání i pravidelné obnovování. TEST ON/OFF dál funguje ručně. Opětovným zapnutím FOLLOW se ihned zobrazí aktuální stav.
+4. Vypni LED OUTPUT: odešle se Off a zastaví se časovač.
+
+Chybějící nebo víceznačný Looper A, neaktivní/nezjištěný stav a data starší než 1,5 s znamenají Off barvu. Po návratu platných dat se sledování obnoví. Testovací okno zůstává; dlouhé a dvojité stisky zatím zařízení nevyhodnocuje.
+
+Pošli výsledek: **jsou čtyři stavy rozeznatelné**, **obnoví se LED po uvolnění tlačítka** a **zůstává původní ovládání Looperu stejné**. Při chybě přidej přesný stavový text.
 
 Pokud by samotný TEST ON/OFF ovládal Looper, vypni LED OUTPUT a napiš to — přiřazení ani MIDI mapování kvůli testu neměň.
 
@@ -23,7 +43,7 @@ Pokud by samotný TEST ON/OFF ovládal Looper, vypni LED OUTPUT a napiš to — 
 
 Jediná zpráva tohoto protokolu je **CC37 na MIDI kanálu 15**, s nakonfigurovanou hodnotou On nebo Off. Výchozí bajty jsou `BE 25 7F` a `BE 25 00` (hex). Nejsou to paletové indexy barev.
 
-Novation/Focusrite odpověď v diskusi o XL3 uvádí, že v Custom Mode aktualizují LED příchozí zprávy shodné s přiřazením i kanálem, přes **první USB MIDI port**, a že pro On barvu musí přijít nakonfigurovaná On hodnota. Podmínkou je aktuální firmware. To je podklad pro tento experiment; v uživatelově konfiguraci ještě není potvrzený.
+Novation/Focusrite odpověď v diskusi o XL3 uvádí, že v Custom Mode aktualizují LED příchozí zprávy shodné s přiřazením i kanálem, přes **první USB MIDI port**, a že pro On barvu musí přijít nakonfigurovaná On hodnota. Podmínkou je aktuální firmware. Uživatel v 0.10 potvrdil přepínání On/Off barev; fyzické uvolnění tlačítka vrací Off barvu. Automatická obnova a blikání v 0.11 ještě čekají na ověření.
 
 Zdroj: [diskuse Launchcontrol XL3 customization, odpovědi TomFocusrite](https://www.reddit.com/r/Novation/comments/1lz4kez/launchcontrol_xl3_customization/).
 

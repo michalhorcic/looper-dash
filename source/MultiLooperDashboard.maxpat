@@ -29,7 +29,7 @@
             650,
             25
           ],
-          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.10 beta",
+          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.11 beta",
           "fontsize": 18.0,
           "presentation": 1,
           "presentation_rect": [
@@ -1193,7 +1193,7 @@
                     550,
                     44
                   ],
-                  "text": "Custom CC: MIDI In / channel 15 / CC37. Match On/Off values to Components; colours come from the Custom Mode. Keep FOLLOW off. Palette/RGB use channel 1 and the colour buttons above.",
+                  "text": "Custom CC: MIDI In / channel 15 / CC37. Match On/Off values to Components; colours come from the Custom Mode. FOLLOW: STOP Off, PLAY On, RECORD slow blink, OVERDUB fast blink. Palette/RGB use channel 1 and the colour buttons above.",
                   "fontsize": 11.0,
                   "presentation": 1,
                   "presentation_rect": [
