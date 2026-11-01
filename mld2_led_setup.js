@@ -1,6 +1,6 @@
 /* LCXL3 CC feedback and Stop-hold gesture. ES5. Clear is delegated to the guarded action module. */
-autowatch=0;inlets=1;outlets=8;
-var config={version:3,port:"",input:"",holdMs:1500,run:false,assignments:[]};
+autowatch=0;inlets=1;outlets=9;
+var config={version:5,port:"",input:"",holdMs:1500,run:false,guideControl:false,guideMemory:[],assignments:[]};
 var latest=null,received=0,rows=[],groups={},items=[],page=0,pageSize=4;
 var types=[],channels=[],typeChoice=null,channelChoice=null,portOptions=[];
 var portName="",channelName="",pendingType=null,pendingChannel=null;
@@ -115,6 +115,10 @@ function choose_port(n){
 function snapshot(){
     try{var s=JSON.parse(textArgs(arguments));if(!s||!Array.isArray(s.rows))throw new Error("rows");
         latest=s;received=Date.now();rows=s.rows;rebuild();
+        if(guideMemoryRestored&&validGuideMemory(s.guide_memory)){
+            var memory=cleanGuideMemory(s.guide_memory);
+            if(JSON.stringify(memory)!==JSON.stringify(config.guideMemory)){config.guideMemory=memory;changed();}
+        }
     }catch(e){latest=null;received=0;rows=[];rebuild();}
     tick();
 }
@@ -198,6 +202,7 @@ function ui(name,command){
     uiCache[k]=s;outlet(1,["script","sendbox",name,command].concat(args));
 }
 function render(){
+    ui("guideControl","set",config.guideControl?1:0);
     renderInputStatus();
     var portIndex=0;for(var i=0;i<portOptions.length;i++)if(portOptions[i].name===config.port)portIndex=i+1;
     ui("setupPort","set",portIndex);ui("holdSeconds","set",config.holdMs/1000);ui("setupRun","set",config.run?1:0);
@@ -231,9 +236,11 @@ function setvalueof(v){
         if(Array.isArray(v)&&v.length===1)v=v[0];
         if(typeof v!=="string"||v.indexOf("mldled1:")!==0)throw new Error("format");
         var c=JSON.parse(decodeURIComponent(v.slice(8)));
-        if(!c||(c.version!==1&&c.version!==2&&c.version!==3)||typeof c.run!=="boolean"||!(c.port===""||allowedPort(c.port))||!Array.isArray(c.assignments)||c.assignments.length>2000)throw new Error("config");
+        if(!c||(c.version!==1&&c.version!==2&&c.version!==3&&c.version!==4&&c.version!==5)||typeof c.run!=="boolean"||!(c.port===""||allowedPort(c.port))||!Array.isArray(c.assignments)||c.assignments.length>2000)throw new Error("config");
         if(c.version>=2&&(!(c.input===""||allowedInput(c.input))||!integer(c.holdMs,500,5000)))throw new Error("input / hold");
-        var clean={version:3,port:c.port,input:c.version>=2?c.input:"",holdMs:c.version>=2?c.holdMs:1500,run:c.run,assignments:[]},seen={};
+        if(c.version>=4&&typeof c.guideControl!=="boolean")throw new Error("guide control");
+        if(c.version>=5&&!validGuideMemory(c.guideMemory))throw new Error("guide memory");
+        var clean={version:5,port:c.port,input:c.version>=2?c.input:"",holdMs:c.version>=2?c.holdMs:1500,run:c.run,guideControl:c.version>=4?c.guideControl:false,guideMemory:c.version>=5?cleanGuideMemory(c.guideMemory):[],assignments:[]},seen={};
         for(var i=0;i<c.assignments.length;i++){
             var a=c.assignments[i];
             if(!a||typeof a.track!=="string"||!a.track.length||a.track.length>1024||seen[key(a.track)]||!integer(a.channel,1,16)||!integer(a.cc,-1,127)||!integer(a.on,0,127)||!integer(a.off,0,127)||typeof a.enabled!=="boolean")throw new Error("assignment");
@@ -246,7 +253,7 @@ function setvalueof(v){
             if(c.version<3&&a.track==="Looper A"&&a.channel===15&&a.cc===37){if(ledOn===127)ledOn=126;if(ledOff===0)ledOff=1;}
             seen[key(a.track)]=true;clean.assignments.push({track:a.track,channel:a.channel,cc:a.cc,on:ledOn,off:ledOff,enabled:a.enabled,stop:{cc:st.cc,on:st.on,off:st.off,inputOn:inputOn,inputOff:inputOff,enabled:st.enabled,clear:st.clear}});
         }
-        clearAll();stop();release();config=clean;pendingType=null;pendingChannel=null;inputPendingType=null;inputPendingChannel=null;rebuild();notice="";
+        clearAll();stop();release();config=clean;pendingType=null;pendingChannel=null;inputPendingType=null;inputPendingChannel=null;rebuild();notice="";sendGuideMemory();
         if(config.run){claim();reconcileRoute();start();}tick();return true;
     }catch(e){notice="Stored LED settings rejected; current configuration kept.";render();return false;}
 }
@@ -256,7 +263,7 @@ function restore_state(){
     if(values.length===1&&Array.isArray(values[0]))values=values[0];
     if(values.length!==1){notice="Stored LED settings rejected; expected one configuration blob.";render();return;}
     var blob=values[0];
-    if(blob===getvalueof())return; // Init bang after Live restore must not restart a running controller.
+    if(blob===getvalueof()){if(!guideMemoryRestored)sendGuideMemory();return;} // Init bang after Live restore must not restart a running controller.
     if(setvalueof(blob)&&getvalueof()!==blob)outlet(7,"list",getvalueof()); // Persist normalized older schemas once.
 }
 function loadbang(){uiCache={};renderInputMenu();render();}
@@ -271,7 +278,7 @@ var inputBytes=0,rawCCCount=0,lastRawCC="No raw CC received";
 var midiStatus=0,midiData=[],inSysex=false;
 function allowedInput(s){return typeof s==="string"&&/^LCXL3 \d+ \(MIDI Out\)$/i.test(s);}
 function inputReady(){var n=outputChannel();return config.run&&ready()&&allowedInput(config.input)&&inputTypes.indexOf(config.input)>=0&&inputName===config.input&&n>0&&channelNumber(inputChannelName)===n;}
-function cancelHolds(){held={};pressed={};pendingActions={};releaseReady={};midiStatus=0;midiData=[];inSysex=false;outlet(5,"cancel");}
+function cancelHolds(){guideReleased={};guidePressed={};held={};pressed={};pendingActions={};releaseReady={};midiStatus=0;midiData=[];inSysex=false;outlet(5,"cancel");}
 function inputtypes(){inputTypes=arrayfromargs(arguments);renderInputMenu();refreshInput();reconcileInput();render();}
 function inputchannels(){inputChannels=arrayfromargs(arguments);refreshInput();reconcileInput();render();}
 function inputtype(){inputTypeChoice=selection(arguments);refreshInput();reconcileInput();render();}
@@ -357,6 +364,7 @@ function inputCC(rawChannel,cc,value){
     if(!inputReady())return;
     // Live may normalize input bytes to channel 1. The confirmed DeviceIO input filter is authoritative.
     if(rawChannel!==1&&rawChannel!==channelNumber(inputChannelName))return;
+    guideCC(cc,value);
     inputCount++;lastInput="CC"+cc+"="+value;
     for(var i=0;i<config.assignments.length;i++){
         var a=config.assignments[i],st=a.stop;if(!st.enabled||!stopComplete(a)||collision(a,"stop")||st.inputOn===st.inputOff||a.channel!==outputChannel()||st.cc!==cc)continue;
@@ -395,3 +403,41 @@ function dispatchAction(action,row){
 function clear_result(){
     try{var r=JSON.parse(textArgs(arguments));if(Object.prototype.hasOwnProperty.call(pendingActions,"$"+r.token)){delete pendingActions["$"+r.token];gestureResult=String(r.message);render();}}catch(e){}
 }
+
+// Persist the opt-in only, never held/primed input edges. Native Rec mappings must be removed.
+var guidePressed={},guideReleased={};
+function guidecontrol(n){
+    var next=Number(n)===1;
+    if(config.guideControl===next){render();return;}
+    cancelHolds();config.guideControl=next;changed();render();
+}
+function guideCC(cc,value){
+    if(!config.guideControl)return;
+    for(var i=0;i<config.assignments.length;i++){
+        var a=config.assignments[i];if(!a.enabled||!complete(a)||collision(a)||a.channel!==outputChannel()||a.cc!==cc)continue;
+        var k=key(a.track);
+        if(value===0){delete guidePressed[k];guideReleased[k]=true;continue;}
+        if(value!==127||guidePressed[k]||!guideReleased[k])continue;guidePressed[k]=true;
+        var g=groups[k]||[];
+        if(!fresh()||Date.now()-received>500||g.length!==1||!validRow(g[0])){gestureResult="Guide blocked: target unavailable";continue;}
+        var t=latest.transport;
+        if(!t||!t.playing||!t.grid_valid){gestureResult="Guide needs running 4/4 transport";continue;}
+        dispatchAction("multi",g[0]);
+    }
+}
+
+var guideMemoryRestored=false;
+function guideMemoryKey(r){return JSON.stringify([r.track,r.name,r.trail]);}
+function validGuideMemory(records){
+    if(!Array.isArray(records)||records.length>2000)return false;
+    var seen={};
+    for(var i=0;i<records.length;i++){
+        var r=records[i];
+        if(!r||typeof r.track!=="string"||!r.track.length||r.track.length>1024||typeof r.name!=="string"||!r.name.length||r.name.length>1024||!Array.isArray(r.trail)||r.trail.length>24||typeof r.bars!=="number"||!isFinite(r.bars)||r.bars<=0||r.bars>4096||typeof r.buffer!=="number"||!isFinite(r.buffer)||r.buffer<=0)return false;
+        for(var j=0;j<r.trail.length;j++)if(typeof r.trail[j]!=="string"||r.trail[j].length>2048)return false;
+        var k=guideMemoryKey(r);if(seen[k])return false;seen[k]=true;
+    }return true;
+}
+
+function cleanGuideMemory(records){return records.map(function(r){return {track:r.track,name:r.name,trail:r.trail.slice(),bars:r.bars,buffer:r.buffer};});}
+function sendGuideMemory(){guideMemoryRestored=true;outlet(8,"guide_memory_restore",JSON.stringify(config.guideMemory));}

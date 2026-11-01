@@ -144,7 +144,12 @@ fanout=[l['patchline'] for l in ledpanel['lines'] if l['patchline']['source']==[
 assert {e['destination'][0]:e['order'] for e in fanout}=={'actions':0,'led':1,'setup':2}
 actions=(root/'mld2_actions.js').read_text()
 assert not re.search(r'\.set\s*\(',actions)
-assert sorted(re.findall(r'\.call\s*\(\s*"([^"]+)"',actions))==['clear','stop','str_for_value']
+assert sorted(re.findall(r'\.call\s*\(\s*"([^"]+)"',actions))==['clear','stop','str_for_value','str_for_value']
+assert 'device.call(chosen)' in actions
+assert ledboxes['actions']['numoutlets']==2
+assert (('actions',1),('guideout',0)) in edges
+assert (('ledwindow',0),('js',0)) in rootedges
+assert setupboxes['guideControl']['mode']==1
 assert 'mld2_actions.js' in [d['name'] for d in p['patcher']['dependency_cache']]
 for i in range(4):
  assert setupboxes['row'+str(i)+'_stopcc']['minimum']==-1
@@ -167,3 +172,10 @@ print('PASS Stop field/control wiring uses numeric outlets and non-outputting UI
 for filename in ['mld2_core.js','mld2_ui.js','mld2_led.js','mld2_led_setup.js','mld2_actions.js']:
  assert 'autowatch=0' in (root/filename).read_text()
 print('PASS Live parameter registry, explicit blob save/restore bridge, disabled initial override and runtime auto-reload')
+
+# Persisted loop metadata returns through the same internal output as guide commands.
+assert ledboxes['setup']['numoutlets']==9
+assert (('setup',8),('guideout',0)) in edges
+assert (('ledwindow',0),('js',0)) in rootedges
+assert 'guide_memory_restore' in core
+print('PASS persisted guide memory bridge from the registered Blob parameter to read-only core')

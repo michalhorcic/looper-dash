@@ -49,6 +49,10 @@ def build_led_setup():
         box(p,ident+"msg","newobj" if mode else "message",[x,790,w,22],"prepend "+command if mode else command)
         wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"out")
     box(p,"setupPage","comment",[650,48,260,22],"0 / 0",varname="setupPage",presentation=1,presentation_rect=[650,48,260,22])
+    box(p,"guideControl","textbutton",[12,144,200,26],text="GUIDE CTRL OFF",texton="GUIDE CTRL ON",mode=1,varname="guideControl",parameter_enable=0,numoutlets=3,outlettype=["int","","int"],presentation=1,presentation_rect=[12,144,200,26])
+    box(p,"guideControlMsg","newobj",[12,1700,180,22],"prepend guidecontrol")
+    wire(p,"guideControl",0,"guideControlMsg");wire(p,"guideControlMsg",0,"out")
+    box(p,"guideNote","comment",[224,144,840,30],"Opt-in: REMOVE native Rec/Play MIDI mappings. CH common; physical buttons 127/0; Quantization 1 Bar; normal speed.",presentation=1,presentation_rect=[224,144,840,30],fontsize=11.0)
     box(p,"setupStatus","comment",[12,112,1056,28],"SYNC OFF. Save the Live Set to keep these settings.",varname="setupStatus",fontsize=12.0,presentation=1,presentation_rect=[12,112,1056,28])
     for label,x,w in [("TRACK / LOOPER",12,260),("CH",278,48),("CC",338,48),("LED+",398,48),("LED-",458,48),("ENABLE",520,64),("STATUS",814,250)]:
         box(p,"heading"+str(x),"comment",[x,186,w,20],label,fontsize=11.0,presentation=1,presentation_rect=[x,186,w,20])
@@ -146,8 +150,8 @@ def build_led_panel():
         box(p,ident+"init","newobj",[x,1280,100,22],"loadmess "+str(initial))
         box(p,ident+"msg","newobj",[x,1320,120,22],"prepend "+ident)
         wire(p,ident+"init",0,ident);wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"led")
-    box(p,"setup","newobj",[860,650,180,22],"js mld2_led_setup.js",varname="ledSetupEngine",numinlets=1,numoutlets=8,outlettype=[""]*8)
-    default_state="mldled1:"+quote(json.dumps({"version":3,"port":"","input":"","holdMs":1500,"run":False,"assignments":[]},separators=(",",":")),safe="~()*!.'-")
+    box(p,"setup","newobj",[860,650,180,22],"js mld2_led_setup.js",varname="ledSetupEngine",numinlets=1,numoutlets=9,outlettype=[""]*9)
+    default_state="mldled1:"+quote(json.dumps({"version":5,"port":"","input":"","holdMs":1500,"run":False,"guideControl":False,"guideMemory":[],"assignments":[]},separators=(",",":")),safe="~()*!.'-")
     box(p,"setupstate","newobj",[860,690,400,22],"pattr ledConfiguration @parameter_enable 1 @thru 2",varname="ledConfiguration",parameter_enable=1,parameter_mappable=0,
         numinlets=1,numoutlets=3,outlettype=["","",""],restore=[default_state],
         saved_object_attributes={"parameter_enable":1,"parameter_mappable":0,"thru":2},
@@ -189,9 +193,12 @@ def build_led_panel():
     box(p,"stopinput","newobj",[1280,960,65,22],"midiin")
     box(p,"stopbytes","newobj",[1280,1000,150,22],"prepend midi_byte")
     wire(p,"stopinput",0,"stopbytes");wire(p,"stopbytes",0,"setup")
-    box(p,"actions","newobj",[1280,1060,150,22],"js mld2_actions.js",numinlets=1,numoutlets=1,outlettype=[""])
+    box(p,"actions","newobj",[1280,1060,150,22],"js mld2_actions.js",numinlets=1,numoutlets=2,outlettype=["",""])
     box(p,"actiondefer","newobj",[1280,1100,70,22],"deferlow")
     wire(p,"setup",5,"actions");wire(p,"setup",6,"actiondefer");wire(p,"actiondefer",0,"actions");wire(p,"actions",0,"setup")
+    box(p,"guideout","outlet",[1470,1100,25,25])
+    wire(p,"actions",1,"guideout")
+    wire(p,"setup",8,"guideout")
     # Refresh action validation before any snapshot-driven setup tick can request Clear.
     for edge in p["lines"]:
         if edge["patchline"]["source"]==["commands",3]:edge["patchline"]["order"]=1 if edge["patchline"]["destination"][0]=="led" else 2
@@ -201,12 +208,12 @@ def build_led_panel():
 def build():
     p=patch([100,100,940,650],1)
     p.update({"devicewidth":580.0,"amxdtype":1633771873,"description":"Live monitoring, LCXL3 LED feedback and optional Stop-hold Clear."})
-    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.13.3 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
+    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.15.0 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
     box(p,"note","comment",[20,45,800,35],"Automatically finds all Loopers.",presentation=1,presentation_rect=[12,36,560,36])
     for ident,label,x,w in [("open","OPEN DASHBOARD",12,160),("scan","RESCAN",184,90),("report","EXPORT REPORT",286,150),("ledopen","LED TEST",448,120)]:
         box(p,ident,"textbutton",[x,100,w,30],numinlets=1,numoutlets=3,outlettype=["","int",""],text=label,texton=label,
             mode=0,parameter_enable=0,presentation=1,presentation_rect=[x,80,w,32])
-    box(p,"warning","comment",[20,150,800,38],"Transport reference. Optional Stop-hold Clear in LED SETUP.",presentation=1,presentation_rect=[12,122,420,40])
+    box(p,"warning","comment",[20,150,800,38],"Recording guide (estimated). Optional GUIDE CTRL and Stop/Clear in LED SETUP.",presentation=1,presentation_rect=[12,122,420,40])
     box(p,"setupopen","textbutton",[448,150,120,26],text="LED SETUP",texton="LED SETUP",mode=0,parameter_enable=0,numoutlets=3,outlettype=["bang","","int"],presentation=1,presentation_rect=[448,122,120,26])
     box(p,"setupopenmsg","message",[150,650,90,22],"setupfront")
     box(p,"this","newobj",[20,220,100,22],"live.thisdevice",numinlets=1,numoutlets=3,outlettype=["bang","int","int"])
@@ -233,7 +240,7 @@ def build():
     box(sub,"out","outlet",[530,820,25,25])
     wire(sub,"in",0,"route");wire(sub,"route",0,"frontmsg");wire(sub,"frontmsg",0,"tp");wire(sub,"route",1,"ui");wire(sub,"ui",0,"out")
     box(p,"window","newobj",[280,445,130,22],"p Dashboard",patcher=sub,numinlets=1,numoutlets=1,outlettype=[""])
-    box(p,"ledwindow","newobj",[20,650,150,22],"p LED_Feedback",patcher=build_led_panel(),numinlets=1,numoutlets=0)
+    box(p,"ledwindow","newobj",[20,650,150,22],"p LED_Feedback",patcher=build_led_panel(),numinlets=1,numoutlets=1,outlettype=[""])
     box(p,"ledtrig","newobj",[20,690,55,22],"t b b")
     box(p,"ledopenmsg","message",[20,730,45,22],"open")
     box(p,"ledfrontmsg","message",[100,730,45,22],"front")
@@ -241,6 +248,7 @@ def build():
     wire(p,"ledopen",0,"ledtrig");wire(p,"ledtrig",1,"ledopenmsg");wire(p,"ledopenmsg",0,"ledpc");wire(p,"ledpc",0,"ledwindow")
     wire(p,"ledtrig",0,"ledfrontmsg");wire(p,"ledfrontmsg",0,"ledwindow")
     wire(p,"setupopen",0,"setupopenmsg");wire(p,"setupopenmsg",0,"ledwindow")
+    wire(p,"ledwindow",0,"js")
     wire(p,"init",0,"ledwindow");wire(p,"js",0,"ledwindow")
     wire(p,"this",0,"init");wire(p,"init",0,"defer")
     wire(p,"open",0,"trig");wire(p,"trig",1,"openmsg");wire(p,"openmsg",0,"pc");wire(p,"pc",0,"window");wire(p,"trig",0,"front");wire(p,"front",0,"window")

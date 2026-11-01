@@ -194,7 +194,7 @@ test('Stop address conflicts with any enabled Play or Stop address are blocked',
 });
 test('v1 saved settings migrate without arming Clear; v2 persists input, hold and Stop mapping',()=>{
  c.setvalueof('mldled1:'+encodeURIComponent(JSON.stringify({version:1,port:'LCXL3 1 (MIDI In)',run:false,assignments:[{track:'Looper A',channel:15,cc:37,on:127,off:0,enabled:true}]})));
- assert.equal(c.config.version,3);assert.equal(c.config.assignments[0].stop.cc,45);assert.equal(c.config.assignments[0].stop.clear,false);assert.equal(c.config.assignments[0].stop.enabled,false);assert.equal(c.config.holdMs,1500);
+ assert.equal(c.config.version,5);assert.equal(c.config.assignments[0].stop.cc,45);assert.equal(c.config.assignments[0].stop.clear,false);assert.equal(c.config.assignments[0].stop.enabled,false);assert.equal(c.config.holdMs,1500);
  snapshot([row('Looper A')]);c.stopedit(0,'enabled',1);c.stopedit(0,'clear',1);c.stopedit(0,'cc',50);c.holdseconds(2);inputroute();const blob=c.getvalueof();setup();c.setvalueof(blob);
  assert.equal(c.config.input,'LCXL3 1 (MIDI Out)');assert.equal(c.config.holdMs,2000);assert.equal(c.config.assignments[0].stop.cc,50);assert.equal(c.config.assignments[0].stop.clear,true);assert.equal(Object.keys(c.held).length,0);
 });
@@ -221,11 +221,20 @@ test('A feedback migration changes only proven CC37 case; B/C and Stop input val
  c.setvalueof('mldled1:'+encodeURIComponent(JSON.stringify({version:2,port:'LCXL3 1 (MIDI In)',input:'LCXL3 1 (MIDI Out)',holdMs:1500,run:false,assignments})));
  const a=saved().assignments;assert.deepEqual(a.map(x=>[x.on,x.off]),[[126,1],[127,0],[127,0]]);assert.ok(a.every(x=>x.stop.inputOn===127&&x.stop.inputOff===0));
  assert.deepEqual([c.defaults('Looper A').on,c.defaults('Looper A').off],[126,1]);assert.deepEqual([c.defaults('Looper B').on,c.defaults('Looper B').off],[127,0]);
- const blob=c.getvalueof();setup();c.setvalueof(blob);assert.equal(c.config.version,3);assert.equal(c.config.assignments[0].on,126);
+ const blob=c.getvalueof();setup();c.setvalueof(blob);assert.equal(c.config.version,5);assert.equal(c.config.assignments[0].on,126);
 });
 test('Stop input edges remain physical 127/0 when LED feedback is 126/1',()=>{
  stopSetup();c.stopedit(0,'on',126);c.stopedit(0,'off',1);cc(45,0);out=[];
  cc(45,127);waitHold(1500);assert.equal(clearRequests().length,1);
  assert.ok(midi().filter(p=>p[1]===45).every(p=>[1,126].includes(p[2])));assert.equal(c.config.assignments[0].stop.inputOn,127);assert.equal(c.config.assignments[0].stop.inputOff,0);
+});
+test('Guide control is opt-in, release-primed, unique-edge only, and disabled with SYNC off',()=>{
+ route();snapshot([row('Looper A','STOP')]);assign(0,37);inputroute();c.run(1);
+ const m={rows:[row('Looper A','STOP')],transport:{playing:1,grid_valid:true}};c.snapshot(JSON.stringify(m));
+ out=[];cc(37,0);cc(37,127);assert.equal(out.filter(v=>v[0]===6).length,0,'default is LED feedback only');
+ c.guidecontrol(1);cc(37,127);assert.equal(out.filter(v=>v[0]===6).length,0,'release required after opting in');
+ cc(37,0);cc(37,127);cc(37,127);let requests=out.filter(v=>v[0]===6);assert.equal(requests.length,1);assert.equal(JSON.parse(requests[0][2]).action,'multi');
+ cc(37,0);cc(37,127);assert.equal(out.filter(v=>v[0]===6).length,2);
+ c.run(0);cc(37,0);cc(37,127);assert.equal(out.filter(v=>v[0]===6).length,2);
 });
 console.log(passed+' multi-Looper LED setup / Stop-hold tests passed; native input and Clear still need verification.');

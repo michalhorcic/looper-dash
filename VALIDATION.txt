@@ -1,3 +1,37 @@
+MLD 0.15.0 beta, 2026-11-02
+NEW: completed loop duration metadata persists through registered host Blob schema v5. Restore waits for a unique matching track/device/rack and positive matching buffer, then a new captured Play establishes phase. No runtime IDs, phase, presses or actions are saved.
+PASS linked real core/setup -> generated host bank -> fresh modules/new runtime IDs -> restored Play -> Overdub. Empty/zero startup, changed Record Length, no recurring writes, Clear and duplicate/rename/rack/buffer/replacement guards covered. v4 GUIDE CTRL preserved; invalid metadata rejected atomically.
+Native Live save/quit/reopen remains to be verified. Seed one new recording when upgrading from 0.14.x, then save after recording completes.
+
+Previous validation/history:
+MLD 0.14.3 beta, 2026-11-01
+NEW GUIDE CTRL saved via existing Live Blob parameter; v4 boolean, v1-v3 migrate with false. Runtime presses/priming never saved. Routing and SYNC gates unchanged.
+PASS 8 persistence/host-lifecycle cases including GUIDE CTRL ON/OFF restore, UI, asynchronous routing, fresh release/press, no startup actions and invalid/migrated schemas. Existing suites, syntax, build/graph and diff checks pass.
+Native Live Set save/quit/reopen still requires user confirmation.
+
+Previous validation/history:
+MLD 0.14.2 beta, 2026-11-01
+USER VERIFIED: native Looper starts at the beginning after Stop -> Play.
+NEW: retain completed buffer length through Stop; confirm from-stopped Play before establishing a new estimated origin. Later Overdub uses this origin. Clear/changed/unknown buffers cannot reuse it.
+PASS complete restart/Overdub flow twice, changed future Record Length, no phase reset on Overdub -> Play, unknown/edited buffer refusal, previous clock-order regression and all existing suites/build checks.
+Native updated guide timing remains to be verified; after loading this instance create one new recording to seed its session-only known length.
+
+Previous validation/history:
+MLD 0.14.1 beta, 2026-11-01
+REPRODUCED: actual core publish integration fails on 0.14.0 when action clock is newer than cached transport; new session is immediately discarded as backward seek.
+FIX: defer command-triggered publication to next fresh tick; older timestamped snapshots cannot masquerade as a seek. Regression now passes along with all existing suites and build/graph validation.
+USER VERIFIED: Rec/Play/Overdub work with native mappings removed and GUIDE CTRL on; position remained unknown in 0.14.0. Native guide timing after this fix still needs retest with a new recording.
+
+Previous validation/history:
+MLD 0.14.0 beta, 2026-11-01
+PASS JS syntax, 16 core, 20 legacy LED, 31 setup/gesture, 6 persistence, 8 guarded Stop/Clear cases; additional guide-model and native-command simulation scenarios; revised UI tests.
+PASS generated AMXD/source roundtrip, 303 objects, complete action-event return path, explicit opt-in toggle, parameter registry, unchanged stereo passthrough and isolated LED MIDI output.
+PASS inspected SVG renders at 3/4/6 cards, including pending/record/overdub and last-bar states.
+NOT NATIVE VERIFIED: Record Length entry/display compatibility; 1 Bar parameter display; physical Rec CC delivery after removing Remote mappings; expected-vs-actual quantized start/end; mid-loop Overdub phase and API requested-state semantics.
+GUIDE CTRL defaults OFF and is session-only, uses release-primed 127/0, requires removing native main-button mappings; short presses only. Existing LED/Stop persistence is unchanged. Phase is an estimate, never a native Looper playhead. Unknown/invalid phase is explicit. See GUIDE-CS.md.
+No physical Record, Stop, Clear or MIDI actions were executed during automated checks.
+
+Previous validation/history:
 MLD 0.13.3 beta, 2026-11-01
 User confirmed 0.3 works in Ableton Live 12 Suite; exact Max/LCXL3 firmware versions unknown.
 PASS JS syntax; 16 discovery/read-only mock tests; 20 legacy LED isolation/protocol/integration tests; 30 multi-Looper setup/hold tests; 6 parameter persistence/lifecycle tests; 8 guarded action tests.

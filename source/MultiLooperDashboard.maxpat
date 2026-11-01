@@ -29,7 +29,7 @@
             650,
             25
           ],
-          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.13.3 beta",
+          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.15.0 beta",
           "fontsize": 18.0,
           "presentation": 1,
           "presentation_rect": [
@@ -190,7 +190,7 @@
             800,
             38
           ],
-          "text": "Transport reference. Optional Stop-hold Clear in LED SETUP.",
+          "text": "Recording guide (estimated). Optional GUIDE CTRL and Stop/Clear in LED SETUP.",
           "presentation": 1,
           "presentation_rect": [
             12,
@@ -1555,8 +1555,9 @@
                   "text": "js mld2_led_setup.js",
                   "varname": "ledSetupEngine",
                   "numinlets": 1,
-                  "numoutlets": 8,
+                  "numoutlets": 9,
                   "outlettype": [
+                    "",
                     "",
                     "",
                     "",
@@ -1590,7 +1591,7 @@
                     ""
                   ],
                   "restore": [
-                    "mldled1:%7B%22version%22%3A3%2C%22port%22%3A%22%22%2C%22input%22%3A%22%22%2C%22holdMs%22%3A1500%2C%22run%22%3Afalse%2C%22assignments%22%3A%5B%5D%7D"
+                    "mldled1:%7B%22version%22%3A5%2C%22port%22%3A%22%22%2C%22input%22%3A%22%22%2C%22holdMs%22%3A1500%2C%22run%22%3Afalse%2C%22guideControl%22%3Afalse%2C%22guideMemory%22%3A%5B%5D%2C%22assignments%22%3A%5B%5D%7D"
                   ],
                   "saved_object_attributes": {
                     "parameter_enable": 1,
@@ -1980,6 +1981,70 @@
                             260,
                             22
                           ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "guideControl",
+                          "maxclass": "textbutton",
+                          "patching_rect": [
+                            12,
+                            144,
+                            200,
+                            26
+                          ],
+                          "text": "GUIDE CTRL OFF",
+                          "texton": "GUIDE CTRL ON",
+                          "mode": 1,
+                          "varname": "guideControl",
+                          "parameter_enable": 0,
+                          "numoutlets": 3,
+                          "outlettype": [
+                            "int",
+                            "",
+                            "int"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            12,
+                            144,
+                            200,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "guideControlMsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            12,
+                            1700,
+                            180,
+                            22
+                          ],
+                          "text": "prepend guidecontrol"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "guideNote",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            224,
+                            144,
+                            840,
+                            30
+                          ],
+                          "text": "Opt-in: REMOVE native Rec/Play MIDI mappings. CH common; physical buttons 127/0; Quantization 1 Bar; normal speed.",
+                          "presentation": 1,
+                          "presentation_rect": [
+                            224,
+                            144,
+                            840,
+                            30
+                          ],
+                          "fontsize": 11.0
                         }
                       },
                       {
@@ -5867,6 +5932,30 @@
                       {
                         "patchline": {
                           "source": [
+                            "guideControl",
+                            0
+                          ],
+                          "destination": [
+                            "guideControlMsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "guideControlMsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
                             "row0_channel",
                             0
                           ],
@@ -7775,8 +7864,9 @@
                   ],
                   "text": "js mld2_actions.js",
                   "numinlets": 1,
-                  "numoutlets": 1,
+                  "numoutlets": 2,
                   "outlettype": [
+                    "",
                     ""
                   ]
                 }
@@ -7792,6 +7882,18 @@
                     22
                   ],
                   "text": "deferlow"
+                }
+              },
+              {
+                "box": {
+                  "id": "guideout",
+                  "maxclass": "outlet",
+                  "patching_rect": [
+                    1470,
+                    1100,
+                    25,
+                    25
+                  ]
                 }
               }
             ],
@@ -8949,6 +9051,30 @@
               {
                 "patchline": {
                   "source": [
+                    "actions",
+                    1
+                  ],
+                  "destination": [
+                    "guideout",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "setup",
+                    8
+                  ],
+                  "destination": [
+                    "guideout",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
                     "commands",
                     3
                   ],
@@ -8969,7 +9095,10 @@
             }
           },
           "numinlets": 1,
-          "numoutlets": 0
+          "numoutlets": 1,
+          "outlettype": [
+            ""
+          ]
         }
       },
       {
@@ -9118,6 +9247,18 @@
           ],
           "destination": [
             "ledwindow",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "ledwindow",
+            0
+          ],
+          "destination": [
+            "js",
             0
           ]
         }

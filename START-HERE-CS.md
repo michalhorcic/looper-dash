@@ -1,4 +1,29 @@
-# Multi Looper Dashboard 0.13.3 beta
+# Multi Looper Dashboard 0.15.0 beta
+
+## Uložení známých délek smyček (0.15.0)
+
+Dashboard ukládá známé délky dokončených záznamů do Setu. Po jeho novém otevření zkontroluje jednoznačný cíl a shodnou délku bufferu; při novém Play založí začátek pro další Overdub. Fáze, čas transportu a runtime ID se neukládají. Při přechodu ze starší verze nejprve vytvoř nový dokončený záznam a ulož Set přes Cmd+S. Potom ověř zavření Live → otevření Setu → Play → Overdub podle [GUIDE-CS.md](GUIDE-CS.md). Změna názvů, rackové cesty, bufferu nebo nejednoznačné stopy brání převzetí údajů. Nativní zavření a otevření ještě vyžaduje ověření; automatický test celého propojení prošel.
+
+## Ukládání GUIDE CTRL (0.14.3)
+
+GUIDE CTRL se nově ukládá a obnovuje spolu s LED SETUP v Live Setu. Po aktualizaci ho jednou zapni a ulož Set přes Cmd+S. Příště se obnoví zapnutý, včetně zobrazení přepínače; akce jsou stále podmíněné správným potvrzeným MIDI připojením a SYNC / CTRL. Držené stisky se neobnovují: nejprve tlačítko uvolni, případně jednou krátce stiskni/uvolni. Nové zařízení a starší uložené konfigurace začínají vypnuté. Automatický test obnovy přes host parametr prošel; skutečné zavření a otevření Live je třeba ověřit.
+
+## Obnovení pozice po Stop → Play (0.14.2)
+
+Uživatel ověřil, že nativní Looper po Stop → Play začíná od začátku. Dashboard nyní zachová délku dokončené nahrávky přes Stop a při potvrzeném novém Play založí nový odhad začátku. Následující Overdub opět ukazuje pozici ve smyčce. Běžný přechod Overdub → Play začátek nemění. Po načtení nové instance nejprve vytvoř jeden nový záznam, aby zařízení znalo délku konkrétního bufferu. Mapování a nastavení GUIDE CTRL zůstává stejné. Opakované Stop → Play a odlišná délka budoucího záznamu jsou pokryté regresními testy; oprava ještě vyžaduje ověření v Live.
+
+## Oprava 0.14.1: zachování začátku záznamu
+
+Stisk Record načetl novější čas než poslední snapshot dashboardu. Okamžité publikování starého snapshotu pak chybně vypadalo jako skok transportu dozadu a vymazalo právě založenou časovou referenci. Průvodce nyní čeká na nový vzorek transportu a případné starší publikování začátek nezruší. Mapování ani nastavení tlačítek se nemění. Po aktualizaci zapni GUIDE CTRL a vytvoř nový záznam z prázdného Looperu — fázi staré smyčky po načtení neznáme.
+
+Regresní test reprodukuje chybu přes skutečné publish() jádra; kontroluje starý snapshot, čerstvý vzorek, odpočet a přechod do záznamu. Časování opravy ještě potřebuje nativní ověření.
+
+## Nový společný průvodce záznamem (0.14.0)
+
+Čtyři kompaktní stavové karty doplňuje jeden velký průvodce: plánovaný start na příštím taktu, pevná délka prvního záznamu, poslední takt a odhad pozice při overdubu. Samostatné referenční hlavy na kartách jsou odstraněné; starší popis těchto hlav níže platí pro předchozí verze.
+
+**Důležité:** pro zachycení stisků je nový, výchozí vypnutý GUIDE CTRL. Vyžaduje odstranění příslušných nativních Rec/Play/Overdub MIDI mapování, momentary 127/0 a potvrzenou Quantization 1 Bar. Bez toho zůstávají stavové karty funkční, ale panel nepředstírá znalost pozice. Od 0.14.3 se zapnutí GUIDE CTRL ukládá do Setu. Celý postup a omezení: [GUIDE-CS.md](GUIDE-CS.md). Nativní časování zatím není ověřené.
+
 
 ## Spuštění — bez úprav v Maxu
 
