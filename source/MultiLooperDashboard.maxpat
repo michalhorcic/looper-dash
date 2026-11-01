@@ -29,7 +29,7 @@
             650,
             25
           ],
-          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.7.1 beta",
+          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.8 beta",
           "fontsize": 18.0,
           "presentation": 1,
           "presentation_rect": [
@@ -152,6 +152,36 @@
       },
       {
         "box": {
+          "id": "ledopen",
+          "maxclass": "textbutton",
+          "patching_rect": [
+            448,
+            100,
+            120,
+            30
+          ],
+          "text": "LED TEST",
+          "numinlets": 1,
+          "numoutlets": 3,
+          "outlettype": [
+            "",
+            "int",
+            ""
+          ],
+          "texton": "LED TEST",
+          "mode": 0,
+          "parameter_enable": 0,
+          "presentation": 1,
+          "presentation_rect": [
+            448,
+            80,
+            120,
+            32
+          ]
+        }
+      },
+      {
+        "box": {
           "id": "warning",
           "maxclass": "comment",
           "patching_rect": [
@@ -160,7 +190,7 @@
             800,
             38
           ],
-          "text": "Estimated timing follows transport. Read only.",
+          "text": "Transport reference. Live API read only. Optional LED test.",
           "presentation": 1,
           "presentation_rect": [
             12,
@@ -562,9 +592,1219 @@
             ""
           ]
         }
+      },
+      {
+        "box": {
+          "id": "ledwindow",
+          "maxclass": "newobj",
+          "patching_rect": [
+            20,
+            650,
+            150,
+            22
+          ],
+          "text": "p LED_Feedback",
+          "patcher": {
+            "fileversion": 1,
+            "appversion": {
+              "major": 8,
+              "minor": 6,
+              "revision": 5,
+              "architecture": "x64",
+              "modernui": 1
+            },
+            "classnamespace": "box",
+            "rect": [
+              140,
+              120,
+              580,
+              210
+            ],
+            "openinpresentation": 1,
+            "default_fontname": "Arial",
+            "default_fontsize": 13.0,
+            "boxes": [
+              {
+                "box": {
+                  "id": "in",
+                  "maxclass": "inlet",
+                  "patching_rect": [
+                    20,
+                    950,
+                    25,
+                    25
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "commands",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    70,
+                    950,
+                    95,
+                    22
+                  ],
+                  "text": "route front init"
+                }
+              },
+              {
+                "box": {
+                  "id": "frontmsg",
+                  "maxclass": "message",
+                  "patching_rect": [
+                    190,
+                    950,
+                    170,
+                    22
+                  ],
+                  "text": "front, topmost 1, presentation 1"
+                }
+              },
+              {
+                "box": {
+                  "id": "window",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    390,
+                    950,
+                    85,
+                    22
+                  ],
+                  "text": "thispatcher"
+                }
+              },
+              {
+                "box": {
+                  "id": "ledtitle",
+                  "maxclass": "comment",
+                  "patching_rect": [
+                    20,
+                    650,
+                    550,
+                    22
+                  ],
+                  "text": "LCXL3 / LOOPER A / EXPERIMENTAL - Custom Mode 2",
+                  "presentation": 1,
+                  "presentation_rect": [
+                    12,
+                    12,
+                    550,
+                    22
+                  ],
+                  "fontsize": 12.0
+                }
+              },
+              {
+                "box": {
+                  "id": "ledport",
+                  "maxclass": "umenu",
+                  "patching_rect": [
+                    20,
+                    680,
+                    340,
+                    22
+                  ],
+                  "items": [
+                    "Select LCXL3 DAW In"
+                  ],
+                  "parameter_enable": 0,
+                  "presentation": 1,
+                  "presentation_rect": [
+                    12,
+                    38,
+                    340,
+                    22
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "ledchannel",
+                  "maxclass": "umenu",
+                  "patching_rect": [
+                    370,
+                    680,
+                    190,
+                    22
+                  ],
+                  "items": [
+                    "Select channel 1"
+                  ],
+                  "parameter_enable": 0,
+                  "presentation": 1,
+                  "presentation_rect": [
+                    364,
+                    38,
+                    204,
+                    22
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "ledarm",
+                  "maxclass": "textbutton",
+                  "patching_rect": [
+                    12,
+                    720,
+                    112,
+                    26
+                  ],
+                  "text": "LED OUTPUT",
+                  "texton": "LED OUTPUT ON",
+                  "mode": 1,
+                  "parameter_enable": 0,
+                  "numoutlets": 3,
+                  "outlettype": [
+                    "",
+                    "int",
+                    ""
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    12,
+                    70,
+                    112,
+                    26
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "ledfollow",
+                  "maxclass": "textbutton",
+                  "patching_rect": [
+                    130,
+                    720,
+                    96,
+                    26
+                  ],
+                  "text": "FOLLOW A",
+                  "texton": "FOLLOW A ON",
+                  "mode": 1,
+                  "parameter_enable": 0,
+                  "numoutlets": 3,
+                  "outlettype": [
+                    "",
+                    "int",
+                    ""
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    130,
+                    70,
+                    96,
+                    26
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "white",
+                  "maxclass": "textbutton",
+                  "patching_rect": [
+                    238,
+                    720,
+                    72,
+                    26
+                  ],
+                  "text": "WHITE",
+                  "texton": "WHITE",
+                  "mode": 0,
+                  "parameter_enable": 0,
+                  "numoutlets": 3,
+                  "outlettype": [
+                    "",
+                    "int",
+                    ""
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    238,
+                    70,
+                    72,
+                    26
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "green",
+                  "maxclass": "textbutton",
+                  "patching_rect": [
+                    316,
+                    720,
+                    72,
+                    26
+                  ],
+                  "text": "GREEN",
+                  "texton": "GREEN",
+                  "mode": 0,
+                  "parameter_enable": 0,
+                  "numoutlets": 3,
+                  "outlettype": [
+                    "",
+                    "int",
+                    ""
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    316,
+                    70,
+                    72,
+                    26
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "red",
+                  "maxclass": "textbutton",
+                  "patching_rect": [
+                    394,
+                    720,
+                    72,
+                    26
+                  ],
+                  "text": "RED",
+                  "texton": "RED",
+                  "mode": 0,
+                  "parameter_enable": 0,
+                  "numoutlets": 3,
+                  "outlettype": [
+                    "",
+                    "int",
+                    ""
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    394,
+                    70,
+                    72,
+                    26
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "orange",
+                  "maxclass": "textbutton",
+                  "patching_rect": [
+                    472,
+                    720,
+                    96,
+                    26
+                  ],
+                  "text": "ORANGE",
+                  "texton": "ORANGE",
+                  "mode": 0,
+                  "parameter_enable": 0,
+                  "numoutlets": 3,
+                  "outlettype": [
+                    "",
+                    "int",
+                    ""
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    472,
+                    70,
+                    96,
+                    26
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "ledstatus",
+                  "maxclass": "comment",
+                  "patching_rect": [
+                    20,
+                    760,
+                    550,
+                    50
+                  ],
+                  "text": "LED output OFF. Select the DAW output and channel 1; enable LED OUTPUT to test.",
+                  "fontsize": 11.0,
+                  "presentation": 1,
+                  "presentation_rect": [
+                    12,
+                    106,
+                    556,
+                    50
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "led",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    20,
+                    830,
+                    150,
+                    22
+                  ],
+                  "text": "js mld2_led.js",
+                  "numinlets": 1,
+                  "numoutlets": 5,
+                  "outlettype": [
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "ledbytes",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    20,
+                    870,
+                    40,
+                    22
+                  ],
+                  "text": "iter"
+                }
+              },
+              {
+                "box": {
+                  "id": "ledout",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    20,
+                    910,
+                    65,
+                    22
+                  ],
+                  "text": "midiout"
+                }
+              },
+              {
+                "box": {
+                  "id": "ledrouting",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    650,
+                    720,
+                    90,
+                    22
+                  ],
+                  "text": "live.routing",
+                  "numinlets": 1,
+                  "numoutlets": 5
+                }
+              },
+              {
+                "box": {
+                  "id": "ledroutinginit",
+                  "maxclass": "message",
+                  "patching_rect": [
+                    650,
+                    650,
+                    145,
+                    22
+                  ],
+                  "text": "port midi_outputs"
+                }
+              },
+              {
+                "box": {
+                  "id": "ledroutingdefer",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    650,
+                    680,
+                    65,
+                    22
+                  ],
+                  "text": "deferlow"
+                }
+              },
+              {
+                "box": {
+                  "id": "ledportmsg",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    220,
+                    830,
+                    170,
+                    22
+                  ],
+                  "text": "prepend choose_type"
+                }
+              },
+              {
+                "box": {
+                  "id": "ledchannelmsg",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    220,
+                    830,
+                    170,
+                    22
+                  ],
+                  "text": "prepend choose_channel"
+                }
+              },
+              {
+                "box": {
+                  "id": "ledarmmsg",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    220,
+                    830,
+                    170,
+                    22
+                  ],
+                  "text": "prepend arm"
+                }
+              },
+              {
+                "box": {
+                  "id": "ledfollowmsg",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    220,
+                    830,
+                    170,
+                    22
+                  ],
+                  "text": "prepend follow"
+                }
+              },
+              {
+                "box": {
+                  "id": "whitemsg",
+                  "maxclass": "message",
+                  "patching_rect": [
+                    400,
+                    830,
+                    140,
+                    22
+                  ],
+                  "text": "testcolour WHITE"
+                }
+              },
+              {
+                "box": {
+                  "id": "greenmsg",
+                  "maxclass": "message",
+                  "patching_rect": [
+                    400,
+                    830,
+                    140,
+                    22
+                  ],
+                  "text": "testcolour GREEN"
+                }
+              },
+              {
+                "box": {
+                  "id": "redmsg",
+                  "maxclass": "message",
+                  "patching_rect": [
+                    400,
+                    830,
+                    140,
+                    22
+                  ],
+                  "text": "testcolour RED"
+                }
+              },
+              {
+                "box": {
+                  "id": "orangemsg",
+                  "maxclass": "message",
+                  "patching_rect": [
+                    400,
+                    830,
+                    140,
+                    22
+                  ],
+                  "text": "testcolour ORANGE"
+                }
+              },
+              {
+                "box": {
+                  "id": "ledrouting0",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    650,
+                    760,
+                    180,
+                    22
+                  ],
+                  "text": "prepend routingtype"
+                }
+              },
+              {
+                "box": {
+                  "id": "ledrouting1",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    650,
+                    790,
+                    180,
+                    22
+                  ],
+                  "text": "prepend routingchannel"
+                }
+              },
+              {
+                "box": {
+                  "id": "ledrouting2",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    650,
+                    820,
+                    180,
+                    22
+                  ],
+                  "text": "prepend routingtypes"
+                }
+              },
+              {
+                "box": {
+                  "id": "ledrouting3",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    650,
+                    850,
+                    180,
+                    22
+                  ],
+                  "text": "prepend routingchannels"
+                }
+              },
+              {
+                "box": {
+                  "id": "hint",
+                  "maxclass": "comment",
+                  "patching_rect": [
+                    20,
+                    1000,
+                    550,
+                    42
+                  ],
+                  "text": "DAW In / channel 1 only. No mode switches or CC15/37 output. If colours do not change in Custom Mode 2, stop and report the result.",
+                  "fontsize": 11.0,
+                  "presentation": 1,
+                  "presentation_rect": [
+                    12,
+                    164,
+                    556,
+                    40
+                  ]
+                }
+              }
+            ],
+            "lines": [
+              {
+                "patchline": {
+                  "source": [
+                    "in",
+                    0
+                  ],
+                  "destination": [
+                    "commands",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "commands",
+                    0
+                  ],
+                  "destination": [
+                    "frontmsg",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "frontmsg",
+                    0
+                  ],
+                  "destination": [
+                    "window",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledport",
+                    0
+                  ],
+                  "destination": [
+                    "ledportmsg",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledportmsg",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledchannel",
+                    0
+                  ],
+                  "destination": [
+                    "ledchannelmsg",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledchannelmsg",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledarm",
+                    1
+                  ],
+                  "destination": [
+                    "ledarmmsg",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledarmmsg",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledfollow",
+                    1
+                  ],
+                  "destination": [
+                    "ledfollowmsg",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledfollowmsg",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "white",
+                    0
+                  ],
+                  "destination": [
+                    "whitemsg",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "whitemsg",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "green",
+                    0
+                  ],
+                  "destination": [
+                    "greenmsg",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "greenmsg",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "red",
+                    0
+                  ],
+                  "destination": [
+                    "redmsg",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "redmsg",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "orange",
+                    0
+                  ],
+                  "destination": [
+                    "orangemsg",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "orangemsg",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledrouting",
+                    0
+                  ],
+                  "destination": [
+                    "ledrouting0",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledrouting0",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledrouting",
+                    1
+                  ],
+                  "destination": [
+                    "ledrouting1",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledrouting1",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledrouting",
+                    2
+                  ],
+                  "destination": [
+                    "ledrouting2",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledrouting2",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledrouting",
+                    3
+                  ],
+                  "destination": [
+                    "ledrouting3",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledrouting3",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "commands",
+                    1
+                  ],
+                  "destination": [
+                    "ledroutinginit",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledroutinginit",
+                    0
+                  ],
+                  "destination": [
+                    "ledroutingdefer",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledroutingdefer",
+                    0
+                  ],
+                  "destination": [
+                    "ledrouting",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "commands",
+                    2
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "led",
+                    0
+                  ],
+                  "destination": [
+                    "ledbytes",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledbytes",
+                    0
+                  ],
+                  "destination": [
+                    "ledout",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "led",
+                    1
+                  ],
+                  "destination": [
+                    "ledstatus",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "led",
+                    2
+                  ],
+                  "destination": [
+                    "ledport",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "led",
+                    3
+                  ],
+                  "destination": [
+                    "ledchannel",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "led",
+                    4
+                  ],
+                  "destination": [
+                    "ledrouting",
+                    0
+                  ]
+                }
+              }
+            ]
+          },
+          "numinlets": 1,
+          "numoutlets": 0
+        }
+      },
+      {
+        "box": {
+          "id": "ledtrig",
+          "maxclass": "newobj",
+          "patching_rect": [
+            20,
+            690,
+            55,
+            22
+          ],
+          "text": "t b b"
+        }
+      },
+      {
+        "box": {
+          "id": "ledopenmsg",
+          "maxclass": "message",
+          "patching_rect": [
+            20,
+            730,
+            45,
+            22
+          ],
+          "text": "open"
+        }
+      },
+      {
+        "box": {
+          "id": "ledfrontmsg",
+          "maxclass": "message",
+          "patching_rect": [
+            100,
+            730,
+            45,
+            22
+          ],
+          "text": "front"
+        }
+      },
+      {
+        "box": {
+          "id": "ledpc",
+          "maxclass": "newobj",
+          "patching_rect": [
+            20,
+            770,
+            65,
+            22
+          ],
+          "text": "pcontrol"
+        }
       }
     ],
     "lines": [
+      {
+        "patchline": {
+          "source": [
+            "ledopen",
+            0
+          ],
+          "destination": [
+            "ledtrig",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "ledtrig",
+            1
+          ],
+          "destination": [
+            "ledopenmsg",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "ledopenmsg",
+            0
+          ],
+          "destination": [
+            "ledpc",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "ledpc",
+            0
+          ],
+          "destination": [
+            "ledwindow",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "ledtrig",
+            0
+          ],
+          "destination": [
+            "ledfrontmsg",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "ledfrontmsg",
+            0
+          ],
+          "destination": [
+            "ledwindow",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "init",
+            0
+          ],
+          "destination": [
+            "ledwindow",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "js",
+            0
+          ],
+          "destination": [
+            "ledwindow",
+            0
+          ]
+        }
+      },
       {
         "patchline": {
           "source": [
@@ -808,7 +2048,7 @@
     ],
     "devicewidth": 580.0,
     "amxdtype": 1633771873,
-    "description": "Automatic read-only dashboard for every built-in Looper in the Live Set.",
+    "description": "Read-only Live monitoring with optional experimental LCXL3 LED feedback.",
     "dependency_cache": [
       {
         "name": "mld2_core.js",
@@ -817,6 +2057,11 @@
       },
       {
         "name": "mld2_ui.js",
+        "type": "TEXT",
+        "implicit": 1
+      },
+      {
+        "name": "mld2_led.js",
         "type": "TEXT",
         "implicit": 1
       }

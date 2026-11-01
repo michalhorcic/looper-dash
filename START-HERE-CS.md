@@ -1,14 +1,21 @@
-# Multi Looper Dashboard 0.7.1 beta
+# Multi Looper Dashboard 0.8 beta
 
 ## Spuštění — bez úprav v Maxu
 
-1. **Rozbal celý ZIP do stálé složky na Macu.** Nech `MultiLooperDashboard.amxd`, `mld2_core.js` a `mld2_ui.js` vedle sebe.
+1. **Rozbal celý ZIP do stálé složky na Macu.** Nech `MultiLooperDashboard.amxd`, `mld2_core.js`, `mld2_ui.js` a `mld2_led.js` vedle sebe.
 2. V Live 12 Suite přetáhni **`MultiLooperDashboard.amxd` na libovolnou audio stopu**, například novou prázdnou stopu Dashboard.
 3. Na zařízení klikni **OPEN DASHBOARD**. Monitor si Loopery najde sám. Není potřeba přejmenovávat stopy, otevírat editor ani měnit MIDI nastavení.
 
-Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.7.1 zatím nebyly přímo v Live ověřeny.
+Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.8 zatím nebyly přímo v Live ověřeny.
 
-## Co je nové v 0.7.1
+## Co je nové v 0.8
+
+- Nové tlačítko **LED TEST** otevře experimentální test jediné LED LCXL3 pro stopu **Looper A**. Výchozí stav je vypnutý; běžný dashboard se chová stejně.
+- Nejprve se ručně ověří barvy WHITE / GREEN / RED / ORANGE na DAW výstupu, kanál 1. Teprve pak se zapne FOLLOW A.
+- Horní tlačítko pod fadery, první zleva, má dokumentovanou DAW LED adresu 37. Původní mapování **channel 15 / CC37 / momentary** se nemění.
+- Chování barev při aktivním **Custom Mode 2** není ověřené. Modul nepřepíná režimy a nesnaží se přebírat vestavěný skript Live. Přesný postup je v [LED-TEST-CS.md](LED-TEST-CS.md).
+
+## Grafika (od 0.7.1)
 
 - Jemně zaoblené karty a tlačítka, spojené přepínače CARDS a SIZE s jasně označenou volbou.
 - Klidnější záhlaví s jemným tónováním, výrazným proužkem barvy stopy a sjednocenými pomocnými popisky. Velký stav zůstává dominantní.
@@ -53,7 +60,7 @@ Skutečné čekání na nahrávání a čtecí hlava nejsou tímto buildem měř
 
 **Bar / Beat / Next bar** jsou vypočtené z transportu pro pevné 4/4. Next bar odpočítává čtvrťové doby k další hranici jednoho taktu; na hranici ukáže 4. Není to odpočet konkrétního požadavku Record. Při zastavení transportu mřížka stojí, i kdyby Looper hrál samostatně. Pro proměnlivé metrum, posunutý začátek skladby, opačný směr nebo změněnou rychlost Looperu není tato mřížka jeho pozicí.
 
-Zařízení pouze čte Live API. Neobsahuje MIDI příjem/výstup, zásahy do mapování LCXL3, ovládání transportu ani zápisy do parametrů Looperu. Audio na hostitelské stopě prochází stereo beze změny úrovně. Nic nenastavuješ na DAW portu ani Custom Mode Launch Controlu.
+Zařízení pouze čte Live API. Neobsahuje MIDI příjem, zásahy do mapování LCXL3, ovládání transportu ani zápisy do parametrů Looperu. Volitelný LED modul má samostatný MIDI výstup pro jedinou LED na DAW portu LCXL3 a ve výchozím stavu je vypnutý. Audio na hostitelské stopě prochází stereo beze změny úrovně. Pro běžný dashboard nic nenastavuješ na MIDI portech ani v Custom Mode Launch Controlu. LED test vyžaduje ruční výběr DAW MIDI výstupu; postup je v LED-TEST-CS.md.
 
 ## Rychlé vyzkoušení
 
@@ -68,12 +75,12 @@ Pokud něco nesedí, klikni **REPORT**, ulož soubor s příponou `.json` a poš
 
 ## Když se něco nenačte
 
-- Zkontroluj, že jsi ZIP rozbalil a oba JS soubory jsou vedle `.amxd`. Není potřeba je ručně přidávat do Max search paths.
+- Zkontroluj, že jsi ZIP rozbalil a všechny tři JS soubory jsou vedle `.amxd`. Není potřeba je ručně přidávat do Max search paths.
 - Pokud Live zařízení odmítne nebo okno zůstane prázdné, napiš konkrétní chybu. Přes kontextové menu zařízení → **Open Max Window** lze zobrazit Max Console. Výpis chyb je pro opravu užitečnější než opakování celé diagnostiky.
 - Pro zachování závislostí při archivaci Setu můžeš zařízení po ověření otevřít v Maxu a použít Freeze Device; pro první vyzkoušení to není potřeba.
 
 ## Co bylo ověřeno
 
-Skutečný AMXD kontejner (nikoliv přejmenovaný JSON) byl dekódován originálním parserem z Ableton/maxdevtools. Zkontrolovány zdroje, propojení, závislosti, stereo průchod a logika automatického hledání v simulovaných API testech. `.amxd` je nezmražené zařízení se dvěma sousedními JS závislostmi. **Parser neověřuje nativní běh Maxu, chování Looperu ani macOS.** To ověří první načtení u tebe.
+Skutečný AMXD kontejner (nikoliv přejmenovaný JSON) byl dekódován originálním parserem z Ableton/maxdevtools. Zkontrolovány zdroje, propojení, závislosti, stereo průchod a logika automatického hledání v simulovaných API testech. `.amxd` je nezmražené zařízení se třemi sousedními JS závislostmi. **Parser neověřuje nativní běh Maxu, chování Looperu ani macOS.** To ověří první načtení u tebe.
 
 Zdroje a sestavovací skript jsou v balíčku kvůli opravám; k běžnému spuštění nepotřebuješ Python, Node ani terminál.

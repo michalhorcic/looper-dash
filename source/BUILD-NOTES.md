@@ -1,4 +1,4 @@
-# Build notes — 0.7.1 beta
+# Build notes — 0.8 beta
 
 Unfrozen Audio Effect AMXD: little-endian chunks `ampf` (payload `aaaa`), `meta` (four zero bytes), `ptch` (UTF-8 patcher JSON + null byte). Adjacent JS dependencies resolve relative to the device directory. No code signing, Node for Max, native externals or manual Max editing is required by this package.
 
@@ -16,7 +16,7 @@ Primary references:
 
 State labels are parsed only from explicit API display strings; no numeric enum assumptions. All parameter values are observed for diagnostic export. Topology observers ignore their initial notification by comparing it with the initial property value. Changes trigger a debounced rediscovery; a five-second full topology comparison is the fallback. Runtime IDs are never persisted across Live sessions. Performance mode defaults to four cards, with two/three/four/six-card layouts. Layout changes preserve the first previously visible device on the selected page. View preferences remain local to the current JS UI instance.
 
-The 4/8-bar strips remain transport-origin references, not measured or inferred buffer playheads. Pending recording is not inferred. `DeviceParameter.state` is not read as Looper transport state. The build never invokes Looper functions, Live setters, or MIDI routing.
+The 4/8-bar strips remain transport-origin references, not measured or inferred buffer playheads. Pending recording is not inferred. `DeviceParameter.state` is not read as Looper transport state. The build never invokes Looper functions or Live setters. The optional 0.8 LED panel adds a manually selected MIDI output bus via live.routing; audio routing and all MIDI input/mappings remain unchanged.
 
 Rebuild/test from the package directory:
 
@@ -24,8 +24,10 @@ Rebuild/test from the package directory:
 python3 source/build.py
 node --check mld2_core.js
 node --check mld2_ui.js
+node --check mld2_led.js
 node tests/test_core.cjs
 node tests/test_ui.cjs
+node tests/test_led.cjs
 python3 tests/validate_build.py
 ```
 
@@ -35,7 +37,7 @@ Track color reference: https://docs.cycling74.com/apiref/lom/track/#color
 
 Core/UI tests cover dynamic colors, nested/return/master tracks, absent colors, layout switching, pagination, scaled click coordinates and the read-only contract. `node tests/test_ui.cjs /tmp/mld-preview` optionally writes simulated SVG previews for all layouts (square export canvas for Quick Look compatibility); these are not native Max screenshots.
 
-The user confirmed 0.3 works in Live 12 Suite. Version 0.7.1 still needs native Live verification.
+The user confirmed 0.3 works in Live 12 Suite. Version 0.8 still needs native Live verification.
 
 0.5 adds read-only A/B send monitoring for each Looper's host track. Only the first two `mixer_device sends` parameters are read/observed, shared once per host track. Return names/IDs and send parameter IDs participate in topology comparison, while send value changes use existing parameter observers without rescanning. No send C parameter is accessed. Missing returns, missing mixers and unavailable values have a neutral display.
 
@@ -62,3 +64,19 @@ The new three-card layout uses three full-width rows: state on the left, referen
 Drawing API reference: https://docs.cycling74.com/apiref/js/mgraphics/
 
 0.7.1 improves reference-bar legibility: brighter 2px boundaries, bold 14px numbers in compact layouts / 16px in larger cards, and a subtle state-tinted badge under the current reference bar number. Timing semantics and interaction remain unchanged.
+
+0.8 adds an isolated experimental `mld2_led.js` module inside the same audio-effect AMXD. The core snapshot outlet feeds both the dashboard and LED subpatcher. No independent discovery, LiveAPI setters, MIDI input, controller-mode switching or Custom Mode editing are used. The device strip stays within its previous height; LED TEST opens a dedicated presentation subwindow.
+
+A single `midiout` receives only the module's fixed three-byte packet `176 37 colour`. Channel 1 / CC37 here addresses the physical LED through DAW In, not the user's channel 15 / CC37 Custom Mode input. Colour indices: STOP/WHITE=1, PLAY/GREEN=21, RECORD/RED=5, OVERDUB/ORANGE=9; off/unavailable=0. A live.routing MIDI output selector follows the bundled Cycling '74 `live.routing Midi-Out Example.maxsnip`. Destination and channel are chosen manually; only the documented/user-supplied LCXL3 1 DAW output aliases and channel 1 pass the module gate. MIDI In, DIN and other devices remain blocked. No automatic destination selection occurs.
+
+LED OUTPUT and FOLLOW A are off on load. Manual tests require LED OUTPUT on and FOLLOW A off. Follow requires exactly one available, active Looper on track named `Looper A`, and only known dashboard state labels. Missing/ambiguous/unknown data produce off. Snapshots older than 1500 ms produce off; a 500 ms watchdog catches stalled core delivery. State changes send immediately; repeated output is limited to 500 ms refresh intervals to recover from button-release/local LED redraws. Disable/deletion clears the single LED when the selected route is still valid and frees the watchdog.
+
+Hardware uncertainty: Novation documents colour commands in DAW mode. Whether they remain visible while Custom Mode 2 is selected, or are overwritten by Live's existing control-surface script, has NOT been verified. This build deliberately sends no DAW-mode enable/disable or surface-mode selection commands. A failed physical colour test is a protocol/mode compatibility result, not grounds to remap the user's input.
+
+References:
+- https://userguides.novationmusic.com/hc/en-gb/articles/27840466544402-Launch-Control-XL-3-programmer-s-DAW-mode
+- https://docs.cycling74.com/reference/live.routing
+- https://www.ableton.com/de/release-notes/live-11/ (MIDI routing to/from Max audio effects)
+- Bundled Max snippet: C74/snippets/m4l/live.routing Midi-Out Example.maxsnip
+
+Validation adds seven LED isolation/protocol mock tests and graph checks for the sole LED-to-MIDI path plus unchanged stereo passthrough. Neither the mock tests nor the AMXD parser prove native hardware behavior.

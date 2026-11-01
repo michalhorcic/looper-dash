@@ -1,7 +1,7 @@
-MLD 0.7.1 beta, 2026-10-31
-User confirmed 0.3 works in Ableton Live 12 Suite; exact Max version unknown.
-PASS JS syntax, 15 discovery/read-only mock tests including track colors and A/B sends
-PASS UI: live view 2/3/4/6, rounded cards, segmented controls, colors, A/B sends, pagination, window size presets, wide three-card scaled clicks, resize rollback
-PASS AMXD chunk sizes, exact source roundtrip, graph/dependencies, read-only contract
-PASS visual inspection of simulated 2/3/4/6-card layouts with sends
-NOT TESTED: 0.7.1 inside native Max/Live.
+MLD 0.8 beta, 2026-11-01
+User confirmed 0.3 works in Ableton Live 12 Suite; exact Max/LCXL3 firmware versions unknown.
+PASS JS syntax; 15 discovery/read-only mock tests; 7 LED isolation/protocol tests
+PASS UI: live view 2/3/4/6, colors, A/B sends, pagination, zoom, reference-strip legibility
+PASS AMXD chunks/source roundtrip, graph/dependencies, isolated LED MIDI path and unchanged stereo passthrough
+NOT TESTED: 0.8 native Max/Live routing selectors or LCXL3 hardware.
+NOT VERIFIED: DAW LED commands while Custom Mode 2 is visible; possible overwrite by Live's control-surface script.
