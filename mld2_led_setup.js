@@ -1,5 +1,5 @@
 /* LCXL3 CC feedback and Stop-hold gesture. ES5. Clear is delegated to the guarded action module. */
-autowatch=1;inlets=1;outlets=7;
+autowatch=0;inlets=1;outlets=8;
 var config={version:3,port:"",input:"",holdMs:1500,run:false,assignments:[]};
 var latest=null,received=0,rows=[],groups={},items=[],page=0,pageSize=4;
 var types=[],channels=[],typeChoice=null,channelChoice=null,portOptions=[];
@@ -67,7 +67,11 @@ function clearAll(){
 }
 function start(){if(!timer){timer=new Task(tick,this);timer.interval=25;timer.repeat();}}
 function stop(){if(timer){timer.cancel();timer.freepeer();timer=null;}}
-function changed(){if(typeof notifyclients==="function")notifyclients();}
+function changed(){
+    if(typeof notifyclients==="function")notifyclients();
+    // Explicit unbound pattr input: thru 2 suppresses its echo back into restore_state.
+    outlet(7,"list",getvalueof());
+}
 function suspend(){clearAll();config.run=false;stop();release();notice="LED SETUP stopped; manual tests remain available.";changed();render();}
 function run(n){
     var next=Number(n)===1;
@@ -198,7 +202,7 @@ function render(){
     var portIndex=0;for(var i=0;i<portOptions.length;i++)if(portOptions[i].name===config.port)portIndex=i+1;
     ui("setupPort","set",portIndex);ui("holdSeconds","set",config.holdMs/1000);ui("setupRun","set",config.run?1:0);
     ui("setupPage","set",(items.length?page+1:0)+" / "+Math.ceil(items.length/pageSize)+"   ("+items.length+" tracks)");
-    var status=notice||((!config.run&&!pendingTest)?"SYNC OFF. Settings are saved with the Live Set.":!ready()?routeStatus():"SYNC ON / channel "+outputChannel()+": STOP Off / PLAY On / RECORD slow / OVERDUB fast.");
+    var status=notice||((!config.run&&!pendingTest)?"SYNC OFF. Save the Live Set to keep these settings.":!ready()?routeStatus():"SYNC ON / channel "+outputChannel()+": STOP Off / PLAY On / RECORD slow / OVERDUB fast.");
     ui("setupStatus","set",status);
     for(i=0;i<pageSize;i++){
         var track=items[page*pageSize+i],prefix="row"+i+"_",exists=track!==undefined;
@@ -224,6 +228,7 @@ function routeStatus(){
 function getvalueof(){return "mldled1:"+encodeURIComponent(JSON.stringify(config));}
 function setvalueof(v){
     try{
+        if(Array.isArray(v)&&v.length===1)v=v[0];
         if(typeof v!=="string"||v.indexOf("mldled1:")!==0)throw new Error("format");
         var c=JSON.parse(decodeURIComponent(v.slice(8)));
         if(!c||(c.version!==1&&c.version!==2&&c.version!==3)||typeof c.run!=="boolean"||!(c.port===""||allowedPort(c.port))||!Array.isArray(c.assignments)||c.assignments.length>2000)throw new Error("config");
@@ -242,8 +247,17 @@ function setvalueof(v){
             seen[key(a.track)]=true;clean.assignments.push({track:a.track,channel:a.channel,cc:a.cc,on:ledOn,off:ledOff,enabled:a.enabled,stop:{cc:st.cc,on:st.on,off:st.off,inputOn:inputOn,inputOff:inputOff,enabled:st.enabled,clear:st.clear}});
         }
         clearAll();stop();release();config=clean;pendingType=null;pendingChannel=null;inputPendingType=null;inputPendingChannel=null;rebuild();notice="";
-        if(config.run){claim();reconcileRoute();start();}tick();
-    }catch(e){notice="Stored LED settings rejected; current configuration kept.";render();}
+        if(config.run){claim();reconcileRoute();start();}tick();return true;
+    }catch(e){notice="Stored LED settings rejected; current configuration kept.";render();return false;}
+}
+function restore_state(){
+    var values=arrayfromargs(arguments);
+    if(values.length===2&&(values[0]==="symbol"||values[0]==="list"))values.shift();
+    if(values.length===1&&Array.isArray(values[0]))values=values[0];
+    if(values.length!==1){notice="Stored LED settings rejected; expected one configuration blob.";render();return;}
+    var blob=values[0];
+    if(blob===getvalueof())return; // Init bang after Live restore must not restart a running controller.
+    if(setvalueof(blob)&&getvalueof()!==blob)outlet(7,"list",getvalueof()); // Persist normalized older schemas once.
 }
 function loadbang(){uiCache={};renderInputMenu();render();}
 function legacy(){outlet(2,"legacy");}

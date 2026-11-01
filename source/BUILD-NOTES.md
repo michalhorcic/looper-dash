@@ -1,4 +1,4 @@
-# Build notes — 0.13.2 beta
+# Build notes — 0.13.3 beta
 
 Unfrozen Audio Effect AMXD: little-endian chunks `ampf` (payload `aaaa`), `meta` (four zero bytes), `ptch` (UTF-8 patcher JSON + null byte). Adjacent JS dependencies resolve relative to the device directory. No code signing, Node for Max, native externals or manual Max editing is required by this package.
 
@@ -31,6 +31,7 @@ node tests/test_core.cjs
 node tests/test_ui.cjs
 node tests/test_led.cjs
 node tests/test_led_setup.cjs
+node tests/test_persistence.cjs
 node tests/test_actions.cjs
 python3 tests/validate_build.py
 ```
@@ -165,3 +166,16 @@ Schema v3 separates Stop LED values (on/off) from physical inputOn/inputOff. Nat
 The optional source/midi_observe.swift diagnostic uses CoreMIDI read-only input ports, filters the LCXL3 main source, records raw hex bytes/timestamps and disposes its client after a bounded invocation. It never creates an output port or sends packets. Native source listing and timed captures were performed with the user's controller; the source version compiles with the system Swift toolchain. It is not an AMXD dependency.
 
 Additional regression tests verify migration limited to the known A mapping while preserving B/C, v3 roundtrip, and physical 127/0 Stop/Clear detection with LED feedback 126/1. Total: 16 core, 30 setup/hold, 20 legacy LED and 8 guarded action tests. Five runtime JS dependencies remain unchanged. User additionally confirmed Stop/Clear on B works natively.
+
+
+0.13.3 fixes the persistence integration after the user's actual Live save/quit/reopen test restored defaults. Earlier tests verified only getvalueof/setvalueof serialization and presence of a parameter-enabled bound pattr; they did not cover registration in the generated top-level parameter inventory or the host storage boundary. The generated file had no parameters registry, and newobj parameter_enable was not also represented in saved_object_attributes as in bundled M4L.api.SaveLivePath.maxpat. Those structural omissions are corrected, without claiming that prior mock tests proved native Set storage.
+
+The generator now enumerates every parameter-enabled object into stable hierarchical parameters maps; the root registers ledwindow::setupstate as LED Configuration / LED Config / order 0. The pattr has saved_object_attributes parameter_enable=1, parameter_mappable=0, thru=2 and an explicit Stored Only Blob descriptor with parameter_initial_enable=0. An encoded factory restore atom provides a valid default for new instances without forcing a parameter initial override on loaded Sets.
+
+The state holder is now unbound, with explicit wiring: setup JS outlet 7 sends list <encoded blob> on each configuration edit to pattr; its left outlet passes through prepend restore_state into the setup engine. Thru 2 suppresses the write echo, while native recall is delivered back to JS. A deferlow bang following live.thisdevice/init reads the restored host value once. Duplicate restore is idempotent; old schemas normalize once into the host parameter; malformed recall does not replace current configuration. Startup loadbang, routing metadata, snapshots, MIDI monitoring and disposal do not emit configuration writes. Transient held buttons are never serialized/restored.
+
+Production autowatch is disabled in all five JS modules. The current Live log contained a real intermediate-source reload error (checkHolds undefined) during development, showing that editing an active adjacent script can reset/recompile runtime state. Device updates must now be applied by loading the new AMXD; source changes cannot silently restart a running setup. This protects user configuration during ongoing development separately from fixing host persistence.
+
+Six additional host-boundary/lifecycle tests use the actual generated registry and a parameter-store simulator. They cover stable enabled-parameter registration, writes without a JS callback at save time, disposal/new instance/restore before topology or port metadata, late initialization, no recall echo, atom/list envelopes, one-time migration, two independent instances and no parameter dirtiness from ordinary monitoring. The simulator is not Ableton Live; a native quit/reopen test remains required. Total tests: 16 core, 30 setup, 6 persistence, 20 legacy LED and 8 actions, plus UI/build graph validation.
+
+Primary references: https://docs.cycling74.com/userguide/m4l/live_pattr/ , https://docs.cycling74.com/reference/pattr/ (thru 2 / Stored Only) and bundled C74/patchers/m4l/LiveAPI resources/abstractions/M4L.api.SaveLivePath.maxpat / M4L.api.DeviceParameterRemote.maxpat (saved object attributes and hierarchical parameters inventory).

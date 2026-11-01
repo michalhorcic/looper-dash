@@ -1,8 +1,8 @@
-MLD 0.13.2 beta, 2026-11-01
+MLD 0.13.3 beta, 2026-11-01
 User confirmed 0.3 works in Ableton Live 12 Suite; exact Max/LCXL3 firmware versions unknown.
-PASS JS syntax; 16 discovery/read-only mock tests; 20 legacy LED isolation/protocol/integration tests; 30 multi-Looper setup/hold tests; 8 guarded action tests.
+PASS JS syntax; 16 discovery/read-only mock tests; 20 legacy LED isolation/protocol/integration tests; 30 multi-Looper setup/hold tests; 6 parameter persistence/lifecycle tests; 8 guarded action tests.
 PASS UI: live view 2/3/4/6, colours, A/B sends, pagination, zoom and reference strips.
-PASS AMXD chunks/source roundtrip, 297 objects, graph/dependencies, native Custom test control wiring/defaults, isolated LED MIDI path and unchanged stereo passthrough.
+PASS AMXD chunks/source roundtrip, 299 objects, graph/dependencies, native Custom test control wiring/defaults, isolated LED MIDI path and unchanged stereo passthrough.
 USER VERIFIED 0.8.1: palette CC via DAW In works in DAW mode; no visible effect in Custom Mode 2.
 USER REPORTED 0.9: no LED response from RGB experiment in Custom Mode.
 USER VERIFIED 0.10: Custom CC15/37 ON/OFF via MIDI In changes LED to Components colours in Custom Mode 2; physical release returns Off.
@@ -21,3 +21,6 @@ USER VERIFIED: Stop/Clear on Looper B works; A main feedback 126/1 restores full
 NATIVE PASSIVE TRACE: LCXL3 source CC37 edges were missing with 127/0 feedback; repeated paired 127/0 input edges observed with 126/1 feedback. CC38 pairs were normal.
 0.13.2: known A assignment migration and separate Stop input/LED values; B/C retained unchanged. Exact firmware/config cause of A/B difference remains unknown. Output Remote re-enable was user-confirmed: Overdub still works with 126/1.
 LATEST NATIVE: A Overdub remains functional with output Remote restored to On. Stop mappings must be removed from Live (CC45/46/47); Stop now belongs to the dashboard. IN+/IN- remain physical 127/0, independently of LED values.
+USER REPORTED 0.13.2: LED setup resets after saving Set, quitting/reopening Live and loading the Set.
+FIX 0.13.3: native saved object parameter attributes, hierarchical host parameter registry, explicit unbound pattr write/restore bridge, late init read and production autowatch disabled.
+PASS simulated host lifecycle/store tests and registered-parameter coverage; actual 0.13.3 Live save-close-reopen is NOT YET VERIFIED.

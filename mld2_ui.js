@@ -1,4 +1,4 @@
-autowatch=1;inlets=1;outlets=1;
+autowatch=0;inlets=1;outlets=1;
 mgraphics.init();mgraphics.relative_coords=0;mgraphics.autofill=0;
 var model={rows:[],status:"Loading Live API",count:0}, page=0, performanceCards=4, lastReceived=0;
 var beatColors={STOP:[.55,.62,.7],PLAY:[.24,.84,.62],RECORD:[1,.31,.37],OVERDUB:[1,.66,.22]};

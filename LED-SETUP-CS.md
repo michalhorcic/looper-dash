@@ -1,10 +1,10 @@
-# LED SETUP — více Looperů (0.13.2 beta)
+# LED SETUP — více Looperů (0.13.3 beta)
 
 Okno nastavuje LED zpětnou vazbu pro CC tlačítka LCXL3 v Custom Mode. Každý Looper musí být na vlastní, jednoznačně pojmenované stopě. Rec/Play/Overdub zůstává v původním mapování Live. Stop od 0.13.1 obsluhuje dashboard, proto pouze jeho původní mapování odstraň. Stop pak potřebuje zapnuté zařízení a **SYNC / CTRL**; při vypnutém nebo odstraněném dashboardu tato tlačítka Stop neobsluhuje.
 
 ## První nastavení
 
-1. Nahraď předchozí zařízení novým **MultiLooperDashboard.amxd 0.13.2 beta**. Vedle něj musí zůstat **všech pět JS souborů**, včetně `mld2_led_setup.js` a nového `mld2_actions.js`.
+1. Nahraď předchozí zařízení novým **MultiLooperDashboard.amxd 0.13.3 beta**. Vedle něj musí zůstat **všech pět JS souborů**, včetně `mld2_led_setup.js` a nového `mld2_actions.js`.
 2. Na zařízení klikni **LED SETUP**. Původní **LED TEST** je stále dostupný i ze setup okna.
 3. Nahoře vyber **LCXL3 1 (MIDI In)**. Jde o výstup do hlavního USB MIDI portu kontroleru, stejně jako u ověřeného ON/OFF testu. Nepoužívej DAW In nebo DIN. Zařízení samo vybere **konkrétní výstupní kanál** podle přiřazení. Pro tvůj setup jde o **15**. Volba All Channels se nepoužívá. Zprávy se odešlou až po potvrzení správného portu a kanálu.
 4. U každého Looperu nastav **CH**, **CC**, **LED+**, **LED-** jako hodnoty zpětné vazby. Nemusí být shodné s fyzickými hodnotami z Components. Typ je v této verzi pevně CC. Kanály jsou 1–16, CC a hodnoty 0–127. **Všechny zapnuté řádky pro SYNC musí mít stejný kanál**, u tebe 15. Smíšené kanály se zablokují s hláškou BLOCKED; jednotlivé ruční testy mohou samostatně vybrat kanál svého řádku. **CC -1 znamená nenastaveno**. Výchozí CH je 15; hlavní A má LED 126/1, B/C ponechávají 127/0. Nové řádky mají zapnutí vypnuté.
@@ -13,6 +13,17 @@ Okno nastavuje LED zpětnou vazbu pro CC tlačítka LCXL3 v Custom Mode. Každý
 7. Ulož Live Set. Konfigurace zahrnuje společný výstup, všechna přiřazení, jejich zapnutí i stav SYNC. Pokud byl SYNC při uložení zapnutý, po obnovení konfigurace pokračuje, jakmile je potvrzen port a konkrétní společný kanál a přijdou data dashboardu. Nové zařízení má SYNC vypnuté.
 
 Pro hlavní LED Looper A použij nyní ověřené **CH 15 / CC37 / LED+ 126 / LED- 1**. Components a nativní mapování jeho tlačítka stále používají 127/0. B/C mohou ponechat funkční LED 127/0. Další CC neodhaduj podle pořadí tlačítek; převezmi skutečná přiřazení z Components.
+
+## Ověření opraveného ukládání (0.13.3)
+
+Předchozí verze podle uživatelského testu konfiguraci po restartu neobnovovala. V 0.13.3 je opravená registrace parametru a přenos dat mezi JS a hostitelem Live.
+
+1. Odstraň starou instanci a načti novou **0.13.3**. Nech všech pět JS souborů vedle `.amxd`; ověř verzi na zařízení.
+2. Pro první test nastav **jen jeden Looper**, výstup/vstup a zapnutí, které chceš uložit. Není potřeba znovu nastavovat vše před ověřením.
+3. Ulož Set přes **Cmd+S**, zavři Live, znovu ho spusť a otevři tentýž Set. Ověř CC, LED hodnoty, IN+/IN-, Stop/Hold, čas držení, porty a SYNC / CTRL.
+4. Pokud se nastavení obnoví, nastav ostatní Loopery a znovu ulož. Pokud ne, pošli text horního stavu a případnou chybu z Max Console.
+
+JS automatické přenačítání je nyní vypnuté, aby se konfigurace neresetovala při úpravě zdrojů. Aktualizace vyžaduje znovunačtení `.amxd`. Konfigurace patří jednotlivé instanci zařízení v Setu; vložení zcela nového zařízení začíná výchozím nastavením.
 
 ## Význam svícení
 

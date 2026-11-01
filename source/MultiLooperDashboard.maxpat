@@ -29,7 +29,7 @@
             650,
             25
           ],
-          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.13.2 beta",
+          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.13.3 beta",
           "fontsize": 18.0,
           "presentation": 1,
           "presentation_rect": [
@@ -1555,8 +1555,9 @@
                   "text": "js mld2_led_setup.js",
                   "varname": "ledSetupEngine",
                   "numinlets": 1,
-                  "numoutlets": 7,
+                  "numoutlets": 8,
                   "outlettype": [
+                    "",
                     "",
                     "",
                     "",
@@ -1577,18 +1578,63 @@
                     400,
                     22
                   ],
-                  "text": "pattr ledConfiguration @bindto ledSetupEngine @parameter_enable 1",
+                  "text": "pattr ledConfiguration @parameter_enable 1 @thru 2",
                   "varname": "ledConfiguration",
                   "parameter_enable": 1,
                   "parameter_mappable": 0,
+                  "numinlets": 1,
+                  "numoutlets": 3,
+                  "outlettype": [
+                    "",
+                    "",
+                    ""
+                  ],
+                  "restore": [
+                    "mldled1:%7B%22version%22%3A3%2C%22port%22%3A%22%22%2C%22input%22%3A%22%22%2C%22holdMs%22%3A1500%2C%22run%22%3Afalse%2C%22assignments%22%3A%5B%5D%7D"
+                  ],
+                  "saved_object_attributes": {
+                    "parameter_enable": 1,
+                    "parameter_mappable": 0,
+                    "thru": 2
+                  },
                   "saved_attribute_attributes": {
                     "valueof": {
                       "parameter_longname": "LED Configuration",
                       "parameter_shortname": "LED Config",
                       "parameter_type": 3,
-                      "parameter_invisible": 1
+                      "parameter_invisible": 1,
+                      "parameter_initial_enable": 0,
+                      "parameter_order": 0,
+                      "parameter_linknames": 0,
+                      "parameter_unitstyle": 10
                     }
                   }
+                }
+              },
+              {
+                "box": {
+                  "id": "setuprestore",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1060,
+                    690,
+                    160,
+                    22
+                  ],
+                  "text": "prepend restore_state"
+                }
+              },
+              {
+                "box": {
+                  "id": "setuprestoredefer",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1060,
+                    650,
+                    70,
+                    22
+                  ],
+                  "text": "deferlow"
                 }
               },
               {
@@ -1946,7 +1992,7 @@
                             1056,
                             28
                           ],
-                          "text": "SYNC OFF. Settings are saved with the Live Set.",
+                          "text": "SYNC OFF. Save the Live Set to keep these settings.",
                           "varname": "setupStatus",
                           "fontsize": 12.0,
                           "presentation": 1,
@@ -8358,6 +8404,66 @@
               {
                 "patchline": {
                   "source": [
+                    "setup",
+                    7
+                  ],
+                  "destination": [
+                    "setupstate",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "setupstate",
+                    0
+                  ],
+                  "destination": [
+                    "setuprestore",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "setuprestore",
+                    0
+                  ],
+                  "destination": [
+                    "setup",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "commands",
+                    1
+                  ],
+                  "destination": [
+                    "setuprestoredefer",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "setuprestoredefer",
+                    0
+                  ],
+                  "destination": [
+                    "setupstate",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
                     "commands",
                     2
                   ],
@@ -8853,7 +8959,14 @@
                   "order": 0
                 }
               }
-            ]
+            ],
+            "parameters": {
+              "setupstate": [
+                "LED Configuration",
+                "LED Config",
+                0
+              ]
+            }
           },
           "numinlets": 1,
           "numoutlets": 0
@@ -9303,6 +9416,13 @@
         "type": "TEXT",
         "implicit": 1
       }
-    ]
+    ],
+    "parameters": {
+      "ledwindow::setupstate": [
+        "LED Configuration",
+        "LED Config",
+        0
+      ]
+    }
   }
 }

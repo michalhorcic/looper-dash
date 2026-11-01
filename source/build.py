@@ -3,6 +3,7 @@ Chunk layout verified against Ableton/maxdevtools/maxdiff/amxd_textconv.py.
 """
 import json
 import struct
+from urllib.parse import quote
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -18,6 +19,19 @@ def box(p,ident,cls,rect,text=None,**kw):
     b.update(kw);p["boxes"].append({"box":b})
 
 def wire(p,src,out,dst,inlet=0):p["lines"].append({"patchline":{"source":[src,out],"destination":[dst,inlet]}})
+
+def parameter_registry(p):
+    result={}
+    for item in p["boxes"]:
+        b=item["box"]
+        attributes=b.get("saved_attribute_attributes",{}).get("valueof",{})
+        if b.get("saved_object_attributes",{}).get("parameter_enable",b.get("parameter_enable",0)):
+            if "parameter_longname" in attributes:
+                result[b["id"]]=[attributes["parameter_longname"],attributes["parameter_shortname"],attributes.get("parameter_order",0)]
+        if "patcher" in b:
+            for child,value in parameter_registry(b["patcher"]).items():result[b["id"]+"::"+child]=value
+    if result:p["parameters"]=result
+    return result
 
 def build_led_setup():
     p=patch([160,100,1080,720],1)
@@ -35,7 +49,7 @@ def build_led_setup():
         box(p,ident+"msg","newobj" if mode else "message",[x,790,w,22],"prepend "+command if mode else command)
         wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"out")
     box(p,"setupPage","comment",[650,48,260,22],"0 / 0",varname="setupPage",presentation=1,presentation_rect=[650,48,260,22])
-    box(p,"setupStatus","comment",[12,112,1056,28],"SYNC OFF. Settings are saved with the Live Set.",varname="setupStatus",fontsize=12.0,presentation=1,presentation_rect=[12,112,1056,28])
+    box(p,"setupStatus","comment",[12,112,1056,28],"SYNC OFF. Save the Live Set to keep these settings.",varname="setupStatus",fontsize=12.0,presentation=1,presentation_rect=[12,112,1056,28])
     for label,x,w in [("TRACK / LOOPER",12,260),("CH",278,48),("CC",338,48),("LED+",398,48),("LED-",458,48),("ENABLE",520,64),("STATUS",814,250)]:
         box(p,"heading"+str(x),"comment",[x,186,w,20],label,fontsize=11.0,presentation=1,presentation_rect=[x,186,w,20])
     for i in range(4):
@@ -132,9 +146,16 @@ def build_led_panel():
         box(p,ident+"init","newobj",[x,1280,100,22],"loadmess "+str(initial))
         box(p,ident+"msg","newobj",[x,1320,120,22],"prepend "+ident)
         wire(p,ident+"init",0,ident);wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"led")
-    box(p,"setup","newobj",[860,650,180,22],"js mld2_led_setup.js",varname="ledSetupEngine",numinlets=1,numoutlets=7,outlettype=[""]*7)
-    box(p,"setupstate","newobj",[860,690,400,22],"pattr ledConfiguration @bindto ledSetupEngine @parameter_enable 1",varname="ledConfiguration",parameter_enable=1,parameter_mappable=0,
-        saved_attribute_attributes={"valueof":{"parameter_longname":"LED Configuration","parameter_shortname":"LED Config","parameter_type":3,"parameter_invisible":1}})
+    box(p,"setup","newobj",[860,650,180,22],"js mld2_led_setup.js",varname="ledSetupEngine",numinlets=1,numoutlets=8,outlettype=[""]*8)
+    default_state="mldled1:"+quote(json.dumps({"version":3,"port":"","input":"","holdMs":1500,"run":False,"assignments":[]},separators=(",",":")),safe="~()*!.'-")
+    box(p,"setupstate","newobj",[860,690,400,22],"pattr ledConfiguration @parameter_enable 1 @thru 2",varname="ledConfiguration",parameter_enable=1,parameter_mappable=0,
+        numinlets=1,numoutlets=3,outlettype=["","",""],restore=[default_state],
+        saved_object_attributes={"parameter_enable":1,"parameter_mappable":0,"thru":2},
+        saved_attribute_attributes={"valueof":{"parameter_longname":"LED Configuration","parameter_shortname":"LED Config","parameter_type":3,"parameter_invisible":1,"parameter_initial_enable":0,"parameter_order":0,"parameter_linknames":0,"parameter_unitstyle":10}})
+    box(p,"setuprestore","newobj",[1060,690,160,22],"prepend restore_state")
+    box(p,"setuprestoredefer","newobj",[1060,650,70,22],"deferlow")
+    wire(p,"setup",7,"setupstate");wire(p,"setupstate",0,"setuprestore");wire(p,"setuprestore",0,"setup")
+    wire(p,"commands",1,"setuprestoredefer");wire(p,"setuprestoredefer",0,"setupstate")
     box(p,"setupwindow","newobj",[860,730,130,22],"p LED_Setup",patcher=build_led_setup(),numinlets=1,numoutlets=1,outlettype=[""])
     box(p,"setupmidimsg","newobj",[860,770,150,22],"prepend setup_midi")
     box(p,"setupclaimmsg","newobj",[860,810,150,22],"prepend setup_claim")
@@ -180,7 +201,7 @@ def build_led_panel():
 def build():
     p=patch([100,100,940,650],1)
     p.update({"devicewidth":580.0,"amxdtype":1633771873,"description":"Live monitoring, LCXL3 LED feedback and optional Stop-hold Clear."})
-    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.13.2 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
+    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.13.3 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
     box(p,"note","comment",[20,45,800,35],"Automatically finds all Loopers.",presentation=1,presentation_rect=[12,36,560,36])
     for ident,label,x,w in [("open","OPEN DASHBOARD",12,160),("scan","RESCAN",184,90),("report","EXPORT REPORT",286,150),("ledopen","LED TEST",448,120)]:
         box(p,ident,"textbutton",[x,100,w,30],numinlets=1,numoutlets=3,outlettype=["","int",""],text=label,texton=label,
@@ -228,6 +249,7 @@ def build():
     wire(p,"defer",0,"js");wire(p,"js",0,"window");wire(p,"window",0,"ui_route");wire(p,"ui_route",0,"dlg");wire(p,"ui_route",1,"defer")
     wire(p,"audioin",0,"audioout",0);wire(p,"audioin",1,"audioout",1)
     p["dependency_cache"]=[{"name":"mld2_core.js","type":"TEXT","implicit":1},{"name":"mld2_ui.js","type":"TEXT","implicit":1},{"name":"mld2_led.js","type":"TEXT","implicit":1},{"name":"mld2_led_setup.js","type":"TEXT","implicit":1},{"name":"mld2_actions.js","type":"TEXT","implicit":1}]
+    parameter_registry(p)
     return {"patcher":p}
 
 def chunk(tag,data):return tag+struct.pack("<I",len(data))+data

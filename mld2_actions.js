@@ -1,5 +1,5 @@
 /* Explicit button Stop and hold Clear only. No MIDI, routing, parameter setters or global transport. */
-autowatch=1;inlets=1;outlets=1;
+autowatch=0;inlets=1;outlets=1;
 var latest=null,received=0,handled={},permits={};
 function authorize(){try{var q=JSON.parse(arrayfromargs(arguments).join(" "));if(typeof q.token==="string"&&q.token.length<=120)permits["$"+q.token]=JSON.stringify(q);}catch(e){}}
 function cancel(){permits={};}

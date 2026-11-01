@@ -129,7 +129,7 @@ test('native setup graph edits and tests the visible row; parameter blob is boun
  const patch=JSON.parse(fs.readFileSync(path.join(root,'source/MultiLooperDashboard.maxpat'),'utf8')).patcher;
  const led=patch.boxes.find(x=>x.box.id==='ledwindow').box.patcher,boxes=Object.fromEntries(led.boxes.map(x=>[x.box.id,x.box]));
  const panel=boxes.setupwindow.patcher,panelBoxes=Object.fromEntries(panel.boxes.map(x=>[x.box.id,x.box]));
- assert.match(boxes.setupstate.text,/@bindto ledSetupEngine @parameter_enable 1/);assert.equal(boxes.setupstate.saved_attribute_attributes.valueof.parameter_type,3);assert.equal(boxes.setupstate.saved_attribute_attributes.valueof.parameter_invisible,1);
+ assert.match(boxes.setupstate.text,/@parameter_enable 1 @thru 2/);assert.ok(!boxes.setupstate.text.includes('@bindto'));assert.ok(patch.parameters['ledwindow::setupstate']);assert.equal(boxes.setupstate.saved_attribute_attributes.valueof.parameter_type,3);assert.equal(boxes.setupstate.saved_attribute_attributes.valueof.parameter_invisible,1);
  function click(id,value){const e=panel.lines.find(x=>x.patchline.source[0]===id).patchline;assert.equal(e.source[1],0);const box=panelBoxes[e.destination[0]],args=box.text.replace(/^prepend /,'').split(' ');const command=args.shift();c[command](...args.map(x=>isNaN(Number(x))?x:Number(x)),...(box.maxclass==='newobj'?[value]:[]));}
  route();snapshot([row('A'),row('B','PLAY',2)]);click('row1_cc',41);click('row1_channel',16);click('row1_enabled',1);click('row1_teston');c.routingchannel(16);assert.deepEqual(midi().at(-1),[191,41,127]);
  click('setupRun',1);assert.equal(c.config.run,true);click('setupRun',0);assert.equal(c.config.run,false);

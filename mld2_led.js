@@ -1,5 +1,5 @@
 /* Experimental LCXL3 LED feedback. ES5. No LiveAPI, MIDI input, mode switching or mapping writes. */
-autowatch=1;inlets=1;outlets=8;
+autowatch=0;inlets=1;outlets=8;
 var armed=false,following=false,portName="",channelName="",latest=null,received=0;
 var lastColour=null,lastSent=0,watchdog=null,lastStatus="";
 var typeNames=[],channelNames=[],typeChoice=null,channelChoice=null;

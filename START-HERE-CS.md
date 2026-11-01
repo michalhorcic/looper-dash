@@ -1,4 +1,4 @@
-# Multi Looper Dashboard 0.13.2 beta
+# Multi Looper Dashboard 0.13.3 beta
 
 ## Spuštění — bez úprav v Maxu
 
@@ -7,6 +7,14 @@
 3. Na zařízení klikni **OPEN DASHBOARD**. Monitor si Loopery najde sám. Není potřeba přejmenovávat stopy, otevírat editor ani měnit MIDI nastavení.
 
 Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.9 zatím nebyly přímo v Live ověřeny.
+
+## Oprava ukládání v 0.13.3
+
+- Ukládací Blob parametr je nově explicitně registrovaný v hlavním patcheru i v jeho hierarchii a má nativně uložené Parameter Mode Enable / Stored Only atributy.
+- Každá změna LED SETUP jde přímo do parametru Live. Při otevření Setu se obnoví z tohoto parametru; odložené inicializační načtení ji nepřepisuje výchozími hodnotami.
+- Automatické načítání změněných JS souborů během běhu je vypnuté. Po aktualizaci vždy načti novou instanci `.amxd`; samotná výměna JS není aktualizace běžícího zařízení.
+- Nejprve ověř uložení na jediném nastaveném Looperu: nahraď starou instanci verzí **0.13.3**, zkontroluj verzi na zařízení, nastav jeden řádek, ulož Set přes Cmd+S, zavři Live a znovu tentýž Set otevři. Teprve po úspěšném testu nastav zbytek.
+- Simulované testy pokrývají registraci parametru, zápis/obnovu přes hranici hostitele, nové spuštění JS, pozdní inicializaci, oddělení dvou zařízení a migraci starších konfigurací. Skutečný restart Live ještě potřebuje ověřit uživatel.
 
 ## Oprava LED Looperu A v 0.13.2
 

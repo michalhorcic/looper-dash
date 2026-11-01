@@ -96,7 +96,19 @@ assert ledboxes['setup']['text']=='js mld2_led_setup.js'
 assert ledboxes['setup']['varname']=='ledSetupEngine'
 assert ledboxes['setupstate']['parameter_enable']==1
 assert ledboxes['setupstate']['parameter_mappable']==0
-assert '@bindto ledSetupEngine' in ledboxes['setupstate']['text']
+assert '@bindto' not in ledboxes['setupstate']['text']
+assert '@thru 2' in ledboxes['setupstate']['text']
+assert ledboxes['setupstate']['saved_object_attributes']['parameter_enable']==1
+assert ledboxes['setupstate']['saved_object_attributes']['thru']==2
+assert ledboxes['setupstate']['saved_attribute_attributes']['valueof']['parameter_initial_enable']==0
+assert p['patcher']['parameters']['ledwindow::setupstate']==['LED Configuration','LED Config',0]
+assert ledpanel['parameters']['setupstate']==['LED Configuration','LED Config',0]
+assert (('setup',7),('setupstate',0)) in edges
+assert (('setupstate',0),('setuprestore',0)) in edges
+assert (('setuprestore',0),('setup',0)) in edges
+assert (('commands',1),('setuprestoredefer',0)) in edges
+assert (('setuprestoredefer',0),('setupstate',0)) in edges
+assert ledboxes['setuprestore']['text']=='prepend restore_state'
 assert ledboxes['setupstate']['saved_attribute_attributes']['valueof']['parameter_type']==3
 assert ledboxes['setupstate']['saved_attribute_attributes']['valueof']['parameter_invisible']==1
 for pair in [(('commands',3),('setup',0)),(('setup',0),('setupmidimsg',0)),(('setupmidimsg',0),('led',0)),(('setup',1),('setupwindow',0)),(('setupwindow',0),('setup',0)),(('setup',3),('setupclaimmsg',0)),(('setupclaimmsg',0),('led',0)),(('led',6),('setup',0)),(('led',7),('ledarm',0))]:assert pair in edges
@@ -151,3 +163,7 @@ for ident,command in [('setupInput','choose_input'),('holdSeconds','holdseconds'
  assert setupboxes[msg]['text']=='prepend '+command
  assert ((ident,0),(msg,0)) in setupedges
 print('PASS Stop field/control wiring uses numeric outlets and non-outputting UI refresh')
+
+for filename in ['mld2_core.js','mld2_ui.js','mld2_led.js','mld2_led_setup.js','mld2_actions.js']:
+ assert 'autowatch=0' in (root/filename).read_text()
+print('PASS Live parameter registry, explicit blob save/restore bridge, disabled initial override and runtime auto-reload')
