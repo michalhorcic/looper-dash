@@ -20,7 +20,7 @@ def box(p,ident,cls,rect,text=None,**kw):
 def wire(p,src,out,dst,inlet=0):p["lines"].append({"patchline":{"source":[src,out],"destination":[dst,inlet]}})
 
 def build_led_setup():
-    p=patch([160,100,1080,640],1)
+    p=patch([160,100,1080,720],1)
     box(p,"in","inlet",[10,700,25,25])
     box(p,"commands","newobj",[50,700,90,22],"route front")
     box(p,"frontmsg","message",[160,700,180,22],"front, topmost 1, presentation 1")
@@ -35,11 +35,11 @@ def build_led_setup():
         box(p,ident+"msg","newobj" if mode else "message",[x,790,w,22],"prepend "+command if mode else command)
         wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"out")
     box(p,"setupPage","comment",[650,48,260,22],"0 / 0",varname="setupPage",presentation=1,presentation_rect=[650,48,260,22])
-    box(p,"setupStatus","comment",[12,80,1056,28],"SYNC OFF. Settings are saved with the Live Set.",varname="setupStatus",fontsize=12.0,presentation=1,presentation_rect=[12,80,1056,28])
+    box(p,"setupStatus","comment",[12,112,1056,28],"SYNC OFF. Settings are saved with the Live Set.",varname="setupStatus",fontsize=12.0,presentation=1,presentation_rect=[12,112,1056,28])
     for label,x,w in [("TRACK / LOOPER",12,260),("CH",278,48),("CC",338,48),("ON",398,48),("OFF",458,48),("ENABLE",520,64),("STATUS",814,250)]:
-        box(p,"heading"+str(x),"comment",[x,110,w,20],label,fontsize=11.0,presentation=1,presentation_rect=[x,110,w,20])
-    for i in range(8):
-        prefix="row"+str(i)+"_";y=136+i*54
+        box(p,"heading"+str(x),"comment",[x,186,w,20],label,fontsize=11.0,presentation=1,presentation_rect=[x,186,w,20])
+    for i in range(4):
+        prefix="row"+str(i)+"_";y=212+i*104
         for field,x,w in [("label",12,260),("status",814,250)]:
             box(p,prefix+field,"comment",[x,y,w,42],"",varname=prefix+field,fontsize=12.0,presentation=1,presentation_rect=[x,y,w,42])
         for field,x,minimum,maximum in [("channel",278,1,16),("cc",338,-1,127),("on",398,0,127),("off",458,0,127)]:
@@ -47,12 +47,31 @@ def build_led_setup():
             box(p,ident,"number",[x,y,48,26],varname=ident,minimum=minimum,maximum=maximum,parameter_enable=0,numoutlets=2,outlettype=["int","bang"],presentation=1,presentation_rect=[x,y,48,26])
             box(p,ident+"msg","newobj",[x,850+i*60,200,22],"prepend rowedit "+str(i)+" "+field)
             wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"out")
-        for field,label,x,w,mode,command in [("enabled","ON",520,64,1,"rowedit "+str(i)+" enabled"),("teston","TEST ON",596,64,0,"test "+str(i)+" 1"),("testoff","OFF",666,64,0,"test "+str(i)+" 0"),("forget","CLEAR",738,64,0,"forget "+str(i))]:
+        for field,label,x,w,mode,command in [("enabled","ON",520,64,1,"rowedit "+str(i)+" enabled"),("teston","TEST ON",596,64,0,"test "+str(i)+" 1"),("testoff","OFF",666,64,0,"test "+str(i)+" 0"),("forget","RESET",738,64,0,"forget "+str(i))]:
             ident=prefix+field
             box(p,ident,"textbutton",[x,y,w,26],text="OFF" if mode else label,texton="ON" if mode else label,mode=mode,varname=ident,parameter_enable=0,numoutlets=3,outlettype=["int" if mode else "bang","","int"],presentation=1,presentation_rect=[x,y,w,26])
             box(p,ident+"msg","newobj" if mode else "message",[x,880+i*60,200,22],"prepend "+command if mode else command)
             wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"out")
-    box(p,"help","comment",[12,580,1056,48],"CC -1 = unassigned. Use the channel, CC and On/Off values from Components. Test with SYNC off. STOP = Off, PLAY = On, RECORD = slow blink, OVERDUB = fast blink. SYNC requires one common MIDI channel for all enabled rows (15 for this setup). Missing assignments stay listed; CLEAR removes their settings.",fontsize=12.0,presentation=1,presentation_rect=[12,580,1056,48])
+        box(p,prefix+"stoplabel","comment",[12,y+40,260,38],"STOP / HOLD CLEAR (same CH)",varname=prefix+"stoplabel",fontsize=11.0,presentation=1,presentation_rect=[12,y+40,260,38])
+        box(p,prefix+"stopstatus","comment",[814,y+40,250,42],"",varname=prefix+"stopstatus",fontsize=11.0,presentation=1,presentation_rect=[814,y+40,250,42])
+        for field,x,minimum,maximum in [("cc",338,-1,127),("on",398,0,127),("off",458,0,127)]:
+            ident=prefix+"stop"+field
+            box(p,ident,"number",[x,y+40,48,26],varname=ident,minimum=minimum,maximum=maximum,parameter_enable=0,numoutlets=2,outlettype=["int","bang"],presentation=1,presentation_rect=[x,y+40,48,26])
+            box(p,ident+"msg","newobj",[x,1400+i*60,200,22],"prepend stopedit "+str(i)+" "+field)
+            wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"out")
+        for field,label,x,w,mode,command in [("stopenabled","OFF",520,64,1,"stopedit "+str(i)+" enabled"),("stopteston","TEST ON",596,64,0,"test "+str(i)+" 1 stop"),("stoptestoff","OFF",666,64,0,"test "+str(i)+" 0 stop"),("stopclear","HOLD OFF",738,74,1,"stopedit "+str(i)+" clear")]:
+            ident=prefix+field
+            box(p,ident,"textbutton",[x,y+40,w,26],text=label,texton="HOLD ON" if field=="stopclear" else "ON" if mode else label,mode=mode,varname=ident,parameter_enable=0,numoutlets=3,outlettype=["int" if mode else "bang","","int"],presentation=1,presentation_rect=[x,y+40,w,26])
+            box(p,ident+"msg","newobj" if mode else "message",[x,1440+i*60,220,22],"prepend "+command if mode else command)
+            wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"out")
+    box(p,"setupInput","umenu",[12,80,330,24],items=["Select LCXL3 MIDI Out input"],varname="setupInput",parameter_enable=0,presentation=1,presentation_rect=[12,80,330,24])
+    box(p,"inputmsg","newobj",[12,1750,150,22],"prepend choose_input");wire(p,"setupInput",0,"inputmsg");wire(p,"inputmsg",0,"out")
+    box(p,"holdlabel","comment",[360,82,94,22],"HOLD seconds",fontsize=11.0,presentation=1,presentation_rect=[360,82,94,22])
+    box(p,"holdSeconds","flonum",[458,80,66,24],minimum=0.5,maximum=5.0,varname="holdSeconds",parameter_enable=0,numoutlets=2,outlettype=["float","bang"],presentation=1,presentation_rect=[458,80,66,24])
+    box(p,"holdmsg","newobj",[458,1750,150,22],"prepend holdseconds");wire(p,"holdSeconds",0,"holdmsg");wire(p,"holdmsg",0,"out")
+    box(p,"holdhint","comment",[540,80,528,24],"Stop stays MIDI-mapped in Live. HOLD ON enables Clear while held.",fontsize=11.0,presentation=1,presentation_rect=[540,80,528,24])
+    box(p,"inputStatus","comment",[12,142,1056,40],"INPUT NOT ARMED",varname="inputStatus",fontsize=11.0,presentation=1,presentation_rect=[12,142,1056,40])
+    box(p,"help","comment",[12,630,1056,72],"CC -1 = unassigned. SYNC uses one channel (15). STOP row: empty buffer = On colour, recorded/unknown = Off. Enable Stop LED and HOLD ON, select MIDI input, then tap/release Stop once to arm. A held Stop clears once at the threshold only if Looper is already stopped. RESET removes mapping, not audio. Test LEDs with SYNC off.",fontsize=12.0,presentation=1,presentation_rect=[12,630,1056,72])
     return p
 
 def build_led_panel():
@@ -107,7 +126,7 @@ def build_led_panel():
         box(p,ident+"init","newobj",[x,1280,100,22],"loadmess "+str(initial))
         box(p,ident+"msg","newobj",[x,1320,120,22],"prepend "+ident)
         wire(p,ident+"init",0,ident);wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"led")
-    box(p,"setup","newobj",[860,650,180,22],"js mld2_led_setup.js",varname="ledSetupEngine",numinlets=1,numoutlets=4,outlettype=[""]*4)
+    box(p,"setup","newobj",[860,650,180,22],"js mld2_led_setup.js",varname="ledSetupEngine",numinlets=1,numoutlets=7,outlettype=[""]*7)
     box(p,"setupstate","newobj",[860,690,400,22],"pattr ledConfiguration @bindto ledSetupEngine @parameter_enable 1",varname="ledConfiguration",parameter_enable=1,parameter_mappable=0,
         saved_attribute_attributes={"valueof":{"parameter_longname":"LED Configuration","parameter_shortname":"LED Config","parameter_type":3,"parameter_invisible":1}})
     box(p,"setupwindow","newobj",[860,730,130,22],"p LED_Setup",patcher=build_led_setup(),numinlets=1,numoutlets=1,outlettype=[""])
@@ -131,17 +150,36 @@ def build_led_panel():
         for edge in p["lines"]:
             if edge["patchline"]["source"]==[source,0]:edge["patchline"]["order"]=0
         wire(p,source,0,"setup");p["lines"][-1]["patchline"]["order"]=1
+    box(p,"inputrouting","newobj",[1280,650,90,22],"live.routing",numinlets=1,numoutlets=5)
+    box(p,"inputinit","message",[1280,690,150,22],"port midi_inputs")
+    box(p,"inputdefer","newobj",[1280,730,70,22],"deferlow")
+    wire(p,"commands",1,"inputinit");wire(p,"inputinit",0,"inputdefer");wire(p,"inputdefer",0,"inputrouting")
+    wire(p,"setup",4,"inputrouting")
+    for outlet,command in [(0,"inputtype"),(1,"inputchannel"),(2,"inputtypes"),(3,"inputchannels")]:
+        ident="inputmeta"+str(outlet)
+        box(p,ident,"newobj",[1280,780+outlet*35,160,22],"prepend "+command)
+        wire(p,"inputrouting",outlet,ident);wire(p,ident,0,"setup")
+    box(p,"stopinput","newobj",[1280,960,65,22],"midiin")
+    box(p,"stopbytes","newobj",[1280,1000,150,22],"prepend midi_byte")
+    wire(p,"stopinput",0,"stopbytes");wire(p,"stopbytes",0,"setup")
+    box(p,"actions","newobj",[1280,1060,150,22],"js mld2_actions.js",numinlets=1,numoutlets=1,outlettype=[""])
+    box(p,"actiondefer","newobj",[1280,1100,70,22],"deferlow")
+    wire(p,"setup",5,"actions");wire(p,"setup",6,"actiondefer");wire(p,"actiondefer",0,"actions");wire(p,"actions",0,"setup")
+    # Refresh action validation before any snapshot-driven setup tick can request Clear.
+    for edge in p["lines"]:
+        if edge["patchline"]["source"]==["commands",3]:edge["patchline"]["order"]=1 if edge["patchline"]["destination"][0]=="led" else 2
+    wire(p,"commands",3,"actions");p["lines"][-1]["patchline"]["order"]=0
     return p
 
 def build():
     p=patch([100,100,940,650],1)
-    p.update({"devicewidth":580.0,"amxdtype":1633771873,"description":"Read-only Live monitoring with optional experimental LCXL3 LED feedback."})
-    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.12.1 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
+    p.update({"devicewidth":580.0,"amxdtype":1633771873,"description":"Live monitoring, LCXL3 LED feedback and optional Stop-hold Clear."})
+    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.13 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
     box(p,"note","comment",[20,45,800,35],"Automatically finds all Loopers.",presentation=1,presentation_rect=[12,36,560,36])
     for ident,label,x,w in [("open","OPEN DASHBOARD",12,160),("scan","RESCAN",184,90),("report","EXPORT REPORT",286,150),("ledopen","LED TEST",448,120)]:
         box(p,ident,"textbutton",[x,100,w,30],numinlets=1,numoutlets=3,outlettype=["","int",""],text=label,texton=label,
             mode=0,parameter_enable=0,presentation=1,presentation_rect=[x,80,w,32])
-    box(p,"warning","comment",[20,150,800,38],"Transport reference. Live API read only. Optional LED test.",presentation=1,presentation_rect=[12,122,420,40])
+    box(p,"warning","comment",[20,150,800,38],"Transport reference. Optional Stop-hold Clear in LED SETUP.",presentation=1,presentation_rect=[12,122,420,40])
     box(p,"setupopen","textbutton",[448,150,120,26],text="LED SETUP",texton="LED SETUP",mode=0,parameter_enable=0,numoutlets=3,outlettype=["bang","","int"],presentation=1,presentation_rect=[448,122,120,26])
     box(p,"setupopenmsg","message",[150,650,90,22],"setupfront")
     box(p,"this","newobj",[20,220,100,22],"live.thisdevice",numinlets=1,numoutlets=3,outlettype=["bang","int","int"])
@@ -183,7 +221,7 @@ def build():
     wire(p,"report",0,"dlg");wire(p,"dlg",0,"export");wire(p,"export",0,"defer")
     wire(p,"defer",0,"js");wire(p,"js",0,"window");wire(p,"window",0,"ui_route");wire(p,"ui_route",0,"dlg");wire(p,"ui_route",1,"defer")
     wire(p,"audioin",0,"audioout",0);wire(p,"audioin",1,"audioout",1)
-    p["dependency_cache"]=[{"name":"mld2_core.js","type":"TEXT","implicit":1},{"name":"mld2_ui.js","type":"TEXT","implicit":1},{"name":"mld2_led.js","type":"TEXT","implicit":1},{"name":"mld2_led_setup.js","type":"TEXT","implicit":1}]
+    p["dependency_cache"]=[{"name":"mld2_core.js","type":"TEXT","implicit":1},{"name":"mld2_ui.js","type":"TEXT","implicit":1},{"name":"mld2_led.js","type":"TEXT","implicit":1},{"name":"mld2_led_setup.js","type":"TEXT","implicit":1},{"name":"mld2_actions.js","type":"TEXT","implicit":1}]
     return {"patcher":p}
 
 def chunk(tag,data):return tag+struct.pack("<I",len(data))+data

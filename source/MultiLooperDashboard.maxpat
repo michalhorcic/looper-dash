@@ -29,7 +29,7 @@
             650,
             25
           ],
-          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.12.1 beta",
+          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.13 beta",
           "fontsize": 18.0,
           "presentation": 1,
           "presentation_rect": [
@@ -190,7 +190,7 @@
             800,
             38
           ],
-          "text": "Transport reference. Live API read only. Optional LED test.",
+          "text": "Transport reference. Optional Stop-hold Clear in LED SETUP.",
           "presentation": 1,
           "presentation_rect": [
             12,
@@ -1555,8 +1555,11 @@
                   "text": "js mld2_led_setup.js",
                   "varname": "ledSetupEngine",
                   "numinlets": 1,
-                  "numoutlets": 4,
+                  "numoutlets": 7,
                   "outlettype": [
+                    "",
+                    "",
+                    "",
                     "",
                     "",
                     "",
@@ -1613,7 +1616,7 @@
                       160,
                       100,
                       1080,
-                      640
+                      720
                     ],
                     "openinpresentation": 1,
                     "default_fontname": "Arial",
@@ -1939,7 +1942,7 @@
                           "maxclass": "comment",
                           "patching_rect": [
                             12,
-                            80,
+                            112,
                             1056,
                             28
                           ],
@@ -1949,7 +1952,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             12,
-                            80,
+                            112,
                             1056,
                             28
                           ]
@@ -1961,7 +1964,7 @@
                           "maxclass": "comment",
                           "patching_rect": [
                             12,
-                            110,
+                            186,
                             260,
                             20
                           ],
@@ -1970,7 +1973,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             12,
-                            110,
+                            186,
                             260,
                             20
                           ]
@@ -1982,7 +1985,7 @@
                           "maxclass": "comment",
                           "patching_rect": [
                             278,
-                            110,
+                            186,
                             48,
                             20
                           ],
@@ -1991,7 +1994,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             278,
-                            110,
+                            186,
                             48,
                             20
                           ]
@@ -2003,7 +2006,7 @@
                           "maxclass": "comment",
                           "patching_rect": [
                             338,
-                            110,
+                            186,
                             48,
                             20
                           ],
@@ -2012,7 +2015,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             338,
-                            110,
+                            186,
                             48,
                             20
                           ]
@@ -2024,7 +2027,7 @@
                           "maxclass": "comment",
                           "patching_rect": [
                             398,
-                            110,
+                            186,
                             48,
                             20
                           ],
@@ -2033,7 +2036,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             398,
-                            110,
+                            186,
                             48,
                             20
                           ]
@@ -2045,7 +2048,7 @@
                           "maxclass": "comment",
                           "patching_rect": [
                             458,
-                            110,
+                            186,
                             48,
                             20
                           ],
@@ -2054,7 +2057,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             458,
-                            110,
+                            186,
                             48,
                             20
                           ]
@@ -2066,7 +2069,7 @@
                           "maxclass": "comment",
                           "patching_rect": [
                             520,
-                            110,
+                            186,
                             64,
                             20
                           ],
@@ -2075,7 +2078,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             520,
-                            110,
+                            186,
                             64,
                             20
                           ]
@@ -2087,7 +2090,7 @@
                           "maxclass": "comment",
                           "patching_rect": [
                             814,
-                            110,
+                            186,
                             250,
                             20
                           ],
@@ -2096,7 +2099,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             814,
-                            110,
+                            186,
                             250,
                             20
                           ]
@@ -2108,7 +2111,7 @@
                           "maxclass": "comment",
                           "patching_rect": [
                             12,
-                            136,
+                            212,
                             260,
                             42
                           ],
@@ -2118,7 +2121,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             12,
-                            136,
+                            212,
                             260,
                             42
                           ]
@@ -2130,7 +2133,7 @@
                           "maxclass": "comment",
                           "patching_rect": [
                             814,
-                            136,
+                            212,
                             250,
                             42
                           ],
@@ -2140,7 +2143,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             814,
-                            136,
+                            212,
                             250,
                             42
                           ]
@@ -2152,7 +2155,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             278,
-                            136,
+                            212,
                             48,
                             26
                           ],
@@ -2168,7 +2171,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             278,
-                            136,
+                            212,
                             48,
                             26
                           ]
@@ -2193,7 +2196,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             338,
-                            136,
+                            212,
                             48,
                             26
                           ],
@@ -2209,7 +2212,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             338,
-                            136,
+                            212,
                             48,
                             26
                           ]
@@ -2234,7 +2237,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             398,
-                            136,
+                            212,
                             48,
                             26
                           ],
@@ -2250,7 +2253,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             398,
-                            136,
+                            212,
                             48,
                             26
                           ]
@@ -2275,7 +2278,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             458,
-                            136,
+                            212,
                             48,
                             26
                           ],
@@ -2291,7 +2294,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             458,
-                            136,
+                            212,
                             48,
                             26
                           ]
@@ -2316,7 +2319,7 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             520,
-                            136,
+                            212,
                             64,
                             26
                           ],
@@ -2334,7 +2337,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             520,
-                            136,
+                            212,
                             64,
                             26
                           ]
@@ -2359,7 +2362,7 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             596,
-                            136,
+                            212,
                             64,
                             26
                           ],
@@ -2377,7 +2380,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             596,
-                            136,
+                            212,
                             64,
                             26
                           ]
@@ -2402,7 +2405,7 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             666,
-                            136,
+                            212,
                             64,
                             26
                           ],
@@ -2420,7 +2423,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             666,
-                            136,
+                            212,
                             64,
                             26
                           ]
@@ -2445,12 +2448,12 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             738,
-                            136,
+                            212,
                             64,
                             26
                           ],
-                          "text": "CLEAR",
-                          "texton": "CLEAR",
+                          "text": "RESET",
+                          "texton": "RESET",
                           "mode": 0,
                           "varname": "row0_forget",
                           "parameter_enable": 0,
@@ -2463,7 +2466,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             738,
-                            136,
+                            212,
                             64,
                             26
                           ]
@@ -2484,11 +2487,350 @@
                       },
                       {
                         "box": {
+                          "id": "row0_stoplabel",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            12,
+                            252,
+                            260,
+                            38
+                          ],
+                          "text": "STOP / HOLD CLEAR (same CH)",
+                          "varname": "row0_stoplabel",
+                          "fontsize": 11.0,
+                          "presentation": 1,
+                          "presentation_rect": [
+                            12,
+                            252,
+                            260,
+                            38
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopstatus",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            814,
+                            252,
+                            250,
+                            42
+                          ],
+                          "text": "",
+                          "varname": "row0_stopstatus",
+                          "fontsize": 11.0,
+                          "presentation": 1,
+                          "presentation_rect": [
+                            814,
+                            252,
+                            250,
+                            42
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopcc",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            338,
+                            252,
+                            48,
+                            26
+                          ],
+                          "varname": "row0_stopcc",
+                          "minimum": -1,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            338,
+                            252,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopccmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            338,
+                            1400,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 0 cc"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopon",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            398,
+                            252,
+                            48,
+                            26
+                          ],
+                          "varname": "row0_stopon",
+                          "minimum": 0,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            398,
+                            252,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stoponmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            398,
+                            1400,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 0 on"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopoff",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            458,
+                            252,
+                            48,
+                            26
+                          ],
+                          "varname": "row0_stopoff",
+                          "minimum": 0,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            458,
+                            252,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopoffmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            458,
+                            1400,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 0 off"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopenabled",
+                          "maxclass": "textbutton",
+                          "patching_rect": [
+                            520,
+                            252,
+                            64,
+                            26
+                          ],
+                          "text": "OFF",
+                          "texton": "ON",
+                          "mode": 1,
+                          "varname": "row0_stopenabled",
+                          "parameter_enable": 0,
+                          "numoutlets": 3,
+                          "outlettype": [
+                            "int",
+                            "",
+                            "int"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            520,
+                            252,
+                            64,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopenabledmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            520,
+                            1440,
+                            220,
+                            22
+                          ],
+                          "text": "prepend stopedit 0 enabled"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopteston",
+                          "maxclass": "textbutton",
+                          "patching_rect": [
+                            596,
+                            252,
+                            64,
+                            26
+                          ],
+                          "text": "TEST ON",
+                          "texton": "TEST ON",
+                          "mode": 0,
+                          "varname": "row0_stopteston",
+                          "parameter_enable": 0,
+                          "numoutlets": 3,
+                          "outlettype": [
+                            "bang",
+                            "",
+                            "int"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            596,
+                            252,
+                            64,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stoptestonmsg",
+                          "maxclass": "message",
+                          "patching_rect": [
+                            596,
+                            1440,
+                            220,
+                            22
+                          ],
+                          "text": "test 0 1 stop"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stoptestoff",
+                          "maxclass": "textbutton",
+                          "patching_rect": [
+                            666,
+                            252,
+                            64,
+                            26
+                          ],
+                          "text": "OFF",
+                          "texton": "OFF",
+                          "mode": 0,
+                          "varname": "row0_stoptestoff",
+                          "parameter_enable": 0,
+                          "numoutlets": 3,
+                          "outlettype": [
+                            "bang",
+                            "",
+                            "int"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            666,
+                            252,
+                            64,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stoptestoffmsg",
+                          "maxclass": "message",
+                          "patching_rect": [
+                            666,
+                            1440,
+                            220,
+                            22
+                          ],
+                          "text": "test 0 0 stop"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopclear",
+                          "maxclass": "textbutton",
+                          "patching_rect": [
+                            738,
+                            252,
+                            74,
+                            26
+                          ],
+                          "text": "HOLD OFF",
+                          "texton": "HOLD ON",
+                          "mode": 1,
+                          "varname": "row0_stopclear",
+                          "parameter_enable": 0,
+                          "numoutlets": 3,
+                          "outlettype": [
+                            "int",
+                            "",
+                            "int"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            738,
+                            252,
+                            74,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopclearmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            738,
+                            1440,
+                            220,
+                            22
+                          ],
+                          "text": "prepend stopedit 0 clear"
+                        }
+                      },
+                      {
+                        "box": {
                           "id": "row1_label",
                           "maxclass": "comment",
                           "patching_rect": [
                             12,
-                            190,
+                            316,
                             260,
                             42
                           ],
@@ -2498,7 +2840,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             12,
-                            190,
+                            316,
                             260,
                             42
                           ]
@@ -2510,7 +2852,7 @@
                           "maxclass": "comment",
                           "patching_rect": [
                             814,
-                            190,
+                            316,
                             250,
                             42
                           ],
@@ -2520,7 +2862,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             814,
-                            190,
+                            316,
                             250,
                             42
                           ]
@@ -2532,7 +2874,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             278,
-                            190,
+                            316,
                             48,
                             26
                           ],
@@ -2548,7 +2890,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             278,
-                            190,
+                            316,
                             48,
                             26
                           ]
@@ -2573,7 +2915,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             338,
-                            190,
+                            316,
                             48,
                             26
                           ],
@@ -2589,7 +2931,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             338,
-                            190,
+                            316,
                             48,
                             26
                           ]
@@ -2614,7 +2956,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             398,
-                            190,
+                            316,
                             48,
                             26
                           ],
@@ -2630,7 +2972,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             398,
-                            190,
+                            316,
                             48,
                             26
                           ]
@@ -2655,7 +2997,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             458,
-                            190,
+                            316,
                             48,
                             26
                           ],
@@ -2671,7 +3013,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             458,
-                            190,
+                            316,
                             48,
                             26
                           ]
@@ -2696,7 +3038,7 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             520,
-                            190,
+                            316,
                             64,
                             26
                           ],
@@ -2714,7 +3056,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             520,
-                            190,
+                            316,
                             64,
                             26
                           ]
@@ -2739,7 +3081,7 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             596,
-                            190,
+                            316,
                             64,
                             26
                           ],
@@ -2757,7 +3099,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             596,
-                            190,
+                            316,
                             64,
                             26
                           ]
@@ -2782,7 +3124,7 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             666,
-                            190,
+                            316,
                             64,
                             26
                           ],
@@ -2800,7 +3142,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             666,
-                            190,
+                            316,
                             64,
                             26
                           ]
@@ -2825,12 +3167,12 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             738,
-                            190,
+                            316,
                             64,
                             26
                           ],
-                          "text": "CLEAR",
-                          "texton": "CLEAR",
+                          "text": "RESET",
+                          "texton": "RESET",
                           "mode": 0,
                           "varname": "row1_forget",
                           "parameter_enable": 0,
@@ -2843,7 +3185,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             738,
-                            190,
+                            316,
                             64,
                             26
                           ]
@@ -2864,11 +3206,350 @@
                       },
                       {
                         "box": {
+                          "id": "row1_stoplabel",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            12,
+                            356,
+                            260,
+                            38
+                          ],
+                          "text": "STOP / HOLD CLEAR (same CH)",
+                          "varname": "row1_stoplabel",
+                          "fontsize": 11.0,
+                          "presentation": 1,
+                          "presentation_rect": [
+                            12,
+                            356,
+                            260,
+                            38
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopstatus",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            814,
+                            356,
+                            250,
+                            42
+                          ],
+                          "text": "",
+                          "varname": "row1_stopstatus",
+                          "fontsize": 11.0,
+                          "presentation": 1,
+                          "presentation_rect": [
+                            814,
+                            356,
+                            250,
+                            42
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopcc",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            338,
+                            356,
+                            48,
+                            26
+                          ],
+                          "varname": "row1_stopcc",
+                          "minimum": -1,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            338,
+                            356,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopccmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            338,
+                            1460,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 1 cc"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopon",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            398,
+                            356,
+                            48,
+                            26
+                          ],
+                          "varname": "row1_stopon",
+                          "minimum": 0,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            398,
+                            356,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stoponmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            398,
+                            1460,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 1 on"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopoff",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            458,
+                            356,
+                            48,
+                            26
+                          ],
+                          "varname": "row1_stopoff",
+                          "minimum": 0,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            458,
+                            356,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopoffmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            458,
+                            1460,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 1 off"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopenabled",
+                          "maxclass": "textbutton",
+                          "patching_rect": [
+                            520,
+                            356,
+                            64,
+                            26
+                          ],
+                          "text": "OFF",
+                          "texton": "ON",
+                          "mode": 1,
+                          "varname": "row1_stopenabled",
+                          "parameter_enable": 0,
+                          "numoutlets": 3,
+                          "outlettype": [
+                            "int",
+                            "",
+                            "int"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            520,
+                            356,
+                            64,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopenabledmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            520,
+                            1500,
+                            220,
+                            22
+                          ],
+                          "text": "prepend stopedit 1 enabled"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopteston",
+                          "maxclass": "textbutton",
+                          "patching_rect": [
+                            596,
+                            356,
+                            64,
+                            26
+                          ],
+                          "text": "TEST ON",
+                          "texton": "TEST ON",
+                          "mode": 0,
+                          "varname": "row1_stopteston",
+                          "parameter_enable": 0,
+                          "numoutlets": 3,
+                          "outlettype": [
+                            "bang",
+                            "",
+                            "int"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            596,
+                            356,
+                            64,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stoptestonmsg",
+                          "maxclass": "message",
+                          "patching_rect": [
+                            596,
+                            1500,
+                            220,
+                            22
+                          ],
+                          "text": "test 1 1 stop"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stoptestoff",
+                          "maxclass": "textbutton",
+                          "patching_rect": [
+                            666,
+                            356,
+                            64,
+                            26
+                          ],
+                          "text": "OFF",
+                          "texton": "OFF",
+                          "mode": 0,
+                          "varname": "row1_stoptestoff",
+                          "parameter_enable": 0,
+                          "numoutlets": 3,
+                          "outlettype": [
+                            "bang",
+                            "",
+                            "int"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            666,
+                            356,
+                            64,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stoptestoffmsg",
+                          "maxclass": "message",
+                          "patching_rect": [
+                            666,
+                            1500,
+                            220,
+                            22
+                          ],
+                          "text": "test 1 0 stop"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopclear",
+                          "maxclass": "textbutton",
+                          "patching_rect": [
+                            738,
+                            356,
+                            74,
+                            26
+                          ],
+                          "text": "HOLD OFF",
+                          "texton": "HOLD ON",
+                          "mode": 1,
+                          "varname": "row1_stopclear",
+                          "parameter_enable": 0,
+                          "numoutlets": 3,
+                          "outlettype": [
+                            "int",
+                            "",
+                            "int"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            738,
+                            356,
+                            74,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopclearmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            738,
+                            1500,
+                            220,
+                            22
+                          ],
+                          "text": "prepend stopedit 1 clear"
+                        }
+                      },
+                      {
+                        "box": {
                           "id": "row2_label",
                           "maxclass": "comment",
                           "patching_rect": [
                             12,
-                            244,
+                            420,
                             260,
                             42
                           ],
@@ -2878,7 +3559,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             12,
-                            244,
+                            420,
                             260,
                             42
                           ]
@@ -2890,7 +3571,7 @@
                           "maxclass": "comment",
                           "patching_rect": [
                             814,
-                            244,
+                            420,
                             250,
                             42
                           ],
@@ -2900,7 +3581,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             814,
-                            244,
+                            420,
                             250,
                             42
                           ]
@@ -2912,7 +3593,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             278,
-                            244,
+                            420,
                             48,
                             26
                           ],
@@ -2928,7 +3609,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             278,
-                            244,
+                            420,
                             48,
                             26
                           ]
@@ -2953,7 +3634,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             338,
-                            244,
+                            420,
                             48,
                             26
                           ],
@@ -2969,7 +3650,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             338,
-                            244,
+                            420,
                             48,
                             26
                           ]
@@ -2994,7 +3675,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             398,
-                            244,
+                            420,
                             48,
                             26
                           ],
@@ -3010,7 +3691,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             398,
-                            244,
+                            420,
                             48,
                             26
                           ]
@@ -3035,7 +3716,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             458,
-                            244,
+                            420,
                             48,
                             26
                           ],
@@ -3051,7 +3732,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             458,
-                            244,
+                            420,
                             48,
                             26
                           ]
@@ -3076,7 +3757,7 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             520,
-                            244,
+                            420,
                             64,
                             26
                           ],
@@ -3094,7 +3775,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             520,
-                            244,
+                            420,
                             64,
                             26
                           ]
@@ -3119,7 +3800,7 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             596,
-                            244,
+                            420,
                             64,
                             26
                           ],
@@ -3137,7 +3818,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             596,
-                            244,
+                            420,
                             64,
                             26
                           ]
@@ -3162,7 +3843,7 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             666,
-                            244,
+                            420,
                             64,
                             26
                           ],
@@ -3180,7 +3861,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             666,
-                            244,
+                            420,
                             64,
                             26
                           ]
@@ -3205,12 +3886,12 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             738,
-                            244,
+                            420,
                             64,
                             26
                           ],
-                          "text": "CLEAR",
-                          "texton": "CLEAR",
+                          "text": "RESET",
+                          "texton": "RESET",
                           "mode": 0,
                           "varname": "row2_forget",
                           "parameter_enable": 0,
@@ -3223,7 +3904,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             738,
-                            244,
+                            420,
                             64,
                             26
                           ]
@@ -3244,11 +3925,350 @@
                       },
                       {
                         "box": {
+                          "id": "row2_stoplabel",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            12,
+                            460,
+                            260,
+                            38
+                          ],
+                          "text": "STOP / HOLD CLEAR (same CH)",
+                          "varname": "row2_stoplabel",
+                          "fontsize": 11.0,
+                          "presentation": 1,
+                          "presentation_rect": [
+                            12,
+                            460,
+                            260,
+                            38
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopstatus",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            814,
+                            460,
+                            250,
+                            42
+                          ],
+                          "text": "",
+                          "varname": "row2_stopstatus",
+                          "fontsize": 11.0,
+                          "presentation": 1,
+                          "presentation_rect": [
+                            814,
+                            460,
+                            250,
+                            42
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopcc",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            338,
+                            460,
+                            48,
+                            26
+                          ],
+                          "varname": "row2_stopcc",
+                          "minimum": -1,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            338,
+                            460,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopccmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            338,
+                            1520,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 2 cc"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopon",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            398,
+                            460,
+                            48,
+                            26
+                          ],
+                          "varname": "row2_stopon",
+                          "minimum": 0,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            398,
+                            460,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stoponmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            398,
+                            1520,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 2 on"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopoff",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            458,
+                            460,
+                            48,
+                            26
+                          ],
+                          "varname": "row2_stopoff",
+                          "minimum": 0,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            458,
+                            460,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopoffmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            458,
+                            1520,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 2 off"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopenabled",
+                          "maxclass": "textbutton",
+                          "patching_rect": [
+                            520,
+                            460,
+                            64,
+                            26
+                          ],
+                          "text": "OFF",
+                          "texton": "ON",
+                          "mode": 1,
+                          "varname": "row2_stopenabled",
+                          "parameter_enable": 0,
+                          "numoutlets": 3,
+                          "outlettype": [
+                            "int",
+                            "",
+                            "int"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            520,
+                            460,
+                            64,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopenabledmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            520,
+                            1560,
+                            220,
+                            22
+                          ],
+                          "text": "prepend stopedit 2 enabled"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopteston",
+                          "maxclass": "textbutton",
+                          "patching_rect": [
+                            596,
+                            460,
+                            64,
+                            26
+                          ],
+                          "text": "TEST ON",
+                          "texton": "TEST ON",
+                          "mode": 0,
+                          "varname": "row2_stopteston",
+                          "parameter_enable": 0,
+                          "numoutlets": 3,
+                          "outlettype": [
+                            "bang",
+                            "",
+                            "int"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            596,
+                            460,
+                            64,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stoptestonmsg",
+                          "maxclass": "message",
+                          "patching_rect": [
+                            596,
+                            1560,
+                            220,
+                            22
+                          ],
+                          "text": "test 2 1 stop"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stoptestoff",
+                          "maxclass": "textbutton",
+                          "patching_rect": [
+                            666,
+                            460,
+                            64,
+                            26
+                          ],
+                          "text": "OFF",
+                          "texton": "OFF",
+                          "mode": 0,
+                          "varname": "row2_stoptestoff",
+                          "parameter_enable": 0,
+                          "numoutlets": 3,
+                          "outlettype": [
+                            "bang",
+                            "",
+                            "int"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            666,
+                            460,
+                            64,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stoptestoffmsg",
+                          "maxclass": "message",
+                          "patching_rect": [
+                            666,
+                            1560,
+                            220,
+                            22
+                          ],
+                          "text": "test 2 0 stop"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopclear",
+                          "maxclass": "textbutton",
+                          "patching_rect": [
+                            738,
+                            460,
+                            74,
+                            26
+                          ],
+                          "text": "HOLD OFF",
+                          "texton": "HOLD ON",
+                          "mode": 1,
+                          "varname": "row2_stopclear",
+                          "parameter_enable": 0,
+                          "numoutlets": 3,
+                          "outlettype": [
+                            "int",
+                            "",
+                            "int"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            738,
+                            460,
+                            74,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopclearmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            738,
+                            1560,
+                            220,
+                            22
+                          ],
+                          "text": "prepend stopedit 2 clear"
+                        }
+                      },
+                      {
+                        "box": {
                           "id": "row3_label",
                           "maxclass": "comment",
                           "patching_rect": [
                             12,
-                            298,
+                            524,
                             260,
                             42
                           ],
@@ -3258,7 +4278,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             12,
-                            298,
+                            524,
                             260,
                             42
                           ]
@@ -3270,7 +4290,7 @@
                           "maxclass": "comment",
                           "patching_rect": [
                             814,
-                            298,
+                            524,
                             250,
                             42
                           ],
@@ -3280,7 +4300,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             814,
-                            298,
+                            524,
                             250,
                             42
                           ]
@@ -3292,7 +4312,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             278,
-                            298,
+                            524,
                             48,
                             26
                           ],
@@ -3308,7 +4328,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             278,
-                            298,
+                            524,
                             48,
                             26
                           ]
@@ -3333,7 +4353,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             338,
-                            298,
+                            524,
                             48,
                             26
                           ],
@@ -3349,7 +4369,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             338,
-                            298,
+                            524,
                             48,
                             26
                           ]
@@ -3374,7 +4394,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             398,
-                            298,
+                            524,
                             48,
                             26
                           ],
@@ -3390,7 +4410,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             398,
-                            298,
+                            524,
                             48,
                             26
                           ]
@@ -3415,7 +4435,7 @@
                           "maxclass": "number",
                           "patching_rect": [
                             458,
-                            298,
+                            524,
                             48,
                             26
                           ],
@@ -3431,7 +4451,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             458,
-                            298,
+                            524,
                             48,
                             26
                           ]
@@ -3456,7 +4476,7 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             520,
-                            298,
+                            524,
                             64,
                             26
                           ],
@@ -3474,7 +4494,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             520,
-                            298,
+                            524,
                             64,
                             26
                           ]
@@ -3499,7 +4519,7 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             596,
-                            298,
+                            524,
                             64,
                             26
                           ],
@@ -3517,7 +4537,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             596,
-                            298,
+                            524,
                             64,
                             26
                           ]
@@ -3542,7 +4562,7 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             666,
-                            298,
+                            524,
                             64,
                             26
                           ],
@@ -3560,7 +4580,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             666,
-                            298,
+                            524,
                             64,
                             26
                           ]
@@ -3585,12 +4605,12 @@
                           "maxclass": "textbutton",
                           "patching_rect": [
                             738,
-                            298,
+                            524,
                             64,
                             26
                           ],
-                          "text": "CLEAR",
-                          "texton": "CLEAR",
+                          "text": "RESET",
+                          "texton": "RESET",
                           "mode": 0,
                           "varname": "row3_forget",
                           "parameter_enable": 0,
@@ -3603,7 +4623,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             738,
-                            298,
+                            524,
                             64,
                             26
                           ]
@@ -3624,43 +4644,43 @@
                       },
                       {
                         "box": {
-                          "id": "row4_label",
+                          "id": "row3_stoplabel",
                           "maxclass": "comment",
                           "patching_rect": [
                             12,
-                            352,
+                            564,
                             260,
-                            42
+                            38
                           ],
-                          "text": "",
-                          "varname": "row4_label",
-                          "fontsize": 12.0,
+                          "text": "STOP / HOLD CLEAR (same CH)",
+                          "varname": "row3_stoplabel",
+                          "fontsize": 11.0,
                           "presentation": 1,
                           "presentation_rect": [
                             12,
-                            352,
+                            564,
                             260,
-                            42
+                            38
                           ]
                         }
                       },
                       {
                         "box": {
-                          "id": "row4_status",
+                          "id": "row3_stopstatus",
                           "maxclass": "comment",
                           "patching_rect": [
                             814,
-                            352,
+                            564,
                             250,
                             42
                           ],
                           "text": "",
-                          "varname": "row4_status",
-                          "fontsize": 12.0,
+                          "varname": "row3_stopstatus",
+                          "fontsize": 11.0,
                           "presentation": 1,
                           "presentation_rect": [
                             814,
-                            352,
+                            564,
                             250,
                             42
                           ]
@@ -3668,56 +4688,15 @@
                       },
                       {
                         "box": {
-                          "id": "row4_channel",
-                          "maxclass": "number",
-                          "patching_rect": [
-                            278,
-                            352,
-                            48,
-                            26
-                          ],
-                          "varname": "row4_channel",
-                          "minimum": 1,
-                          "maximum": 16,
-                          "parameter_enable": 0,
-                          "numoutlets": 2,
-                          "outlettype": [
-                            "int",
-                            "bang"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            278,
-                            352,
-                            48,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row4_channelmsg",
-                          "maxclass": "newobj",
-                          "patching_rect": [
-                            278,
-                            1090,
-                            200,
-                            22
-                          ],
-                          "text": "prepend rowedit 4 channel"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row4_cc",
+                          "id": "row3_stopcc",
                           "maxclass": "number",
                           "patching_rect": [
                             338,
-                            352,
+                            564,
                             48,
                             26
                           ],
-                          "varname": "row4_cc",
+                          "varname": "row3_stopcc",
                           "minimum": -1,
                           "maximum": 127,
                           "parameter_enable": 0,
@@ -3729,7 +4708,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             338,
-                            352,
+                            564,
                             48,
                             26
                           ]
@@ -3737,28 +4716,28 @@
                       },
                       {
                         "box": {
-                          "id": "row4_ccmsg",
+                          "id": "row3_stopccmsg",
                           "maxclass": "newobj",
                           "patching_rect": [
                             338,
-                            1090,
+                            1580,
                             200,
                             22
                           ],
-                          "text": "prepend rowedit 4 cc"
+                          "text": "prepend stopedit 3 cc"
                         }
                       },
                       {
                         "box": {
-                          "id": "row4_on",
+                          "id": "row3_stopon",
                           "maxclass": "number",
                           "patching_rect": [
                             398,
-                            352,
+                            564,
                             48,
                             26
                           ],
-                          "varname": "row4_on",
+                          "varname": "row3_stopon",
                           "minimum": 0,
                           "maximum": 127,
                           "parameter_enable": 0,
@@ -3770,7 +4749,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             398,
-                            352,
+                            564,
                             48,
                             26
                           ]
@@ -3778,28 +4757,28 @@
                       },
                       {
                         "box": {
-                          "id": "row4_onmsg",
+                          "id": "row3_stoponmsg",
                           "maxclass": "newobj",
                           "patching_rect": [
                             398,
-                            1090,
+                            1580,
                             200,
                             22
                           ],
-                          "text": "prepend rowedit 4 on"
+                          "text": "prepend stopedit 3 on"
                         }
                       },
                       {
                         "box": {
-                          "id": "row4_off",
+                          "id": "row3_stopoff",
                           "maxclass": "number",
                           "patching_rect": [
                             458,
-                            352,
+                            564,
                             48,
                             26
                           ],
-                          "varname": "row4_off",
+                          "varname": "row3_stopoff",
                           "minimum": 0,
                           "maximum": 127,
                           "parameter_enable": 0,
@@ -3811,7 +4790,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             458,
-                            352,
+                            564,
                             48,
                             26
                           ]
@@ -3819,31 +4798,31 @@
                       },
                       {
                         "box": {
-                          "id": "row4_offmsg",
+                          "id": "row3_stopoffmsg",
                           "maxclass": "newobj",
                           "patching_rect": [
                             458,
-                            1090,
+                            1580,
                             200,
                             22
                           ],
-                          "text": "prepend rowedit 4 off"
+                          "text": "prepend stopedit 3 off"
                         }
                       },
                       {
                         "box": {
-                          "id": "row4_enabled",
+                          "id": "row3_stopenabled",
                           "maxclass": "textbutton",
                           "patching_rect": [
                             520,
-                            352,
+                            564,
                             64,
                             26
                           ],
                           "text": "OFF",
                           "texton": "ON",
                           "mode": 1,
-                          "varname": "row4_enabled",
+                          "varname": "row3_stopenabled",
                           "parameter_enable": 0,
                           "numoutlets": 3,
                           "outlettype": [
@@ -3854,7 +4833,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             520,
-                            352,
+                            564,
                             64,
                             26
                           ]
@@ -3862,31 +4841,31 @@
                       },
                       {
                         "box": {
-                          "id": "row4_enabledmsg",
+                          "id": "row3_stopenabledmsg",
                           "maxclass": "newobj",
                           "patching_rect": [
                             520,
-                            1120,
-                            200,
+                            1620,
+                            220,
                             22
                           ],
-                          "text": "prepend rowedit 4 enabled"
+                          "text": "prepend stopedit 3 enabled"
                         }
                       },
                       {
                         "box": {
-                          "id": "row4_teston",
+                          "id": "row3_stopteston",
                           "maxclass": "textbutton",
                           "patching_rect": [
                             596,
-                            352,
+                            564,
                             64,
                             26
                           ],
                           "text": "TEST ON",
                           "texton": "TEST ON",
                           "mode": 0,
-                          "varname": "row4_teston",
+                          "varname": "row3_stopteston",
                           "parameter_enable": 0,
                           "numoutlets": 3,
                           "outlettype": [
@@ -3897,7 +4876,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             596,
-                            352,
+                            564,
                             64,
                             26
                           ]
@@ -3905,31 +4884,31 @@
                       },
                       {
                         "box": {
-                          "id": "row4_testonmsg",
+                          "id": "row3_stoptestonmsg",
                           "maxclass": "message",
                           "patching_rect": [
                             596,
-                            1120,
-                            200,
+                            1620,
+                            220,
                             22
                           ],
-                          "text": "test 4 1"
+                          "text": "test 3 1 stop"
                         }
                       },
                       {
                         "box": {
-                          "id": "row4_testoff",
+                          "id": "row3_stoptestoff",
                           "maxclass": "textbutton",
                           "patching_rect": [
                             666,
-                            352,
+                            564,
                             64,
                             26
                           ],
                           "text": "OFF",
                           "texton": "OFF",
                           "mode": 0,
-                          "varname": "row4_testoff",
+                          "varname": "row3_stoptestoff",
                           "parameter_enable": 0,
                           "numoutlets": 3,
                           "outlettype": [
@@ -3940,7 +4919,7 @@
                           "presentation": 1,
                           "presentation_rect": [
                             666,
-                            352,
+                            564,
                             64,
                             26
                           ]
@@ -3948,282 +4927,31 @@
                       },
                       {
                         "box": {
-                          "id": "row4_testoffmsg",
+                          "id": "row3_stoptestoffmsg",
                           "maxclass": "message",
                           "patching_rect": [
                             666,
-                            1120,
-                            200,
+                            1620,
+                            220,
                             22
                           ],
-                          "text": "test 4 0"
+                          "text": "test 3 0 stop"
                         }
                       },
                       {
                         "box": {
-                          "id": "row4_forget",
+                          "id": "row3_stopclear",
                           "maxclass": "textbutton",
                           "patching_rect": [
                             738,
-                            352,
-                            64,
+                            564,
+                            74,
                             26
                           ],
-                          "text": "CLEAR",
-                          "texton": "CLEAR",
-                          "mode": 0,
-                          "varname": "row4_forget",
-                          "parameter_enable": 0,
-                          "numoutlets": 3,
-                          "outlettype": [
-                            "bang",
-                            "",
-                            "int"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            738,
-                            352,
-                            64,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row4_forgetmsg",
-                          "maxclass": "message",
-                          "patching_rect": [
-                            738,
-                            1120,
-                            200,
-                            22
-                          ],
-                          "text": "forget 4"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_label",
-                          "maxclass": "comment",
-                          "patching_rect": [
-                            12,
-                            406,
-                            260,
-                            42
-                          ],
-                          "text": "",
-                          "varname": "row5_label",
-                          "fontsize": 12.0,
-                          "presentation": 1,
-                          "presentation_rect": [
-                            12,
-                            406,
-                            260,
-                            42
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_status",
-                          "maxclass": "comment",
-                          "patching_rect": [
-                            814,
-                            406,
-                            250,
-                            42
-                          ],
-                          "text": "",
-                          "varname": "row5_status",
-                          "fontsize": 12.0,
-                          "presentation": 1,
-                          "presentation_rect": [
-                            814,
-                            406,
-                            250,
-                            42
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_channel",
-                          "maxclass": "number",
-                          "patching_rect": [
-                            278,
-                            406,
-                            48,
-                            26
-                          ],
-                          "varname": "row5_channel",
-                          "minimum": 1,
-                          "maximum": 16,
-                          "parameter_enable": 0,
-                          "numoutlets": 2,
-                          "outlettype": [
-                            "int",
-                            "bang"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            278,
-                            406,
-                            48,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_channelmsg",
-                          "maxclass": "newobj",
-                          "patching_rect": [
-                            278,
-                            1150,
-                            200,
-                            22
-                          ],
-                          "text": "prepend rowedit 5 channel"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_cc",
-                          "maxclass": "number",
-                          "patching_rect": [
-                            338,
-                            406,
-                            48,
-                            26
-                          ],
-                          "varname": "row5_cc",
-                          "minimum": -1,
-                          "maximum": 127,
-                          "parameter_enable": 0,
-                          "numoutlets": 2,
-                          "outlettype": [
-                            "int",
-                            "bang"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            338,
-                            406,
-                            48,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_ccmsg",
-                          "maxclass": "newobj",
-                          "patching_rect": [
-                            338,
-                            1150,
-                            200,
-                            22
-                          ],
-                          "text": "prepend rowedit 5 cc"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_on",
-                          "maxclass": "number",
-                          "patching_rect": [
-                            398,
-                            406,
-                            48,
-                            26
-                          ],
-                          "varname": "row5_on",
-                          "minimum": 0,
-                          "maximum": 127,
-                          "parameter_enable": 0,
-                          "numoutlets": 2,
-                          "outlettype": [
-                            "int",
-                            "bang"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            398,
-                            406,
-                            48,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_onmsg",
-                          "maxclass": "newobj",
-                          "patching_rect": [
-                            398,
-                            1150,
-                            200,
-                            22
-                          ],
-                          "text": "prepend rowedit 5 on"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_off",
-                          "maxclass": "number",
-                          "patching_rect": [
-                            458,
-                            406,
-                            48,
-                            26
-                          ],
-                          "varname": "row5_off",
-                          "minimum": 0,
-                          "maximum": 127,
-                          "parameter_enable": 0,
-                          "numoutlets": 2,
-                          "outlettype": [
-                            "int",
-                            "bang"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            458,
-                            406,
-                            48,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_offmsg",
-                          "maxclass": "newobj",
-                          "patching_rect": [
-                            458,
-                            1150,
-                            200,
-                            22
-                          ],
-                          "text": "prepend rowedit 5 off"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_enabled",
-                          "maxclass": "textbutton",
-                          "patching_rect": [
-                            520,
-                            406,
-                            64,
-                            26
-                          ],
-                          "text": "OFF",
-                          "texton": "ON",
+                          "text": "HOLD OFF",
+                          "texton": "HOLD ON",
                           "mode": 1,
-                          "varname": "row5_enabled",
+                          "varname": "row3_stopclear",
                           "parameter_enable": 0,
                           "numoutlets": 3,
                           "outlettype": [
@@ -4233,913 +4961,166 @@
                           ],
                           "presentation": 1,
                           "presentation_rect": [
-                            520,
-                            406,
-                            64,
+                            738,
+                            564,
+                            74,
                             26
                           ]
                         }
                       },
                       {
                         "box": {
-                          "id": "row5_enabledmsg",
+                          "id": "row3_stopclearmsg",
                           "maxclass": "newobj",
                           "patching_rect": [
-                            520,
-                            1180,
-                            200,
-                            22
-                          ],
-                          "text": "prepend rowedit 5 enabled"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_teston",
-                          "maxclass": "textbutton",
-                          "patching_rect": [
-                            596,
-                            406,
-                            64,
-                            26
-                          ],
-                          "text": "TEST ON",
-                          "texton": "TEST ON",
-                          "mode": 0,
-                          "varname": "row5_teston",
-                          "parameter_enable": 0,
-                          "numoutlets": 3,
-                          "outlettype": [
-                            "bang",
-                            "",
-                            "int"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            596,
-                            406,
-                            64,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_testonmsg",
-                          "maxclass": "message",
-                          "patching_rect": [
-                            596,
-                            1180,
-                            200,
-                            22
-                          ],
-                          "text": "test 5 1"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_testoff",
-                          "maxclass": "textbutton",
-                          "patching_rect": [
-                            666,
-                            406,
-                            64,
-                            26
-                          ],
-                          "text": "OFF",
-                          "texton": "OFF",
-                          "mode": 0,
-                          "varname": "row5_testoff",
-                          "parameter_enable": 0,
-                          "numoutlets": 3,
-                          "outlettype": [
-                            "bang",
-                            "",
-                            "int"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            666,
-                            406,
-                            64,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_testoffmsg",
-                          "maxclass": "message",
-                          "patching_rect": [
-                            666,
-                            1180,
-                            200,
-                            22
-                          ],
-                          "text": "test 5 0"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_forget",
-                          "maxclass": "textbutton",
-                          "patching_rect": [
                             738,
-                            406,
-                            64,
-                            26
-                          ],
-                          "text": "CLEAR",
-                          "texton": "CLEAR",
-                          "mode": 0,
-                          "varname": "row5_forget",
-                          "parameter_enable": 0,
-                          "numoutlets": 3,
-                          "outlettype": [
-                            "bang",
-                            "",
-                            "int"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            738,
-                            406,
-                            64,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row5_forgetmsg",
-                          "maxclass": "message",
-                          "patching_rect": [
-                            738,
-                            1180,
-                            200,
+                            1620,
+                            220,
                             22
                           ],
-                          "text": "forget 5"
+                          "text": "prepend stopedit 3 clear"
                         }
                       },
                       {
                         "box": {
-                          "id": "row6_label",
-                          "maxclass": "comment",
+                          "id": "setupInput",
+                          "maxclass": "umenu",
                           "patching_rect": [
                             12,
-                            460,
-                            260,
-                            42
+                            80,
+                            330,
+                            24
                           ],
-                          "text": "",
-                          "varname": "row6_label",
-                          "fontsize": 12.0,
+                          "items": [
+                            "Select LCXL3 MIDI Out input"
+                          ],
+                          "varname": "setupInput",
+                          "parameter_enable": 0,
                           "presentation": 1,
                           "presentation_rect": [
                             12,
-                            460,
-                            260,
-                            42
+                            80,
+                            330,
+                            24
                           ]
                         }
                       },
                       {
                         "box": {
-                          "id": "row6_status",
+                          "id": "inputmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            12,
+                            1750,
+                            150,
+                            22
+                          ],
+                          "text": "prepend choose_input"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "holdlabel",
                           "maxclass": "comment",
                           "patching_rect": [
-                            814,
-                            460,
-                            250,
-                            42
-                          ],
-                          "text": "",
-                          "varname": "row6_status",
-                          "fontsize": 12.0,
-                          "presentation": 1,
-                          "presentation_rect": [
-                            814,
-                            460,
-                            250,
-                            42
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row6_channel",
-                          "maxclass": "number",
-                          "patching_rect": [
-                            278,
-                            460,
-                            48,
-                            26
-                          ],
-                          "varname": "row6_channel",
-                          "minimum": 1,
-                          "maximum": 16,
-                          "parameter_enable": 0,
-                          "numoutlets": 2,
-                          "outlettype": [
-                            "int",
-                            "bang"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            278,
-                            460,
-                            48,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row6_channelmsg",
-                          "maxclass": "newobj",
-                          "patching_rect": [
-                            278,
-                            1210,
-                            200,
+                            360,
+                            82,
+                            94,
                             22
                           ],
-                          "text": "prepend rowedit 6 channel"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row6_cc",
-                          "maxclass": "number",
-                          "patching_rect": [
-                            338,
-                            460,
-                            48,
-                            26
-                          ],
-                          "varname": "row6_cc",
-                          "minimum": -1,
-                          "maximum": 127,
-                          "parameter_enable": 0,
-                          "numoutlets": 2,
-                          "outlettype": [
-                            "int",
-                            "bang"
-                          ],
+                          "text": "HOLD seconds",
+                          "fontsize": 11.0,
                           "presentation": 1,
                           "presentation_rect": [
-                            338,
-                            460,
-                            48,
-                            26
+                            360,
+                            82,
+                            94,
+                            22
                           ]
                         }
                       },
                       {
                         "box": {
-                          "id": "row6_ccmsg",
-                          "maxclass": "newobj",
-                          "patching_rect": [
-                            338,
-                            1210,
-                            200,
-                            22
-                          ],
-                          "text": "prepend rowedit 6 cc"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row6_on",
-                          "maxclass": "number",
-                          "patching_rect": [
-                            398,
-                            460,
-                            48,
-                            26
-                          ],
-                          "varname": "row6_on",
-                          "minimum": 0,
-                          "maximum": 127,
-                          "parameter_enable": 0,
-                          "numoutlets": 2,
-                          "outlettype": [
-                            "int",
-                            "bang"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            398,
-                            460,
-                            48,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row6_onmsg",
-                          "maxclass": "newobj",
-                          "patching_rect": [
-                            398,
-                            1210,
-                            200,
-                            22
-                          ],
-                          "text": "prepend rowedit 6 on"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row6_off",
-                          "maxclass": "number",
+                          "id": "holdSeconds",
+                          "maxclass": "flonum",
                           "patching_rect": [
                             458,
-                            460,
-                            48,
-                            26
+                            80,
+                            66,
+                            24
                           ],
-                          "varname": "row6_off",
-                          "minimum": 0,
-                          "maximum": 127,
+                          "minimum": 0.5,
+                          "maximum": 5.0,
+                          "varname": "holdSeconds",
                           "parameter_enable": 0,
                           "numoutlets": 2,
                           "outlettype": [
-                            "int",
+                            "float",
                             "bang"
                           ],
                           "presentation": 1,
                           "presentation_rect": [
                             458,
-                            460,
-                            48,
-                            26
+                            80,
+                            66,
+                            24
                           ]
                         }
                       },
                       {
                         "box": {
-                          "id": "row6_offmsg",
+                          "id": "holdmsg",
                           "maxclass": "newobj",
                           "patching_rect": [
                             458,
-                            1210,
-                            200,
+                            1750,
+                            150,
                             22
                           ],
-                          "text": "prepend rowedit 6 off"
+                          "text": "prepend holdseconds"
                         }
                       },
                       {
                         "box": {
-                          "id": "row6_enabled",
-                          "maxclass": "textbutton",
+                          "id": "holdhint",
+                          "maxclass": "comment",
                           "patching_rect": [
-                            520,
-                            460,
-                            64,
-                            26
+                            540,
+                            80,
+                            528,
+                            24
                           ],
-                          "text": "OFF",
-                          "texton": "ON",
-                          "mode": 1,
-                          "varname": "row6_enabled",
-                          "parameter_enable": 0,
-                          "numoutlets": 3,
-                          "outlettype": [
-                            "int",
-                            "",
-                            "int"
-                          ],
+                          "text": "Stop stays MIDI-mapped in Live. HOLD ON enables Clear while held.",
+                          "fontsize": 11.0,
                           "presentation": 1,
                           "presentation_rect": [
-                            520,
-                            460,
-                            64,
-                            26
+                            540,
+                            80,
+                            528,
+                            24
                           ]
                         }
                       },
                       {
                         "box": {
-                          "id": "row6_enabledmsg",
-                          "maxclass": "newobj",
-                          "patching_rect": [
-                            520,
-                            1240,
-                            200,
-                            22
-                          ],
-                          "text": "prepend rowedit 6 enabled"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row6_teston",
-                          "maxclass": "textbutton",
-                          "patching_rect": [
-                            596,
-                            460,
-                            64,
-                            26
-                          ],
-                          "text": "TEST ON",
-                          "texton": "TEST ON",
-                          "mode": 0,
-                          "varname": "row6_teston",
-                          "parameter_enable": 0,
-                          "numoutlets": 3,
-                          "outlettype": [
-                            "bang",
-                            "",
-                            "int"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            596,
-                            460,
-                            64,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row6_testonmsg",
-                          "maxclass": "message",
-                          "patching_rect": [
-                            596,
-                            1240,
-                            200,
-                            22
-                          ],
-                          "text": "test 6 1"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row6_testoff",
-                          "maxclass": "textbutton",
-                          "patching_rect": [
-                            666,
-                            460,
-                            64,
-                            26
-                          ],
-                          "text": "OFF",
-                          "texton": "OFF",
-                          "mode": 0,
-                          "varname": "row6_testoff",
-                          "parameter_enable": 0,
-                          "numoutlets": 3,
-                          "outlettype": [
-                            "bang",
-                            "",
-                            "int"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            666,
-                            460,
-                            64,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row6_testoffmsg",
-                          "maxclass": "message",
-                          "patching_rect": [
-                            666,
-                            1240,
-                            200,
-                            22
-                          ],
-                          "text": "test 6 0"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row6_forget",
-                          "maxclass": "textbutton",
-                          "patching_rect": [
-                            738,
-                            460,
-                            64,
-                            26
-                          ],
-                          "text": "CLEAR",
-                          "texton": "CLEAR",
-                          "mode": 0,
-                          "varname": "row6_forget",
-                          "parameter_enable": 0,
-                          "numoutlets": 3,
-                          "outlettype": [
-                            "bang",
-                            "",
-                            "int"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            738,
-                            460,
-                            64,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row6_forgetmsg",
-                          "maxclass": "message",
-                          "patching_rect": [
-                            738,
-                            1240,
-                            200,
-                            22
-                          ],
-                          "text": "forget 6"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_label",
+                          "id": "inputStatus",
                           "maxclass": "comment",
                           "patching_rect": [
                             12,
-                            514,
-                            260,
-                            42
+                            142,
+                            1056,
+                            40
                           ],
-                          "text": "",
-                          "varname": "row7_label",
-                          "fontsize": 12.0,
+                          "text": "INPUT NOT ARMED",
+                          "varname": "inputStatus",
+                          "fontsize": 11.0,
                           "presentation": 1,
                           "presentation_rect": [
                             12,
-                            514,
-                            260,
-                            42
+                            142,
+                            1056,
+                            40
                           ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_status",
-                          "maxclass": "comment",
-                          "patching_rect": [
-                            814,
-                            514,
-                            250,
-                            42
-                          ],
-                          "text": "",
-                          "varname": "row7_status",
-                          "fontsize": 12.0,
-                          "presentation": 1,
-                          "presentation_rect": [
-                            814,
-                            514,
-                            250,
-                            42
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_channel",
-                          "maxclass": "number",
-                          "patching_rect": [
-                            278,
-                            514,
-                            48,
-                            26
-                          ],
-                          "varname": "row7_channel",
-                          "minimum": 1,
-                          "maximum": 16,
-                          "parameter_enable": 0,
-                          "numoutlets": 2,
-                          "outlettype": [
-                            "int",
-                            "bang"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            278,
-                            514,
-                            48,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_channelmsg",
-                          "maxclass": "newobj",
-                          "patching_rect": [
-                            278,
-                            1270,
-                            200,
-                            22
-                          ],
-                          "text": "prepend rowedit 7 channel"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_cc",
-                          "maxclass": "number",
-                          "patching_rect": [
-                            338,
-                            514,
-                            48,
-                            26
-                          ],
-                          "varname": "row7_cc",
-                          "minimum": -1,
-                          "maximum": 127,
-                          "parameter_enable": 0,
-                          "numoutlets": 2,
-                          "outlettype": [
-                            "int",
-                            "bang"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            338,
-                            514,
-                            48,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_ccmsg",
-                          "maxclass": "newobj",
-                          "patching_rect": [
-                            338,
-                            1270,
-                            200,
-                            22
-                          ],
-                          "text": "prepend rowedit 7 cc"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_on",
-                          "maxclass": "number",
-                          "patching_rect": [
-                            398,
-                            514,
-                            48,
-                            26
-                          ],
-                          "varname": "row7_on",
-                          "minimum": 0,
-                          "maximum": 127,
-                          "parameter_enable": 0,
-                          "numoutlets": 2,
-                          "outlettype": [
-                            "int",
-                            "bang"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            398,
-                            514,
-                            48,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_onmsg",
-                          "maxclass": "newobj",
-                          "patching_rect": [
-                            398,
-                            1270,
-                            200,
-                            22
-                          ],
-                          "text": "prepend rowedit 7 on"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_off",
-                          "maxclass": "number",
-                          "patching_rect": [
-                            458,
-                            514,
-                            48,
-                            26
-                          ],
-                          "varname": "row7_off",
-                          "minimum": 0,
-                          "maximum": 127,
-                          "parameter_enable": 0,
-                          "numoutlets": 2,
-                          "outlettype": [
-                            "int",
-                            "bang"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            458,
-                            514,
-                            48,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_offmsg",
-                          "maxclass": "newobj",
-                          "patching_rect": [
-                            458,
-                            1270,
-                            200,
-                            22
-                          ],
-                          "text": "prepend rowedit 7 off"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_enabled",
-                          "maxclass": "textbutton",
-                          "patching_rect": [
-                            520,
-                            514,
-                            64,
-                            26
-                          ],
-                          "text": "OFF",
-                          "texton": "ON",
-                          "mode": 1,
-                          "varname": "row7_enabled",
-                          "parameter_enable": 0,
-                          "numoutlets": 3,
-                          "outlettype": [
-                            "int",
-                            "",
-                            "int"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            520,
-                            514,
-                            64,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_enabledmsg",
-                          "maxclass": "newobj",
-                          "patching_rect": [
-                            520,
-                            1300,
-                            200,
-                            22
-                          ],
-                          "text": "prepend rowedit 7 enabled"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_teston",
-                          "maxclass": "textbutton",
-                          "patching_rect": [
-                            596,
-                            514,
-                            64,
-                            26
-                          ],
-                          "text": "TEST ON",
-                          "texton": "TEST ON",
-                          "mode": 0,
-                          "varname": "row7_teston",
-                          "parameter_enable": 0,
-                          "numoutlets": 3,
-                          "outlettype": [
-                            "bang",
-                            "",
-                            "int"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            596,
-                            514,
-                            64,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_testonmsg",
-                          "maxclass": "message",
-                          "patching_rect": [
-                            596,
-                            1300,
-                            200,
-                            22
-                          ],
-                          "text": "test 7 1"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_testoff",
-                          "maxclass": "textbutton",
-                          "patching_rect": [
-                            666,
-                            514,
-                            64,
-                            26
-                          ],
-                          "text": "OFF",
-                          "texton": "OFF",
-                          "mode": 0,
-                          "varname": "row7_testoff",
-                          "parameter_enable": 0,
-                          "numoutlets": 3,
-                          "outlettype": [
-                            "bang",
-                            "",
-                            "int"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            666,
-                            514,
-                            64,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_testoffmsg",
-                          "maxclass": "message",
-                          "patching_rect": [
-                            666,
-                            1300,
-                            200,
-                            22
-                          ],
-                          "text": "test 7 0"
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_forget",
-                          "maxclass": "textbutton",
-                          "patching_rect": [
-                            738,
-                            514,
-                            64,
-                            26
-                          ],
-                          "text": "CLEAR",
-                          "texton": "CLEAR",
-                          "mode": 0,
-                          "varname": "row7_forget",
-                          "parameter_enable": 0,
-                          "numoutlets": 3,
-                          "outlettype": [
-                            "bang",
-                            "",
-                            "int"
-                          ],
-                          "presentation": 1,
-                          "presentation_rect": [
-                            738,
-                            514,
-                            64,
-                            26
-                          ]
-                        }
-                      },
-                      {
-                        "box": {
-                          "id": "row7_forgetmsg",
-                          "maxclass": "message",
-                          "patching_rect": [
-                            738,
-                            1300,
-                            200,
-                            22
-                          ],
-                          "text": "forget 7"
                         }
                       },
                       {
@@ -5148,18 +5129,18 @@
                           "maxclass": "comment",
                           "patching_rect": [
                             12,
-                            580,
+                            630,
                             1056,
-                            48
+                            72
                           ],
-                          "text": "CC -1 = unassigned. Use the channel, CC and On/Off values from Components. Test with SYNC off. STOP = Off, PLAY = On, RECORD = slow blink, OVERDUB = fast blink. SYNC requires one common MIDI channel for all enabled rows (15 for this setup). Missing assignments stay listed; CLEAR removes their settings.",
+                          "text": "CC -1 = unassigned. SYNC uses one channel (15). STOP row: empty buffer = On colour, recorded/unknown = Off. Enable Stop LED and HOLD ON, select MIDI input, then tap/release Stop once to arm. A held Stop clears once at the threshold only if Looper is already stopped. RESET removes mapping, not audio. Test LEDs with SYNC off.",
                           "fontsize": 12.0,
                           "presentation": 1,
                           "presentation_rect": [
                             12,
-                            580,
+                            630,
                             1056,
-                            48
+                            72
                           ]
                         }
                       }
@@ -5528,6 +5509,174 @@
                       {
                         "patchline": {
                           "source": [
+                            "row0_stopcc",
+                            0
+                          ],
+                          "destination": [
+                            "row0_stopccmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stopccmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stopon",
+                            0
+                          ],
+                          "destination": [
+                            "row0_stoponmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stoponmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stopoff",
+                            0
+                          ],
+                          "destination": [
+                            "row0_stopoffmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stopoffmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stopenabled",
+                            0
+                          ],
+                          "destination": [
+                            "row0_stopenabledmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stopenabledmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stopteston",
+                            0
+                          ],
+                          "destination": [
+                            "row0_stoptestonmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stoptestonmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stoptestoff",
+                            0
+                          ],
+                          "destination": [
+                            "row0_stoptestoffmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stoptestoffmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stopclear",
+                            0
+                          ],
+                          "destination": [
+                            "row0_stopclearmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stopclearmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
                             "row1_channel",
                             0
                           ],
@@ -5709,6 +5858,174 @@
                         "patchline": {
                           "source": [
                             "row1_forgetmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stopcc",
+                            0
+                          ],
+                          "destination": [
+                            "row1_stopccmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stopccmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stopon",
+                            0
+                          ],
+                          "destination": [
+                            "row1_stoponmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stoponmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stopoff",
+                            0
+                          ],
+                          "destination": [
+                            "row1_stopoffmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stopoffmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stopenabled",
+                            0
+                          ],
+                          "destination": [
+                            "row1_stopenabledmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stopenabledmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stopteston",
+                            0
+                          ],
+                          "destination": [
+                            "row1_stoptestonmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stoptestonmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stoptestoff",
+                            0
+                          ],
+                          "destination": [
+                            "row1_stoptestoffmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stoptestoffmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stopclear",
+                            0
+                          ],
+                          "destination": [
+                            "row1_stopclearmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stopclearmsg",
                             0
                           ],
                           "destination": [
@@ -5912,6 +6229,174 @@
                       {
                         "patchline": {
                           "source": [
+                            "row2_stopcc",
+                            0
+                          ],
+                          "destination": [
+                            "row2_stopccmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stopccmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stopon",
+                            0
+                          ],
+                          "destination": [
+                            "row2_stoponmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stoponmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stopoff",
+                            0
+                          ],
+                          "destination": [
+                            "row2_stopoffmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stopoffmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stopenabled",
+                            0
+                          ],
+                          "destination": [
+                            "row2_stopenabledmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stopenabledmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stopteston",
+                            0
+                          ],
+                          "destination": [
+                            "row2_stoptestonmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stoptestonmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stoptestoff",
+                            0
+                          ],
+                          "destination": [
+                            "row2_stoptestoffmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stoptestoffmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stopclear",
+                            0
+                          ],
+                          "destination": [
+                            "row2_stopclearmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stopclearmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
                             "row3_channel",
                             0
                           ],
@@ -6104,11 +6589,11 @@
                       {
                         "patchline": {
                           "source": [
-                            "row4_channel",
+                            "row3_stopcc",
                             0
                           ],
                           "destination": [
-                            "row4_channelmsg",
+                            "row3_stopccmsg",
                             0
                           ]
                         }
@@ -6116,31 +6601,7 @@
                       {
                         "patchline": {
                           "source": [
-                            "row4_channelmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row4_cc",
-                            0
-                          ],
-                          "destination": [
-                            "row4_ccmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row4_ccmsg",
+                            "row3_stopccmsg",
                             0
                           ],
                           "destination": [
@@ -6152,11 +6613,11 @@
                       {
                         "patchline": {
                           "source": [
-                            "row4_on",
+                            "row3_stopon",
                             0
                           ],
                           "destination": [
-                            "row4_onmsg",
+                            "row3_stoponmsg",
                             0
                           ]
                         }
@@ -6164,31 +6625,7 @@
                       {
                         "patchline": {
                           "source": [
-                            "row4_onmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row4_off",
-                            0
-                          ],
-                          "destination": [
-                            "row4_offmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row4_offmsg",
+                            "row3_stoponmsg",
                             0
                           ],
                           "destination": [
@@ -6200,11 +6637,11 @@
                       {
                         "patchline": {
                           "source": [
-                            "row4_enabled",
+                            "row3_stopoff",
                             0
                           ],
                           "destination": [
-                            "row4_enabledmsg",
+                            "row3_stopoffmsg",
                             0
                           ]
                         }
@@ -6212,31 +6649,7 @@
                       {
                         "patchline": {
                           "source": [
-                            "row4_enabledmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row4_teston",
-                            0
-                          ],
-                          "destination": [
-                            "row4_testonmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row4_testonmsg",
+                            "row3_stopoffmsg",
                             0
                           ],
                           "destination": [
@@ -6248,11 +6661,11 @@
                       {
                         "patchline": {
                           "source": [
-                            "row4_testoff",
+                            "row3_stopenabled",
                             0
                           ],
                           "destination": [
-                            "row4_testoffmsg",
+                            "row3_stopenabledmsg",
                             0
                           ]
                         }
@@ -6260,31 +6673,7 @@
                       {
                         "patchline": {
                           "source": [
-                            "row4_testoffmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row4_forget",
-                            0
-                          ],
-                          "destination": [
-                            "row4_forgetmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row4_forgetmsg",
+                            "row3_stopenabledmsg",
                             0
                           ],
                           "destination": [
@@ -6296,11 +6685,11 @@
                       {
                         "patchline": {
                           "source": [
-                            "row5_channel",
+                            "row3_stopteston",
                             0
                           ],
                           "destination": [
-                            "row5_channelmsg",
+                            "row3_stoptestonmsg",
                             0
                           ]
                         }
@@ -6308,31 +6697,7 @@
                       {
                         "patchline": {
                           "source": [
-                            "row5_channelmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row5_cc",
-                            0
-                          ],
-                          "destination": [
-                            "row5_ccmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row5_ccmsg",
+                            "row3_stoptestonmsg",
                             0
                           ],
                           "destination": [
@@ -6344,11 +6709,11 @@
                       {
                         "patchline": {
                           "source": [
-                            "row5_on",
+                            "row3_stoptestoff",
                             0
                           ],
                           "destination": [
-                            "row5_onmsg",
+                            "row3_stoptestoffmsg",
                             0
                           ]
                         }
@@ -6356,31 +6721,7 @@
                       {
                         "patchline": {
                           "source": [
-                            "row5_onmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row5_off",
-                            0
-                          ],
-                          "destination": [
-                            "row5_offmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row5_offmsg",
+                            "row3_stoptestoffmsg",
                             0
                           ],
                           "destination": [
@@ -6392,11 +6733,11 @@
                       {
                         "patchline": {
                           "source": [
-                            "row5_enabled",
+                            "row3_stopclear",
                             0
                           ],
                           "destination": [
-                            "row5_enabledmsg",
+                            "row3_stopclearmsg",
                             0
                           ]
                         }
@@ -6404,31 +6745,7 @@
                       {
                         "patchline": {
                           "source": [
-                            "row5_enabledmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row5_teston",
-                            0
-                          ],
-                          "destination": [
-                            "row5_testonmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row5_testonmsg",
+                            "row3_stopclearmsg",
                             0
                           ],
                           "destination": [
@@ -6440,11 +6757,11 @@
                       {
                         "patchline": {
                           "source": [
-                            "row5_testoff",
+                            "setupInput",
                             0
                           ],
                           "destination": [
-                            "row5_testoffmsg",
+                            "inputmsg",
                             0
                           ]
                         }
@@ -6452,31 +6769,7 @@
                       {
                         "patchline": {
                           "source": [
-                            "row5_testoffmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row5_forget",
-                            0
-                          ],
-                          "destination": [
-                            "row5_forgetmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row5_forgetmsg",
+                            "inputmsg",
                             0
                           ],
                           "destination": [
@@ -6488,11 +6781,11 @@
                       {
                         "patchline": {
                           "source": [
-                            "row6_channel",
+                            "holdSeconds",
                             0
                           ],
                           "destination": [
-                            "row6_channelmsg",
+                            "holdmsg",
                             0
                           ]
                         }
@@ -6500,367 +6793,7 @@
                       {
                         "patchline": {
                           "source": [
-                            "row6_channelmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row6_cc",
-                            0
-                          ],
-                          "destination": [
-                            "row6_ccmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row6_ccmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row6_on",
-                            0
-                          ],
-                          "destination": [
-                            "row6_onmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row6_onmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row6_off",
-                            0
-                          ],
-                          "destination": [
-                            "row6_offmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row6_offmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row6_enabled",
-                            0
-                          ],
-                          "destination": [
-                            "row6_enabledmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row6_enabledmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row6_teston",
-                            0
-                          ],
-                          "destination": [
-                            "row6_testonmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row6_testonmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row6_testoff",
-                            0
-                          ],
-                          "destination": [
-                            "row6_testoffmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row6_testoffmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row6_forget",
-                            0
-                          ],
-                          "destination": [
-                            "row6_forgetmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row6_forgetmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_channel",
-                            0
-                          ],
-                          "destination": [
-                            "row7_channelmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_channelmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_cc",
-                            0
-                          ],
-                          "destination": [
-                            "row7_ccmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_ccmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_on",
-                            0
-                          ],
-                          "destination": [
-                            "row7_onmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_onmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_off",
-                            0
-                          ],
-                          "destination": [
-                            "row7_offmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_offmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_enabled",
-                            0
-                          ],
-                          "destination": [
-                            "row7_enabledmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_enabledmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_teston",
-                            0
-                          ],
-                          "destination": [
-                            "row7_testonmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_testonmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_testoff",
-                            0
-                          ],
-                          "destination": [
-                            "row7_testoffmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_testoffmsg",
-                            0
-                          ],
-                          "destination": [
-                            "out",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_forget",
-                            0
-                          ],
-                          "destination": [
-                            "row7_forgetmsg",
-                            0
-                          ]
-                        }
-                      },
-                      {
-                        "patchline": {
-                          "source": [
-                            "row7_forgetmsg",
+                            "holdmsg",
                             0
                           ],
                           "destination": [
@@ -6967,6 +6900,156 @@
                     22
                   ],
                   "text": "pcontrol"
+                }
+              },
+              {
+                "box": {
+                  "id": "inputrouting",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1280,
+                    650,
+                    90,
+                    22
+                  ],
+                  "text": "live.routing",
+                  "numinlets": 1,
+                  "numoutlets": 5
+                }
+              },
+              {
+                "box": {
+                  "id": "inputinit",
+                  "maxclass": "message",
+                  "patching_rect": [
+                    1280,
+                    690,
+                    150,
+                    22
+                  ],
+                  "text": "port midi_inputs"
+                }
+              },
+              {
+                "box": {
+                  "id": "inputdefer",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1280,
+                    730,
+                    70,
+                    22
+                  ],
+                  "text": "deferlow"
+                }
+              },
+              {
+                "box": {
+                  "id": "inputmeta0",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1280,
+                    780,
+                    160,
+                    22
+                  ],
+                  "text": "prepend inputtype"
+                }
+              },
+              {
+                "box": {
+                  "id": "inputmeta1",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1280,
+                    815,
+                    160,
+                    22
+                  ],
+                  "text": "prepend inputchannel"
+                }
+              },
+              {
+                "box": {
+                  "id": "inputmeta2",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1280,
+                    850,
+                    160,
+                    22
+                  ],
+                  "text": "prepend inputtypes"
+                }
+              },
+              {
+                "box": {
+                  "id": "inputmeta3",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1280,
+                    885,
+                    160,
+                    22
+                  ],
+                  "text": "prepend inputchannels"
+                }
+              },
+              {
+                "box": {
+                  "id": "stopinput",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1280,
+                    960,
+                    65,
+                    22
+                  ],
+                  "text": "midiin"
+                }
+              },
+              {
+                "box": {
+                  "id": "stopbytes",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1280,
+                    1000,
+                    150,
+                    22
+                  ],
+                  "text": "prepend midi_byte"
+                }
+              },
+              {
+                "box": {
+                  "id": "actions",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1280,
+                    1060,
+                    150,
+                    22
+                  ],
+                  "text": "js mld2_actions.js",
+                  "numinlets": 1,
+                  "numoutlets": 1,
+                  "outlettype": [
+                    ""
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "actiondefer",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1280,
+                    1100,
+                    70,
+                    22
+                  ],
+                  "text": "deferlow"
                 }
               }
             ],
@@ -7344,7 +7427,8 @@
                   "destination": [
                     "led",
                     0
-                  ]
+                  ],
+                  "order": 1
                 }
               },
               {
@@ -7656,7 +7740,8 @@
                   "destination": [
                     "setup",
                     0
-                  ]
+                  ],
+                  "order": 2
                 }
               },
               {
@@ -7841,6 +7926,235 @@
                     0
                   ],
                   "order": 1
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "commands",
+                    1
+                  ],
+                  "destination": [
+                    "inputinit",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "inputinit",
+                    0
+                  ],
+                  "destination": [
+                    "inputdefer",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "inputdefer",
+                    0
+                  ],
+                  "destination": [
+                    "inputrouting",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "setup",
+                    4
+                  ],
+                  "destination": [
+                    "inputrouting",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "inputrouting",
+                    0
+                  ],
+                  "destination": [
+                    "inputmeta0",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "inputmeta0",
+                    0
+                  ],
+                  "destination": [
+                    "setup",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "inputrouting",
+                    1
+                  ],
+                  "destination": [
+                    "inputmeta1",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "inputmeta1",
+                    0
+                  ],
+                  "destination": [
+                    "setup",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "inputrouting",
+                    2
+                  ],
+                  "destination": [
+                    "inputmeta2",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "inputmeta2",
+                    0
+                  ],
+                  "destination": [
+                    "setup",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "inputrouting",
+                    3
+                  ],
+                  "destination": [
+                    "inputmeta3",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "inputmeta3",
+                    0
+                  ],
+                  "destination": [
+                    "setup",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "stopinput",
+                    0
+                  ],
+                  "destination": [
+                    "stopbytes",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "stopbytes",
+                    0
+                  ],
+                  "destination": [
+                    "setup",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "setup",
+                    5
+                  ],
+                  "destination": [
+                    "actions",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "setup",
+                    6
+                  ],
+                  "destination": [
+                    "actiondefer",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "actiondefer",
+                    0
+                  ],
+                  "destination": [
+                    "actions",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "actions",
+                    0
+                  ],
+                  "destination": [
+                    "setup",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "commands",
+                    3
+                  ],
+                  "destination": [
+                    "actions",
+                    0
+                  ],
+                  "order": 0
                 }
               }
             ]
@@ -8266,7 +8580,7 @@
     ],
     "devicewidth": 580.0,
     "amxdtype": 1633771873,
-    "description": "Read-only Live monitoring with optional experimental LCXL3 LED feedback.",
+    "description": "Live monitoring, LCXL3 LED feedback and optional Stop-hold Clear.",
     "dependency_cache": [
       {
         "name": "mld2_core.js",
@@ -8285,6 +8599,11 @@
       },
       {
         "name": "mld2_led_setup.js",
+        "type": "TEXT",
+        "implicit": 1
+      },
+      {
+        "name": "mld2_actions.js",
         "type": "TEXT",
         "implicit": 1
       }

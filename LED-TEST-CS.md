@@ -1,4 +1,4 @@
-# LCXL3 — Custom CC ON/OFF test (0.12.1 beta)
+# LCXL3 — Custom CC ON/OFF test (0.13 beta)
 
 Cíl: přepnout dvě barvy prvního tlačítka horní řady pod fadery v **Custom Mode 2**, při zachování mapování **channel 15 / CC37 / momentary**. FOLLOW A nově sleduje jediný Looper na stopě **Looper A**.
 
@@ -6,7 +6,7 @@ Původní test zůstává zachovaný. Pro více Looperů použij [LED SETUP](LED
 
 ## Postup
 
-1. Nahraď předchozí instanci novým **MultiLooperDashboard.amxd 0.12.1 beta**. Všechny čtyři JS soubory musí zůstat vedle `.amxd`; samotná výměna JS nestačí.
+1. Nahraď předchozí instanci novým **MultiLooperDashboard.amxd 0.13 beta**. Všech pět JS souborů musí zůstat vedle `.amxd`; samotná výměna JS nestačí.
 2. LCXL3 nech v **Custom Mode 2**. Původní mapování a nastavení Control Surface ponech.
 3. Otevři **LED TEST**. Vypni **LED OUTPUT** i **FOLLOW A**.
 4. V nabídce protokolu vyber **Custom CC15/37 - ON/OFF**.
@@ -55,4 +55,4 @@ Zdroj: [diskuse Launchcontrol XL3 customization, odpovědi TomFocusrite](https:/
 - Uživatel nezaznamenal změnu LED ani při RGB SysEx experimentu v Custom Mode.
 - Starší protokoly zůstávají v nabídce pro srovnání. Palette používá DAW In / kanál 1; RGB používá DAW In nebo MIDI In / kanál 1 a je ruční. Jejich WHITE/GREEN/RED/ORANGE tlačítka v novém Custom CC protokolu nevysílají.
 
-Zařízení nepřijímá MIDI, nezapisuje Live API, nemění mapování ani neposílá změnu režimu nebo konfigurace kontroleru. Launchpad X není součástí řešení.
+Tento původní LED TEST nepřijímá MIDI ani nezapisuje Live API. Nový LED SETUP má samostatně povolovaný Stop-hold Clear a MIDI vstup. Mapování ani režim kontroleru se nemění. Launchpad X není součástí řešení.

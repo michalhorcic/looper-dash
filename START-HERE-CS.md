@@ -1,12 +1,24 @@
-# Multi Looper Dashboard 0.12.1 beta
+# Multi Looper Dashboard 0.13 beta
 
 ## Spuštění — bez úprav v Maxu
 
-1. **Rozbal celý ZIP do stálé složky na Macu.** Nech `MultiLooperDashboard.amxd`, `mld2_core.js`, `mld2_ui.js`, `mld2_led.js` a `mld2_led_setup.js` vedle sebe.
+1. **Rozbal celý ZIP do stálé složky na Macu.** Nech `MultiLooperDashboard.amxd`, `mld2_core.js`, `mld2_ui.js`, `mld2_led.js`, `mld2_led_setup.js` a `mld2_actions.js` vedle sebe.
 2. V Live 12 Suite přetáhni **`MultiLooperDashboard.amxd` na libovolnou audio stopu**, například novou prázdnou stopu Dashboard.
 3. Na zařízení klikni **OPEN DASHBOARD**. Monitor si Loopery najde sám. Není potřeba přejmenovávat stopy, otevírat editor ani měnit MIDI nastavení.
 
 Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.9 zatím nebyly přímo v Live ověřeny.
+
+## Co je nové v 0.13
+
+- Každý Looper má v LED SETUP druhý řádek **STOP / HOLD CLEAR** s nastavením CC, On/Off, zapnutím Stop LED, ručním testem a přepínačem **HOLD ON/OFF**.
+- Pro stopy přesně pojmenované Looper A/B/C se předvyplní Stop CC **45/46/47**. Zapnutí Stop LED a Hold Clear je zpočátku vypnuté. Kanál je společný s hlavním tlačítkem; u tebe 15. On/Off je výchozí 127/0.
+- Stop LED: potvrzený prázdný buffer = **On barva**, existující smyčka = **Off barva**. Neznámá délka bufferu = Off a text BUFFER UNKNOWN; STOP samo neznamená prázdnou smyčku.
+- Nový MIDI vstup se vybírá samostatně: **LCXL3 1 (MIDI Out)**. Výstup dál používá **LCXL3 1 (MIDI In)**. Oba vybírají konkrétní kanál 15.
+- Držení Stop **1,5 sekundy** vyvolá jednou Clear, ještě během držení, pokud je cílový Looper potvrzený jako zastavený. Délku lze změnit nahoře v HOLD seconds. Po zapnutí/změně konfigurace nejprve Stop krátce stiskni a uvolni.
+- Krátký Stop stále obsluhuje tvoje MIDI mapování v Live. Dashboard neposílá druhý Stop; nově ovládá pouze explicitně povolený Clear. Rec/Play/Overdub mapování zůstává stejné.
+- Okno má čtyři Loopery na stránku, aby se oba řádky vešly. Původní CLEAR pro odstranění přiřazení se nyní jmenuje **RESET**; audio nemaže.
+- Konfigurace starší verze se převede a nový Hold zůstane vypnutý. Nové nastavení včetně vstupu, délky držení a Stop CC se ukládá do Setu.
+- Vedle `.amxd` musí zůstat **všech pět JS souborů**, včetně nového `mld2_actions.js`. Postup: [LED-SETUP-CS.md](LED-SETUP-CS.md).
 
 ## Oprava 0.12.1
 
@@ -17,14 +29,14 @@ Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včet
 
 ## Co je nové v 0.12
 
-- **LED SETUP** má řádek pro každý detekovaný Looper, společný výstup LCXL3 MIDI In a nastavení **CH / CC / ON / OFF / ENABLE / TEST**. Po osmi řádcích se stránkuje PREV/NEXT; sledování běží i na ostatních stránkách.
+- **LED SETUP** má řádek pro každý detekovaný Looper, společný výstup LCXL3 MIDI In a nastavení **CH / CC / ON / OFF / ENABLE / TEST**. Po čtyřech řádcích se stránkuje PREV/NEXT; sledování běží i na ostatních stránkách.
 - Nové Loopery zůstávají nenastavené a vypnuté. Pro Looper A zadej dosud ověřené **15 / 37 / 127 / 0**. Ostatní nastavení převezmi z Components.
 - **SYNC** sleduje všechny zapnuté řádky: STOP Off, PLAY On, RECORD pomalé blikání (1 Hz), OVERDUB rychlé (4 Hz). Hodnoty a barvy dál odpovídají Components.
 - Konfigurace včetně výstupu, zapnutí řádků a SYNC se ukládá do Live Setu. Zapnutý uložený SYNC se obnoví po potvrzení správného směrování. Nové zařízení začíná vypnuté.
-- Stejné kanál/CC u zapnutých přiřazení jsou blokované jako CONFLICT. Chybějící řádky se uchovávají; obnovení se váže na přesný, jedinečný název stopy. Přejmenovanou stopu nastav znovu, starou vymaž CLEAR.
+- Stejné kanál/CC u zapnutých přiřazení jsou blokované jako CONFLICT. Chybějící řádky se uchovávají; obnovení se váže na přesný, jedinečný název stopy. Přejmenovanou stopu nastav znovu, starou vymaž RESET.
 - Společný výstup používá konkrétní kanál podle zapnutých řádků. Všechny zapnuté řádky musí mít stejný kanál; u tebe 15. Nastavení a ukládání ještě potřebují nativní test v Live.
 - Původní **LED TEST** zůstává. Oba způsoby si předávají společný výstup a automaticky se navzájem zastaví při převzetí ovládání.
-- Přibylo `mld2_led_setup.js`: vedle `.amxd` musí být **všechny čtyři JS soubory**. MIDI Learn, dlouhé a dvojité stisky zatím nepřidáváme.
+- Přibylo `mld2_led_setup.js`: vedle `.amxd` musí být **všech pět JS souborů**. MIDI Learn, dlouhé a dvojité stisky zatím nepřidáváme.
 - Postup nového nastavení: [LED-SETUP-CS.md](LED-SETUP-CS.md). Původní test: [LED-TEST-CS.md](LED-TEST-CS.md).
 
 ## Opravy 0.8.1
@@ -84,7 +96,7 @@ Skutečné čekání na nahrávání a čtecí hlava nejsou tímto buildem měř
 
 **Bar / Beat / Next bar** jsou vypočtené z transportu pro pevné 4/4. Next bar odpočítává čtvrťové doby k další hranici jednoho taktu; na hranici ukáže 4. Není to odpočet konkrétního požadavku Record. Při zastavení transportu mřížka stojí, i kdyby Looper hrál samostatně. Pro proměnlivé metrum, posunutý začátek skladby, opačný směr nebo změněnou rychlost Looperu není tato mřížka jeho pozicí.
 
-Zařízení pouze čte Live API. Neobsahuje MIDI příjem, zásahy do mapování LCXL3, ovládání transportu ani zápisy do parametrů Looperu. Volitelný LED modul má samostatný MIDI výstup pro nakonfigurované CC LED LCXL3 a ve výchozím stavu je vypnutý. DAW In slouží pro paletové CC a RGB; MIDI In je povolený pro ruční RGB experiment a Custom CC ON/OFF testy a sledování přiřazených Looperů. Audio na hostitelské stopě prochází stereo beze změny úrovně. Pro běžný dashboard nic nenastavuješ na MIDI portech ani v Custom Mode Launch Controlu. LED test vyžaduje ruční výběr výstupu podle protokolu; postup je v LED-TEST-CS.md.
+Monitor pouze čte Live API a nemění audio ani původní MIDI mapování. Volitelný LED SETUP vysílá zpětnou vazbu a od 0.13 může přijímat MIDI pro Stop-hold Clear. Samostatný akční modul smí po výslovně povoleném dlouhém stisku vyvolat Clear konkrétního zastaveného Looperu. Nepřidává automatický Stop ani ovládání transportu. Původní LED TEST zůstává dostupný. Audio prochází stereo beze změny úrovně. Pro běžný dashboard nic nenastavuješ na MIDI portech ani v Components.
 
 ## Rychlé vyzkoušení
 
@@ -99,12 +111,12 @@ Pokud něco nesedí, klikni **REPORT**, ulož soubor s příponou `.json` a poš
 
 ## Když se něco nenačte
 
-- Zkontroluj, že jsi ZIP rozbalil a všechny čtyři JS soubory jsou vedle `.amxd`. Není potřeba je ručně přidávat do Max search paths.
+- Zkontroluj, že jsi ZIP rozbalil a všech pět JS souborů jsou vedle `.amxd`. Není potřeba je ručně přidávat do Max search paths.
 - Pokud Live zařízení odmítne nebo okno zůstane prázdné, napiš konkrétní chybu. Přes kontextové menu zařízení → **Open Max Window** lze zobrazit Max Console. Výpis chyb je pro opravu užitečnější než opakování celé diagnostiky.
 - Pro zachování závislostí při archivaci Setu můžeš zařízení po ověření otevřít v Maxu a použít Freeze Device; pro první vyzkoušení to není potřeba.
 
 ## Co bylo ověřeno
 
-Skutečný AMXD kontejner (nikoliv přejmenovaný JSON) byl dekódován originálním parserem z Ableton/maxdevtools. Zkontrolovány zdroje, propojení, závislosti, stereo průchod a logika automatického hledání v simulovaných API testech. `.amxd` je nezmražené zařízení se čtyřmi sousedními JS závislostmi. **Parser neověřuje nativní běh Maxu, chování Looperu ani macOS.** To ověří první načtení u tebe.
+Skutečný AMXD kontejner (nikoliv přejmenovaný JSON) byl dekódován originálním parserem z Ableton/maxdevtools. Zkontrolovány zdroje, propojení, závislosti, stereo průchod a logika automatického hledání v simulovaných API testech. `.amxd` je nezmražené zařízení s pěti sousedními JS závislostmi. **Parser neověřuje nativní běh Maxu, chování Looperu ani macOS.** To ověří první načtení u tebe.
 
 Zdroje a sestavovací skript jsou v balíčku kvůli opravám; k běžnému spuštění nepotřebuješ Python, Node ani terminál.

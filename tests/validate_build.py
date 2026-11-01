@@ -20,7 +20,8 @@ def graph(p):
   for key in ('source','destination'):assert edge[key][0] in boxes
  for b in boxes.values():
   if 'patcher' in b:graph(b['patcher'])
-  if b['maxclass']=='newobj':assert b['text'].split()[0] not in {'midiin','ctlin','ctlout','live.remote~'}
+  if b['maxclass']=='newobj':assert b['text'].split()[0] not in {'ctlin','ctlout','live.remote~'}
+  if b['maxclass']=='newobj' and b['text'].split()[0]=='midiin':assert b['id']=='stopinput' and b['text']=='midiin'
   if b['maxclass']=='newobj' and b['text'].split()[0]=='midiout':assert b['id']=='ledout' and b['text']=='midiout'
   if b['maxclass']=='jsui':assert (root/b['filename']).is_file()
 graph(p['patcher'])
@@ -107,9 +108,46 @@ for outlet in range(4):
 setupboxes={b['box']['id']:b['box'] for b in ledboxes['setupwindow']['patcher']['boxes']}
 for b in setupboxes.values():
  if b.get('presentation'):
-  x,y,w,h=b['presentation_rect'];assert x>=0 and y>=0 and x+w<=1080 and y+h<=640
+  x,y,w,h=b['presentation_rect'];assert x>=0 and y>=0 and x+w<=1080 and y+h<=720
 assert 'mld2_led_setup.js' in [d['name'] for d in p['patcher']['dependency_cache']]
 setupsource=(root/'mld2_led_setup.js').read_text()
 assert 'LiveAPI' not in re.sub(r'/\*.*?\*/','',setupsource,flags=re.S)
 assert 'getvalueof' in setupsource and 'setvalueof' in setupsource and 'notifyclients()' in setupsource
 print('PASS multi-Looper setup window, blob persistence, metadata ordering and shared MIDI arbiter')
+
+# Explicitly authorized Stop-hold feature: the core remains read-only; Clear is isolated.
+assert ledboxes['inputrouting']['text']=='live.routing'
+assert ledboxes['inputinit']['text']=='port midi_inputs'
+assert (('setup',4),('inputrouting',0)) in edges
+assert (('stopinput',0),('stopbytes',0)) in edges
+assert ledboxes['stopbytes']['text']=='prepend midi_byte'
+assert (('stopbytes',0),('setup',0)) in edges
+assert (('setup',5),('actions',0)) in edges
+assert (('setup',6),('actiondefer',0)) in edges
+assert ledboxes['actiondefer']['text']=='deferlow'
+assert (('actiondefer',0),('actions',0)) in edges
+assert (('actions',0),('setup',0)) in edges
+assert ledboxes['actions']['text']=='js mld2_actions.js'
+fanout=[l['patchline'] for l in ledpanel['lines'] if l['patchline']['source']==['commands',3]]
+assert {e['destination'][0]:e['order'] for e in fanout}=={'actions':0,'led':1,'setup':2}
+actions=(root/'mld2_actions.js').read_text()
+assert not re.search(r'\.set\s*\(',actions)
+assert sorted(re.findall(r'\.call\s*\(\s*"([^"]+)"',actions))==['clear','str_for_value']
+assert 'mld2_actions.js' in [d['name'] for d in p['patcher']['dependency_cache']]
+for i in range(4):
+ assert setupboxes['row'+str(i)+'_stopcc']['minimum']==-1
+ assert setupboxes['row'+str(i)+'_stopclear']['mode']==1
+ assert setupboxes['row'+str(i)+'_forget']['text']=='RESET'
+print('PASS routed Stop MIDI input, opt-in hold UI, cancellable deferred Clear and read-only core separation')
+setupedges=[(tuple(l['patchline']['source']),tuple(l['patchline']['destination'])) for l in ledboxes['setupwindow']['patcher']['lines']]
+for i in range(4):
+ for control,command in [('stopcc','cc'),('stopon','on'),('stopoff','off'),('stopenabled','enabled'),('stopclear','clear')]:
+  ident='row'+str(i)+'_'+control
+  assert setupboxes[ident+'msg']['text']=='prepend stopedit '+str(i)+' '+command
+  assert ((ident,0),(ident+'msg',0)) in setupedges
+  assert ((ident+'msg',0),('out',0)) in setupedges
+for ident,command in [('setupInput','choose_input'),('holdSeconds','holdseconds')]:
+ msg='inputmsg' if ident=='setupInput' else 'holdmsg'
+ assert setupboxes[msg]['text']=='prepend '+command
+ assert ((ident,0),(msg,0)) in setupedges
+print('PASS Stop field/control wiring uses numeric outlets and non-outputting UI refresh')

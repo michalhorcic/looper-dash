@@ -16,7 +16,7 @@ function setup(){
  class API{
   constructor(cb,p){this.cb=cb;this.o=resolve(p);this._id=this.o?.id||0;}
   get id(){return this._id;}set id(v){this._id=v;}
-  get info(){return Object.keys(this.o.props).map(k=>'property '+k+' float').concat(Object.keys(this.o.children).map(k=>'children '+k+' Device')).join('\n');}
+  get info(){return Object.keys(this.o.props).map(k=>'property '+k+' float').concat(Object.keys(this.o.children).map(k=>'children '+k+' Device'),(this.o.functions||[]).map(k=>'function '+k)).join('\n');}
   get(p){reads.push({id:this.o.id,property:p});return inside(raw(this.o,p));}
   getcount(p){assert.ok(p in this.o.children,p);return this.o.children[p].length;}
   call(f,value){assert.equal(f,'str_for_value','read only');return inside([this.o.props.name==='State'?this.o.props.value_items[value]:/^Send /.test(this.o.props.name)?(value===0?'-inf dB':(-60+value*60).toFixed(1)+' dB'):String(value)]);}
@@ -116,4 +116,12 @@ test('nested Loopers share only one pair of host send observers; dirty snapshots
  c.dirty=true;c.publish();assert.ok(JSON.parse(outputs.at(-1)[2]).rows.every(r=>r.sends.every(s=>!s.available&&s.position===null&&s.display==='')));
 });
 test('deletion cleans all subscriptions and Task',()=>{setup();c.init();flush();const timer=c.timer;c.notifydeleted();assert.ok(timer.cancelled&&timer.freed);assert.equal(c.refs.length,0);});
+test('buffer length is observed independently of State, exported live and absent API stays unknown',()=>{
+ const {song}=setup(),t=track('Looper A'),l=looper();l.props.loop_length=0;l.functions=['clear'];t.children.devices=[l];song.children.tracks=[t];c.init();flush();c.tick();
+ assert.equal(JSON.parse(outputs.at(-1)[2]).rows[0].loop_length,0);assert.equal(JSON.parse(outputs.at(-1)[2]).rows[0].clear_available,true);
+ l.props.loop_length=16;changed(l,'loop_length');c.tick();assert.equal(JSON.parse(outputs.at(-1)[2]).rows[0].loop_length,16);
+ l.props.loop_length=0;changed(l,'loop_length');c.tick();assert.equal(JSON.parse(outputs.at(-1)[2]).rows[0].loop_length,0);
+ delete l.props.loop_length;delete l.functions;c.rescan();flush();c.tick();assert.equal(JSON.parse(outputs.at(-1)[2]).rows[0].loop_length,null);
+ assert.equal(JSON.parse(outputs.at(-1)[2]).rows[0].clear_available,false);
+});
 console.log(passed+' dynamic discovery/read-only mock tests passed; native Live validation still required.');

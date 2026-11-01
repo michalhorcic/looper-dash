@@ -1,4 +1,4 @@
-# Build notes — 0.12.1 beta
+# Build notes — 0.13 beta
 
 Unfrozen Audio Effect AMXD: little-endian chunks `ampf` (payload `aaaa`), `meta` (four zero bytes), `ptch` (UTF-8 patcher JSON + null byte). Adjacent JS dependencies resolve relative to the device directory. No code signing, Node for Max, native externals or manual Max editing is required by this package.
 
@@ -26,10 +26,12 @@ node --check mld2_core.js
 node --check mld2_ui.js
 node --check mld2_led.js
 node --check mld2_led_setup.js
+node --check mld2_actions.js
 node tests/test_core.cjs
 node tests/test_ui.cjs
 node tests/test_led.cjs
 node tests/test_led_setup.cjs
+node tests/test_actions.cjs
 python3 tests/validate_build.py
 ```
 
@@ -130,3 +132,18 @@ Four adjacent JS dependencies are now required. Fifteen new setup tests cover pa
 Setup now resolves the actual numbered routing channel by display name (15, Ch. 15 or Channel 15), then waits for its confirmation, matching the known working single-LED route. SYNC requires one common channel across all complete enabled assignments; mixed channels are explicitly blocked instead of pretending raw status-byte channels survive the Live bus. Manual tests can individually select their row's channel while SYNC is off. The final MIDI gate independently requires the status-byte channel to match the explicitly confirmed bus channel; All Channels is not accepted. No additional MIDI ports or routing APIs are introduced. Existing version-1 assignment blobs remain compatible. Output route retries remain throttled to once per second.
 
 Global status distinguishes unresolved port, pending explicit channel, unavailable numbered channel and mixed-channel configuration. The per-row Looper state remains a monitor, not proof of MIDI delivery. Three additional setup regressions cover numbered-only channels, mixed-channel refusal/recovery and missing numbered channel diagnostics. Total: 18 setup tests plus 20 legacy LED and 15 core tests. The user-confirmed single-channel hardware path is reused; native 0.12.1 setup delivery still needs a hardware retest.
+
+
+0.13 adds opt-in Stop-hold Clear. The original MIDI Stop mapping is retained and no Stop command is emitted by this device. Each assignment gains a Stop CC/On/Off, LED enabled and Hold Clear enabled flag, using the same channel. Exact Looper A/B/C track names prefill CC45/46/47, with both flags off on migration/new assignment. Global hold defaults to 1500ms (500–5000ms configurable), firing once at threshold while down. Native setup now uses four two-row assignments per page in 1080x720. The mapping-removal button is renamed RESET, distinct from audio Clear.
+
+Core adds read-only observation of supported loop_length and publishes validated nonnegative length, Clear API capability and current discovery generation with each row. Buffer 0 means empty only with STOP. Positive length means recorded; first recording at zero or unavailable length is not declared empty. Stop LED uses On for confirmed empty, Off for recorded/recording/unknown. Existing Rec/Play/Overdub feedback is unchanged. Runtime output keys include role, and collisions span both roles across all assignments.
+
+A dedicated live.routing on midi_inputs and single midiin supply raw bytes to the setup engine; input selection is explicitly made in the setup UI, limited to LCXL3 main USB MIDI Out aliases. Output routing remains independently on midi_outputs. Both use a confirmed common numbered channel. The input filter establishes source/channel; raw bytes may retain that channel or be normalized by Live to channel 1. Running status and real-time interleaving are handled; notes, other messages and SysEx are ignored. No received MIDI is forwarded. Input CC count/last value and hold state are visible for native troubleshooting, particularly whether Live forwards CCs consumed by existing Remote mappings.
+
+Gestures require Stop enabled, Hold enabled, SYNC, valid input/output routing, a unique available Looper with Clear capability and a prior Off/release message since arming. Repeated On is ignored. Each hold captures live ID and discovery generation. State must be STOP at threshold; otherwise the attempt is consumed and will not fire later. Stale data (>500ms), input/identity/config changes, SYNC off and legacy takeover cancel held state. Restored configurations never restore held presses. Clear edits and route loss also revoke queued action permits.
+
+New mld2_actions.js isolates the single write (device.call clear) from the read-only core. Threshold detection sends a synchronous permit and a deferred request; cancellation revokes permits before deferred execution. The handler validates matching permit, one-shot token, fresh request (<250ms), fresh snapshot (<500ms), unique matching target ID/generation and native Looper class, active status, Clear capability and a newly read explicit stopped State display. It emits a result to the setup status and never retries a held action or writes parameters. Audio/MIDI mapping/transport remain unchanged. Action requests do not infer global transport or send remote MIDI back into Live.
+
+Persistence migrates v1 blobs to v2, retaining prior play assignments/port/SYNC and defaulting input unset and Stop/Hold off. v2 stores input name, global hold milliseconds and per-assignment Stop fields. Five adjacent JS dependencies are now required. Primary API reference: https://docs.cycling74.com/apiref/lom/looperdevice/ . Native MIDI delivery alongside Remote mappings, simultaneous input/output DeviceIO routing, loop_length/clear capability and actual Clear timing require user testing. User confirmed 0.12.1 setup feedback works.
+
+Validation: 16 core tests, 25 setup/hold tests, 20 legacy LED tests, 6 action tests plus UI and container/graph checks. New coverage includes buffer observation/absence, empty vs stopped LED, exact threshold/release, duplicate CCs across roles, raw parsing, cancellation/identity/staleness, schema migration, guarded action readback and cancelled deferred actions. No physical Clear actions were run during automated tests.

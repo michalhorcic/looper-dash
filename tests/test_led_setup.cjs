@@ -7,7 +7,7 @@ function setup(){out=[];now=10000;tasks=[];notifications=0;
  c=vm.createContext({Task,Date:Clock,outlet(...v){out.push(JSON.parse(JSON.stringify(v)));},notifyclients(){notifications++;},arrayfromargs:v=>Array.from(v)});vm.runInContext(source,c);
 }
 function midi(){return out.filter(x=>x[0]===0).map(x=>x[1]);}
-function row(track,state='PLAY',id=1){return {id,track,name:'Looper',available:true,active:1,state};}
+function row(track,state='PLAY',id=1){return {id,generation:1,track,name:'Looper',available:true,active:1,state,loop_length:8,clear_available:true};}
 function snapshot(rows=[row('Looper A')]){c.snapshot(JSON.stringify({rows}));}
 function route(channel=15){c.routingtypes('<none>','LCXL3 1 (DAW In)','LCXL3 1 (MIDI In)','LCXL3 1 (To DIN Out)');c.routingchannels('All Channels',...Array.from({length:16},(_,i)=>'Ch. '+(i+1)));c.routingtype(2);c.routingchannel(channel);c.choose_port(1);}
 function assign(slot,cc,channel=15){c.rowedit(slot,'channel',channel);c.rowedit(slot,'cc',cc);c.rowedit(slot,'enabled',1);}
@@ -19,10 +19,10 @@ test('new discoveries remain disabled/unassigned; routing is manual and no autom
  c.run(1);now+=100;c.tick();assert.deepEqual(midi(),[]);assert.equal(saved().port,'');
  assert.ok(!out.some(x=>x[0]===2),'no auto destination without a saved/user selection');
 });
-test('all detected tracks paginate; missing assignments survive and CLEAR removes only their settings',()=>{
+test('all detected tracks paginate; missing assignments survive and RESET removes only their settings',()=>{
  snapshot(Array.from({length:11},(_,i)=>row('Track '+i,'PLAY',i+1)));assert.equal(c.items.length,11);
- c.turnpage(1);assign(2,47);assert.equal(saved().assignments[0].track,'Track 10');
- c.turnpage(20);assert.equal(c.page,1);c.turnpage(-20);assert.equal(c.page,0);
+ c.turnpage(2);assign(2,47);assert.equal(saved().assignments[0].track,'Track 10');
+ c.turnpage(20);assert.equal(c.page,2);c.turnpage(-20);assert.equal(c.page,0);
  snapshot([row('Track 0')]);assert.equal(c.items.length,2);assert.match(c.rowStatus('Track 10'),/MISSING/);
  c.forget(1);assert.equal(c.items.length,1);assert.equal(saved().assignments.length,0);
  assign(0,37);c.forget(0);assert.equal(c.items.length,1);assert.match(c.rowStatus('Track 0'),/UNASSIGNED/);
@@ -133,7 +133,7 @@ test('native setup graph edits and tests the visible row; parameter blob is boun
  function click(id,value){const e=panel.lines.find(x=>x.patchline.source[0]===id).patchline;assert.equal(e.source[1],0);const box=panelBoxes[e.destination[0]],args=box.text.replace(/^prepend /,'').split(' ');const command=args.shift();c[command](...args.map(x=>isNaN(Number(x))?x:Number(x)),...(box.maxclass==='newobj'?[value]:[]));}
  route();snapshot([row('A'),row('B','PLAY',2)]);click('row1_cc',41);click('row1_channel',16);click('row1_enabled',1);click('row1_teston');c.routingchannel(16);assert.deepEqual(midi().at(-1),[191,41,127]);
  click('setupRun',1);assert.equal(c.config.run,true);click('setupRun',0);assert.equal(c.config.run,false);
- for(const b of Object.values(panelBoxes))if(b.presentation){const [x,y,w,h]=b.presentation_rect;assert.ok(x>=0&&y>=0&&x+w<=1080&&y+h<=640);}
+ for(const b of Object.values(panelBoxes))if(b.presentation){const [x,y,w,h]=b.presentation_rect;assert.ok(x>=0&&y>=0&&x+w<=1080&&y+h<=720);}
 });
 test('shared MIDI arbiter requires matching explicit channel and stops setup on legacy takeover',()=>{
  const hw=[],oldOut=[],old=vm.createContext({Task:c.Task,Date:c.Date,arrayfromargs:v=>Array.from(v),outlet(...v){oldOut.push(v);if(v[0]===0)hw.push(JSON.parse(JSON.stringify(v[1])));if(v[0]===6)c.suspend();}});
@@ -149,4 +149,53 @@ test('shared MIDI arbiter requires matching explicit channel and stops setup on 
  old.routingtype('LCXL3 1 (MIDI In)');old.routingchannel('15');for(const p of [[175,37,1],[192,37,1],[190,128,1],[190,37,-1],[190,37,1.5]])old.setup_midi(...p);assert.equal(hw.length,count,'only valid CC bytes pass');
  old.routingchannel('All Channels');old.setup_midi(191,127,127);assert.equal(hw.length,count,'All Channels remains blocked');old.routingchannel('Channel 16');old.setup_midi(191,127,127);assert.deepEqual(hw.at(-1),[191,127,127]);
 });
-console.log(passed+' multi-Looper LED setup tests passed; native Live persistence/routing still needs verification.');
+
+function inputroute(){c.inputtypes('<none>','LCXL3 1 (MIDI Out)','LCXL3 1 (DAW Out)');c.inputchannels(...Array.from({length:16},(_,i)=>String(i+1)));c.inputtype(1);c.inputchannel(14);c.choose_input(1);}
+function cc(number,value,channel=15){for(const v of [175+channel,number,value])c.midi_byte(v);}
+function clearRequests(){return out.filter(x=>x[0]===6&&x[1]==='request').map(x=>JSON.parse(x[2]));}
+function stopSetup(){route();snapshot([row('Looper A','STOP')]);assign(0,37);c.stopedit(0,'enabled',1);c.stopedit(0,'clear',1);inputroute();c.run(1);cc(45,0);out=[];}
+function stopped(){snapshot([row('Looper A','STOP')]);}
+function waitHold(ms){while(ms>0){const step=Math.min(ms,250);now+=step;stopped();ms-=step;}}
+test('Stop LED distinguishes empty, recorded and unknown buffers without changing the Play LED',()=>{
+ route();snapshot([row('Looper A','STOP')]);assign(0,37);c.stopedit(0,'enabled',1);c.run(1);
+ assert.ok(midi().some(p=>p[1]===45&&p[2]===0));
+ snapshot([{...row('Looper A','STOP'),loop_length:0}]);assert.deepEqual(midi().filter(p=>p[1]===45).at(-1),[190,45,127]);
+ assert.equal(c.bufferState({...row('Looper A','RECORD'),loop_length:0}),'recording');
+ now+=100;snapshot([{...row('Looper A','PLAY'),loop_length:null}]);assert.ok(midi().some(p=>p[1]===45&&p[2]===0));assert.match(c.stopStatus('Looper A'),/UNKNOWN/);
+ c.run(0);out=[];c.test(0,1,'stop');assert.deepEqual(midi(),[[190,45,127]]);assert.deepEqual(clearRequests(),[]);
+});
+test('momentary Stop hold fires once at 1500 ms while down; short tap never clears',()=>{
+ stopSetup();cc(45,127);waitHold(1000);cc(45,0);waitHold(1000);assert.deepEqual(clearRequests(),[]);
+ cc(45,127);waitHold(1499);assert.deepEqual(clearRequests(),[]);waitHold(1);assert.equal(clearRequests().length,1);
+ assert.equal(clearRequests()[0].id,1);assert.equal(clearRequests()[0].track,'Looper A');
+ cc(45,127);waitHold(2000);assert.equal(clearRequests().length,1,'repeated On and continued hold cannot retrigger');
+ cc(45,0);cc(45,127);waitHold(1500);assert.equal(clearRequests().length,2);
+ assert.equal(out.filter(x=>x[0]===5&&x[1]==='authorize').length,2);
+});
+test('Clear requires release priming, matching input/CC, unique target and STOP at threshold',()=>{
+ stopSetup();c.cancelHolds();cc(45,127);waitHold(1500);assert.deepEqual(clearRequests(),[],'reconnect/arming must see release before a new hold');
+ cc(45,0);cc(44,127);cc(45,127,2);waitHold(1500);assert.deepEqual(clearRequests(),[]);
+ cc(45,127);now+=1500;snapshot([row('Looper A','PLAY')]);assert.deepEqual(clearRequests(),[]);stopped();assert.deepEqual(clearRequests(),[],'no delayed clear if quantized Stop arrives after the threshold');
+ cc(45,0);cc(45,127);waitHold(1500);assert.equal(clearRequests().length,1);
+});
+test('hold is cancelled by route loss, stale data, topology change, config edit, SYNC off and legacy takeover',()=>{
+ for(const cancel of [()=>c.inputtype(0),()=>{now+=600;c.tick();},()=>snapshot([{...row('Looper A','STOP'),generation:2}]),()=>c.stopedit(0,'cc',46),()=>c.run(0),()=>c.suspend()]){
+  setup();stopSetup();cc(45,127);now+=500;stopped();cancel();now+=1600;c.tick();assert.deepEqual(clearRequests(),[]);
+ }
+});
+test('raw MIDI parsing handles running status and realtime, ignores notes/SysEx and normalized channel 1',()=>{
+ stopSetup();for(const v of [240,190,45,127,247,144,45,127,128,45,0])c.midi_byte(v);waitHold(1500);assert.deepEqual(clearRequests(),[]);
+ cc(45,0,1);for(const v of [176,45,248,127])c.midi_byte(v);waitHold(1500);assert.equal(clearRequests().length,1);
+ for(const v of [45,0,45,127])c.midi_byte(v);waitHold(1500);assert.equal(clearRequests().length,2,'running-status messages decode correctly');
+});
+test('Stop address conflicts with any enabled Play or Stop address are blocked',()=>{
+ route();snapshot([row('Looper A','STOP'),row('Looper B','STOP',2)]);assign(0,37);assign(1,45);c.stopedit(0,'enabled',1);c.stopedit(0,'clear',1);inputroute();c.run(1);
+ assert.match(c.stopStatus('Looper A'),/CONFLICT/);cc(45,0);cc(45,127);waitHold(1500);assert.deepEqual(clearRequests(),[]);
+});
+test('v1 saved settings migrate without arming Clear; v2 persists input, hold and Stop mapping',()=>{
+ c.setvalueof('mldled1:'+encodeURIComponent(JSON.stringify({version:1,port:'LCXL3 1 (MIDI In)',run:false,assignments:[{track:'Looper A',channel:15,cc:37,on:127,off:0,enabled:true}]})));
+ assert.equal(c.config.version,2);assert.equal(c.config.assignments[0].stop.cc,45);assert.equal(c.config.assignments[0].stop.clear,false);assert.equal(c.config.assignments[0].stop.enabled,false);assert.equal(c.config.holdMs,1500);
+ snapshot([row('Looper A')]);c.stopedit(0,'enabled',1);c.stopedit(0,'clear',1);c.stopedit(0,'cc',50);c.holdseconds(2);inputroute();const blob=c.getvalueof();setup();c.setvalueof(blob);
+ assert.equal(c.config.input,'LCXL3 1 (MIDI Out)');assert.equal(c.config.holdMs,2000);assert.equal(c.config.assignments[0].stop.cc,50);assert.equal(c.config.assignments[0].stop.clear,true);assert.equal(Object.keys(c.held).length,0);
+});
+console.log(passed+' multi-Looper LED setup / Stop-hold tests passed; native input and Clear still need verification.');
