@@ -5,11 +5,22 @@ var latest=null,received=0,rows=[],groups={},items=[],page=0,pageSize=8;
 var types=[],channels=[],typeChoice=null,channelChoice=null,portOptions=[];
 var portName="",channelName="",pendingType=null,pendingChannel=null;
 var lastTypeRequest=0,lastChannelRequest=0;
+var manualChannel=15;
 var active=false,timer=null,runtime={},pendingTest=null,uiCache={},notice="Choose the LCXL3 MIDI In output; enter CC and enable each row.";
 function textArgs(args){return arrayfromargs(args).join(" ");}
 function integer(n,min,max){return typeof n==="number"&&isFinite(n)&&Math.floor(n)===n&&n>=min&&n<=max;}
 function allowedPort(s){return typeof s==="string"&&/^LCXL3 \d+ \(MIDI In\)$/i.test(s);}
-function allChannels(s){return /^(?:All Channels|All)$/i.test(s);}
+function channelNumber(s){var m=/^(?:(?:Ch\.?|Channel)\s*)?(\d{1,2})$/i.exec(String(s));return m&&integer(Number(m[1]),1,16)?Number(m[1]):0;}
+function outputChannel(){
+    if(!config.run)return manualChannel;
+    var channel=0;
+    for(var i=0;i<config.assignments.length;i++){
+        var a=config.assignments[i];if(!a.enabled||!complete(a))continue;
+        if(channel&&channel!==a.channel)return 0;
+        channel=a.channel;
+    }return channel||15;
+}
+function channelIndex(n){for(var i=0;i<channels.length;i++)if(channelNumber(channels[i])===n)return i;return -1;}
 function key(s){return "$"+s;}
 function assignment(track){for(var i=0;i<config.assignments.length;i++)if(config.assignments[i].track===track)return config.assignments[i];return null;}
 function defaults(track){return {track:track,channel:15,cc:-1,on:127,off:0,enabled:false};}
@@ -20,13 +31,13 @@ function collision(a){
         var b=config.assignments[i];if(b.track!==a.track&&b.enabled&&complete(b)&&a.channel===b.channel&&a.cc===b.cc)return true;
     }return false;
 }
-function ready(){return active&&allowedPort(config.port)&&portName===config.port&&allChannels(channelName);}
+function ready(){var n=outputChannel();return active&&allowedPort(config.port)&&portName===config.port&&n>0&&channelNumber(channelName)===n;}
 function fresh(){return latest&&Date.now()-received<=1500;}
 function validRow(row){return row&&row.available&&row.active!==0&&/^(STOP|PLAY|RECORD|OVERDUB)$/.test(row.state);}
 function claim(){if(!active){active=true;outlet(3,1);}}
 function release(){if(active){active=false;outlet(3,0);}}
 function send(a,bit,force){
-    if(!ready()||!complete(a))return;
+    if(!ready()||!complete(a)||a.channel!==channelNumber(channelName))return;
     var k=key(a.track),r=runtime[k]||(runtime[k]={state:null,start:0,bit:null,sent:0,target:null});
     var now=Date.now(),value=bit?a.on:a.off;
     if(!force&&r.bit===bit&&r.value===value&&now-r.sent<100)return;
@@ -35,7 +46,7 @@ function send(a,bit,force){
 }
 function clearAll(){
     if(ready())for(var k in runtime)if(Object.prototype.hasOwnProperty.call(runtime,k)){
-        var t=runtime[k].target;if(t)outlet(0,[175+t.channel,t.cc,t.off]);
+        var t=runtime[k].target;if(t&&t.channel===channelNumber(channelName))outlet(0,[175+t.channel,t.cc,t.off]);
     }
     runtime={};pendingTest=null;
 }
@@ -46,7 +57,7 @@ function suspend(){clearAll();config.run=false;stop();release();notice="LED SETU
 function run(n){
     var next=Number(n)===1;
     if(!next){suspend();return;}
-    pendingTest=null;config.run=true;claim();reconcileRoute();start();notice="";changed();tick();
+    if(!config.run)clearAll();pendingTest=null;config.run=true;claim();reconcileRoute();start();notice="";changed();tick();
 }
 function resolve(choice,names){return typeof choice==="number"?(integer(choice,0,names.length-1)?String(names[choice]):""):typeof choice==="string"?choice:"";}
 function routingtypes(){
@@ -71,8 +82,10 @@ function reconcileRoute(){
             if(pendingType!==i||Date.now()-lastTypeRequest>=1000){pendingType=i;lastTypeRequest=Date.now();outlet(2,"type",i);}return;
         }return;
     }
-    if(!allChannels(channelName))for(i=0;i<channels.length;i++)if(allChannels(String(channels[i]))){
-        if(pendingChannel!==i||Date.now()-lastChannelRequest>=1000){pendingChannel=i;lastChannelRequest=Date.now();outlet(2,"channel",i);}return;
+    var desired=outputChannel();
+    if(desired>0&&channelNumber(channelName)!==desired){
+        i=channelIndex(desired);
+        if(i>=0&&(pendingChannel!==i||Date.now()-lastChannelRequest>=1000)){pendingChannel=i;lastChannelRequest=Date.now();outlet(2,"channel",i);}
     }
 }
 function choose_port(n){
@@ -130,7 +143,8 @@ function test(slot,bit){
     var track=items[page*pageSize+slot],a=assignment(track),g=groups[key(track)]||[];
     if(config.run){notice="Turn SYNC off before manual tests.";render();return;}
     if(!complete(a)||g.length!==1||collision(a)){notice="TEST blocked: assign a unique CC to an available, unambiguous Looper row.";render();return;}
-    pendingTest={track:track,bit:bit};notice="TEST waiting for LCXL3 MIDI In / All Channels routing.";claim();reconcileRoute();tick();
+    if(manualChannel!==a.channel){clearAll();manualChannel=a.channel;pendingChannel=null;}
+    pendingTest={track:track,bit:bit};notice="";claim();reconcileRoute();tick();
 }
 function turnpage(delta){var p=page;page=Math.max(0,Math.min(page+Number(delta),Math.max(0,Math.ceil(items.length/pageSize)-1)));if(!integer(page,0,100000))page=p;render();}
 function tick(){
@@ -163,7 +177,7 @@ function render(){
     var portIndex=0;for(var i=0;i<portOptions.length;i++)if(portOptions[i].name===config.port)portIndex=i+1;
     ui("setupPort","set",portIndex);ui("setupRun","set",config.run?1:0);
     ui("setupPage","set",(items.length?page+1:0)+" / "+Math.ceil(items.length/pageSize)+"   ("+items.length+" tracks)");
-    var status=notice||(!config.run?"SYNC OFF. Settings are saved with the Live Set.":!ready()?"WAITING: "+(config.port||"select LCXL3 MIDI In")+" / All Channels. Current: "+(portName||"unresolved")+" / "+(channelName||"unresolved"):"SYNC ON: STOP Off / PLAY On / RECORD slow / OVERDUB fast. Settings saved with Live Set.");
+    var status=notice||((!config.run&&!pendingTest)?"SYNC OFF. Settings are saved with the Live Set.":!ready()?routeStatus():"SYNC ON / channel "+outputChannel()+": STOP Off / PLAY On / RECORD slow / OVERDUB fast.");
     ui("setupStatus","set",status);
     for(i=0;i<pageSize;i++){
         var track=items[page*pageSize+i],prefix="row"+i+"_",exists=track!==undefined;
@@ -175,6 +189,13 @@ function render(){
         ui(prefix+"status","set",rowStatus(track));
         for(j=0;j<5;j++){var field=["channel","cc","on","off","enabled"][j];ui(prefix+field,"set",field==="enabled"?(a.enabled?1:0):a[field]);}
     }
+}
+function routeStatus(){
+    var n=outputChannel();
+    if(!n)return "BLOCKED: enabled rows use different MIDI channels. SYNC requires one common output channel.";
+    if(!allowedPort(config.port)||portName!==config.port)return "WAITING: output "+(config.port||"select LCXL3 MIDI In")+"; current="+(portName||"unresolved")+".";
+    if(channels.length&&channelIndex(n)<0)return "BLOCKED: output does not offer MIDI channel "+n+". Current="+(channelName||"unresolved")+".";
+    return (pendingTest?"TEST waiting":"WAITING")+": MIDI channel "+n+"; current="+(channelName||"unresolved")+". Selecting the explicit channel used by the buttons.";
 }
 function getvalueof(){return "mldled1:"+encodeURIComponent(JSON.stringify(config));}
 function setvalueof(v){

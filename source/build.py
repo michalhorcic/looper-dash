@@ -52,7 +52,7 @@ def build_led_setup():
             box(p,ident,"textbutton",[x,y,w,26],text="OFF" if mode else label,texton="ON" if mode else label,mode=mode,varname=ident,parameter_enable=0,numoutlets=3,outlettype=["int" if mode else "bang","","int"],presentation=1,presentation_rect=[x,y,w,26])
             box(p,ident+"msg","newobj" if mode else "message",[x,880+i*60,200,22],"prepend "+command if mode else command)
             wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"out")
-    box(p,"help","comment",[12,580,1056,48],"CC -1 = unassigned. Use the channel, CC and On/Off values from Components. Test with SYNC off. STOP = Off, PLAY = On, RECORD = slow blink, OVERDUB = fast blink. One Looper per uniquely named track. Missing assignments stay listed; CLEAR removes their settings.",fontsize=12.0,presentation=1,presentation_rect=[12,580,1056,48])
+    box(p,"help","comment",[12,580,1056,48],"CC -1 = unassigned. Use the channel, CC and On/Off values from Components. Test with SYNC off. STOP = Off, PLAY = On, RECORD = slow blink, OVERDUB = fast blink. SYNC requires one common MIDI channel for all enabled rows (15 for this setup). Missing assignments stay listed; CLEAR removes their settings.",fontsize=12.0,presentation=1,presentation_rect=[12,580,1056,48])
     return p
 
 def build_led_panel():
@@ -136,7 +136,7 @@ def build_led_panel():
 def build():
     p=patch([100,100,940,650],1)
     p.update({"devicewidth":580.0,"amxdtype":1633771873,"description":"Read-only Live monitoring with optional experimental LCXL3 LED feedback."})
-    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.12 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
+    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.12.1 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
     box(p,"note","comment",[20,45,800,35],"Automatically finds all Loopers.",presentation=1,presentation_rect=[12,36,560,36])
     for ident,label,x,w in [("open","OPEN DASHBOARD",12,160),("scan","RESCAN",184,90),("report","EXPORT REPORT",286,150),("ledopen","LED TEST",448,120)]:
         box(p,ident,"textbutton",[x,100,w,30],numinlets=1,numoutlets=3,outlettype=["","int",""],text=label,texton=label,

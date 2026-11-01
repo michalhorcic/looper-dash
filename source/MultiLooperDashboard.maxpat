@@ -29,7 +29,7 @@
             650,
             25
           ],
-          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.12 beta",
+          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.12.1 beta",
           "fontsize": 18.0,
           "presentation": 1,
           "presentation_rect": [
@@ -5152,7 +5152,7 @@
                             1056,
                             48
                           ],
-                          "text": "CC -1 = unassigned. Use the channel, CC and On/Off values from Components. Test with SYNC off. STOP = Off, PLAY = On, RECORD = slow blink, OVERDUB = fast blink. One Looper per uniquely named track. Missing assignments stay listed; CLEAR removes their settings.",
+                          "text": "CC -1 = unassigned. Use the channel, CC and On/Off values from Components. Test with SYNC off. STOP = Off, PLAY = On, RECORD = slow blink, OVERDUB = fast blink. SYNC requires one common MIDI channel for all enabled rows (15 for this setup). Missing assignments stay listed; CLEAR removes their settings.",
                           "fontsize": 12.0,
                           "presentation": 1,
                           "presentation_rect": [

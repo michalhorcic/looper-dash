@@ -1,10 +1,12 @@
-MLD 0.12 beta, 2026-11-01
+MLD 0.12.1 beta, 2026-11-01
 User confirmed 0.3 works in Ableton Live 12 Suite; exact Max/LCXL3 firmware versions unknown.
-PASS JS syntax; 15 discovery/read-only mock tests; 20 legacy LED isolation/protocol/integration tests; 15 multi-Looper setup tests.
+PASS JS syntax; 15 discovery/read-only mock tests; 20 legacy LED isolation/protocol/integration tests; 18 multi-Looper setup tests.
 PASS UI: live view 2/3/4/6, colours, A/B sends, pagination, zoom and reference strips.
 PASS AMXD chunks/source roundtrip, 263 objects, graph/dependencies, native Custom test control wiring/defaults, isolated LED MIDI path and unchanged stereo passthrough.
 USER VERIFIED 0.8.1: palette CC via DAW In works in DAW mode; no visible effect in Custom Mode 2.
 USER REPORTED 0.9: no LED response from RGB experiment in Custom Mode.
 USER VERIFIED 0.10: Custom CC15/37 ON/OFF via MIDI In changes LED to Components colours in Custom Mode 2; physical release returns Off.
-NOT VERIFIED: 0.12 native setup UI, All Channels / multichannel CC delivery, Set save-close-reopen parameter restoration, automatic blink legibility/timing and restoration latency under Live load.
+NOT VERIFIED: 0.12.1 native setup UI, explicit common-channel CC delivery, Set save-close-reopen parameter restoration, automatic blink legibility/timing and restoration latency under Live load.
 USER TEST 0.8: status stayed OFF; software toggle/routing defects fixed in 0.8.1.
+USER REPORTED 0.12: SETUP global status WAITING and no manual/SYNC LED response; original LED TEST still works. All assigned buttons use channel 15.
+FIX 0.12.1: numbered output channel selection replaces unsupported All Channels prerequisite; mixed enabled channels explicitly blocked; stored assignments remain compatible.

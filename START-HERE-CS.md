@@ -1,4 +1,4 @@
-# Multi Looper Dashboard 0.12 beta
+# Multi Looper Dashboard 0.12.1 beta
 
 ## Spuštění — bez úprav v Maxu
 
@@ -8,6 +8,13 @@
 
 Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.9 zatím nebyly přímo v Live ověřeny.
 
+## Oprava 0.12.1
+
+- Opravené čekání v LED SETUP: předchozí verze vyžadovala nepodloženou volbu All Channels a mohla nevyslat žádné zprávy, přestože stav Looperu v řádku fungoval.
+- Výstup teď vybírá konkrétní kanál jako ověřený LED TEST. **Všechny zapnuté řádky nastav na CH 15**, podle svého skutečného mapování.
+- SYNC nyní vyžaduje jeden společný kanál pro zapnutá přiřazení. Smíšené kanály se explicitně zablokují. Ruční test může jednotlivě vybrat kanál svého řádku.
+- Nahoře se ukazuje požadovaný a aktuální kanál při čekání; chybějící kanál je BLOCKED. Původní uložená přiřazení jsou kompatibilní.
+
 ## Co je nové v 0.12
 
 - **LED SETUP** má řádek pro každý detekovaný Looper, společný výstup LCXL3 MIDI In a nastavení **CH / CC / ON / OFF / ENABLE / TEST**. Po osmi řádcích se stránkuje PREV/NEXT; sledování běží i na ostatních stránkách.
@@ -15,7 +22,7 @@ Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včet
 - **SYNC** sleduje všechny zapnuté řádky: STOP Off, PLAY On, RECORD pomalé blikání (1 Hz), OVERDUB rychlé (4 Hz). Hodnoty a barvy dál odpovídají Components.
 - Konfigurace včetně výstupu, zapnutí řádků a SYNC se ukládá do Live Setu. Zapnutý uložený SYNC se obnoví po potvrzení správného směrování. Nové zařízení začíná vypnuté.
 - Stejné kanál/CC u zapnutých přiřazení jsou blokované jako CONFLICT. Chybějící řádky se uchovávají; obnovení se váže na přesný, jedinečný název stopy. Přejmenovanou stopu nastav znovu, starou vymaž CLEAR.
-- Pro více kanálů se společný výstup nastavuje na **All Channels**. Nastavení a ukládání nové verze ještě potřebují nativní test v Live.
+- Společný výstup používá konkrétní kanál podle zapnutých řádků. Všechny zapnuté řádky musí mít stejný kanál; u tebe 15. Nastavení a ukládání ještě potřebují nativní test v Live.
 - Původní **LED TEST** zůstává. Oba způsoby si předávají společný výstup a automaticky se navzájem zastaví při převzetí ovládání.
 - Přibylo `mld2_led_setup.js`: vedle `.amxd` musí být **všechny čtyři JS soubory**. MIDI Learn, dlouhé a dvojité stisky zatím nepřidáváme.
 - Postup nového nastavení: [LED-SETUP-CS.md](LED-SETUP-CS.md). Původní test: [LED-TEST-CS.md](LED-TEST-CS.md).

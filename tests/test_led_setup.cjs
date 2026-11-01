@@ -9,7 +9,7 @@ function setup(){out=[];now=10000;tasks=[];notifications=0;
 function midi(){return out.filter(x=>x[0]===0).map(x=>x[1]);}
 function row(track,state='PLAY',id=1){return {id,track,name:'Looper',available:true,active:1,state};}
 function snapshot(rows=[row('Looper A')]){c.snapshot(JSON.stringify({rows}));}
-function route(){c.routingtypes('<none>','LCXL3 1 (DAW In)','LCXL3 1 (MIDI In)','LCXL3 1 (To DIN Out)');c.routingchannels('All Channels',...Array.from({length:16},(_,i)=>'Ch. '+(i+1)));c.routingtype(2);c.routingchannel(0);c.choose_port(1);}
+function route(channel=15){c.routingtypes('<none>','LCXL3 1 (DAW In)','LCXL3 1 (MIDI In)','LCXL3 1 (To DIN Out)');c.routingchannels('All Channels',...Array.from({length:16},(_,i)=>'Ch. '+(i+1)));c.routingtype(2);c.routingchannel(channel);c.choose_port(1);}
 function assign(slot,cc,channel=15){c.rowedit(slot,'channel',channel);c.rowedit(slot,'cc',cc);c.rowedit(slot,'enabled',1);}
 function saved(){return JSON.parse(decodeURIComponent(c.getvalueof().slice(8)));}
 function restore(config){c.setvalueof('mldled1:'+encodeURIComponent(JSON.stringify(config)));}
@@ -27,13 +27,13 @@ test('all detected tracks paginate; missing assignments survive and CLEAR remove
  c.forget(1);assert.equal(c.items.length,1);assert.equal(saved().assignments.length,0);
  assign(0,37);c.forget(0);assert.equal(c.items.length,1);assert.match(c.rowStatus('Track 0'),/UNASSIGNED/);
 });
-test('multiple Loopers follow independently on different CCs and channels with configured colours',()=>{
+test('multiple Loopers follow independently on a confirmed common channel with configured colours',()=>{
  route();snapshot([row('A','PLAY'),row('B','STOP',2),row('C','RECORD',3),row('D','OVERDUB',4)]);
- assign(0,37,15);assign(1,38,1);assign(2,39,16);assign(3,40,2);c.rowedit(1,'off',5);c.rowedit(2,'on',90);out=[];c.run(1);
- assert.deepEqual(midi(),[[190,37,127],[176,38,5],[191,39,90],[177,40,127]]);
+ assign(0,37,15);assign(1,38);assign(2,39);assign(3,40);c.rowedit(1,'off',5);c.rowedit(2,'on',90);out=[];c.run(1);
+ assert.deepEqual(midi(),[[190,37,127],[190,38,5],[190,39,90],[190,40,127]]);
  assert.equal(tasks.at(-1).interval,25);out=[];now+=100;tasks.at(-1).fn();assert.equal(midi().length,4,'steady state refreshes at 100ms');
- now+=25;snapshot([row('A','PLAY'),row('B','STOP',2),row('C','RECORD',3),row('D','OVERDUB',4)]);assert.deepEqual(midi().at(-1),[177,40,0]);
- now+=375;snapshot([row('A','PLAY'),row('B','STOP',2),row('C','RECORD',3),row('D','OVERDUB',4)]);assert.ok(midi().some(p=>p[0]===191&&p[1]===39&&p[2]===0));
+ now+=25;snapshot([row('A','PLAY'),row('B','STOP',2),row('C','RECORD',3),row('D','OVERDUB',4)]);assert.deepEqual(midi().at(-1),[190,40,0]);
+ now+=375;snapshot([row('A','PLAY'),row('B','STOP',2),row('C','RECORD',3),row('D','OVERDUB',4)]);assert.ok(midi().some(p=>p[0]===190&&p[1]===39&&p[2]===0));
  assert.ok(midi().every(p=>p.length===3&&p[0]>=176&&p[0]<=191&&p.slice(1).every(v=>Number.isInteger(v)&&v>=0&&v<=127)));
 });
 test('repeated snapshots preserve blink phase; every state transition starts immediately',()=>{
@@ -70,7 +70,7 @@ test('parameter blob roundtrip restores names, values, output and sync state per
  route();snapshot([row('A "quoted", č; /','OVERDUB')]);assign(0,127,16);c.rowedit(0,'on',80);c.rowedit(0,'off',12);c.run(1);
  assert.ok(notifications>0);const blob=c.getvalueof(),config=saved();assert.ok(!/\s/.test(blob));
  setup();c.setvalueof(blob);assert.deepEqual(saved(),config);assert.deepEqual(midi(),[],'restored config cannot emit before route confirmation');
- snapshot([row('A "quoted", č; /','OVERDUB',999)]);route();assert.deepEqual(midi().at(-1),[191,127,80]);
+ snapshot([row('A "quoted", č; /','OVERDUB',999)]);route(16);assert.deepEqual(midi().at(-1),[191,127,80]);
  assert.ok(out.some(x=>x[0]===2&&x[1]==='type'&&x[2]===2),'saved output resolved by name');
 });
 test('malformed saved state is rejected atomically; field ranges cannot emit invalid MIDI',()=>{
@@ -90,24 +90,40 @@ test('manual tests work with SYNC off and are excluded during follow; stop and d
  out=[];now+=100;c.tick();snapshot();assert.deepEqual(midi(),[]);
  c.run(1);c.notifydeleted();assert.deepEqual(midi().at(-1),[190,37,0]);assert.equal(c.active,false);assert.ok(tasks.at(-1).freed);
 });
-test('routing filters ports, requests All Channels and never emits on DAW, DIN or a forced channel',()=>{
+test('routing selects the explicit common channel and rejects All Channels, DAW and DIN',()=>{
  c.routingtypes('LCXL3 1 (DAW In)','Other','LCXL3 1 (MIDI In)','LCXL3 1 (To DIN Out)');
- assert.equal(c.portOptions.length,1);c.routingchannels('All Channels','Ch. 15');c.routingtype(0);c.routingchannel(1);snapshot();assign(0,37);c.choose_port(1);c.run(1);assert.deepEqual(midi(),[]);
- assert.ok(out.some(x=>x[0]===2&&x[1]==='type'&&x[2]===2));c.routingtype(2);assert.ok(out.some(x=>x[0]===2&&x[1]==='channel'&&x[2]===0));
- assert.deepEqual(midi(),[]);c.routingchannel(0);assert.deepEqual(midi().at(-1),[190,37,127]);
- out=[];c.routingchannel(1);snapshot();c.tick();assert.deepEqual(midi(),[]);
+ assert.equal(c.portOptions.length,1);c.routingchannels('All Channels','Ch. 15');c.routingtype(0);c.routingchannel(0);snapshot();assign(0,37);c.choose_port(1);c.run(1);assert.deepEqual(midi(),[]);
+ assert.ok(out.some(x=>x[0]===2&&x[1]==='type'&&x[2]===2));c.routingtype(2);assert.ok(out.some(x=>x[0]===2&&x[1]==='channel'&&x[2]===1));
+ assert.deepEqual(midi(),[]);c.routingchannel(1);assert.deepEqual(midi().at(-1),[190,37,127]);
+ out=[];c.routingchannel(0);snapshot();c.tick();assert.deepEqual(midi(),[],'All Channels does not establish a safe output route');
  c.routingtype(3);c.tick();assert.deepEqual(midi(),[]);
 });
-test('manual test waits for asynchronous routing instead of sending to an unconfirmed bus',()=>{
- c.routingtypes('<none>','LCXL3 1 (MIDI In)');c.routingchannels('All Channels','Ch. 15');c.routingtype(0);c.routingchannel(1);snapshot();assign(0,37);c.choose_port(1);c.test(0,1);assert.deepEqual(midi(),[]);
- c.routingtype(1);assert.deepEqual(midi(),[]);c.routingchannel(0);assert.deepEqual(midi(),[[190,37,127]]);
+test('manual test waits for asynchronous explicit channel confirmation before sending',()=>{
+ c.routingtypes('<none>','LCXL3 1 (MIDI In)');c.routingchannels('All Channels','Ch. 15');c.routingtype(0);c.routingchannel(0);snapshot();assign(0,37);c.choose_port(1);c.test(0,1);assert.deepEqual(midi(),[]);
+ c.routingtype(1);assert.deepEqual(midi(),[]);c.routingchannel(1);assert.deepEqual(midi(),[[190,37,127]]);
 });
 test('rejected routing callbacks are throttled and retried after reconnect without a feedback loop',()=>{
- c.routingtypes('<none>','LCXL3 1 (MIDI In)');c.routingchannels('All Channels','Ch. 15');c.routingtype(0);c.routingchannel(1);snapshot();assign(0,37);c.choose_port(1);c.run(1);
+ c.routingtypes('<none>','LCXL3 1 (MIDI In)');c.routingchannels('All Channels','Ch. 15');c.routingtype(0);c.routingchannel(0);snapshot();assign(0,37);c.choose_port(1);c.run(1);
  out=[];for(let i=0;i<5;i++){c.routingtype(0);c.tick();}assert.ok(!out.some(x=>x[0]===2),'no immediate retry loop on rejected type');
  now+=1000;c.tick();assert.ok(out.some(x=>x[0]===2&&x[1]==='type'&&x[2]===1));
- c.routingtype(1);out=[];for(let i=0;i<5;i++){c.routingchannel(1);c.tick();}assert.ok(!out.some(x=>x[0]===2),'no immediate retry loop on rejected channel');
- now+=1000;snapshot();assert.ok(out.some(x=>x[0]===2&&x[1]==='channel'&&x[2]===0));c.routingchannel(0);assert.deepEqual(midi().at(-1),[190,37,127]);
+ c.routingtype(1);out=[];for(let i=0;i<5;i++){c.routingchannel(0);c.tick();}assert.ok(!out.some(x=>x[0]===2),'no immediate retry loop on rejected channel');
+ now+=1000;snapshot();assert.ok(out.some(x=>x[0]===2&&x[1]==='channel'&&x[2]===1));c.routingchannel(1);assert.deepEqual(midi().at(-1),[190,37,127]);
+});
+test('output with only numbered channels reproduces the user failure and now sends test and sync',()=>{
+ c.routingtypes('LCXL3 1 (MIDI In)');c.routingchannels(...Array.from({length:16},(_,i)=>String(i+1)));c.routingtype(0);c.routingchannel(0);
+ snapshot([row('A'),row('B','PLAY',2)]);assign(0,37);assign(1,38);c.choose_port(1);c.test(0,1);
+ assert.deepEqual(midi(),[]);assert.ok(out.some(x=>x[0]===2&&x[1]==='channel'&&x[2]===14),'selects channel 15 without requiring an All Channels item');
+ c.routingchannel(14);assert.deepEqual(midi(),[[190,37,127]]);c.test(0,0);assert.deepEqual(midi().at(-1),[190,37,0]);
+ c.run(1);assert.deepEqual(midi().slice(-2),[[190,37,127],[190,38,127]]);
+});
+test('mixed enabled channels are blocked clearly, and disabling the mismatched row resumes sync',()=>{
+ route();snapshot([row('A'),row('B','PLAY',2)]);assign(0,37);assign(1,38,2);c.run(1);assert.deepEqual(midi(),[]);assert.match(c.routeStatus(),/different MIDI channels/);
+ c.rowedit(1,'enabled',0);assert.deepEqual(midi().at(-1),[190,37,127]);
+ c.run(0);c.test(1,1);assert.match(c.routeStatus(),/channel 2/);const n=midi().length;c.routingchannel(2);assert.deepEqual(midi().slice(n),[[177,38,127]],'manual tests select their row channel explicitly');
+});
+test('missing explicit channel is reported as blocked rather than waiting indefinitely',()=>{
+ c.routingtypes('LCXL3 1 (MIDI In)');c.routingchannels('1','2');c.routingtype(0);c.routingchannel(0);snapshot();assign(0,37);c.choose_port(1);c.run(1);
+ assert.match(c.routeStatus(),/BLOCKED.*channel 15/);assert.deepEqual(midi(),[]);
 });
 test('native setup graph edits and tests the visible row; parameter blob is bound and stored',()=>{
  const patch=JSON.parse(fs.readFileSync(path.join(root,'source/MultiLooperDashboard.maxpat'),'utf8')).patcher;
@@ -115,22 +131,22 @@ test('native setup graph edits and tests the visible row; parameter blob is boun
  const panel=boxes.setupwindow.patcher,panelBoxes=Object.fromEntries(panel.boxes.map(x=>[x.box.id,x.box]));
  assert.match(boxes.setupstate.text,/@bindto ledSetupEngine @parameter_enable 1/);assert.equal(boxes.setupstate.saved_attribute_attributes.valueof.parameter_type,3);assert.equal(boxes.setupstate.saved_attribute_attributes.valueof.parameter_invisible,1);
  function click(id,value){const e=panel.lines.find(x=>x.patchline.source[0]===id).patchline;assert.equal(e.source[1],0);const box=panelBoxes[e.destination[0]],args=box.text.replace(/^prepend /,'').split(' ');const command=args.shift();c[command](...args.map(x=>isNaN(Number(x))?x:Number(x)),...(box.maxclass==='newobj'?[value]:[]));}
- route();snapshot([row('A'),row('B','PLAY',2)]);click('row1_cc',41);click('row1_channel',16);click('row1_enabled',1);click('row1_teston');assert.deepEqual(midi().at(-1),[191,41,127]);
+ route();snapshot([row('A'),row('B','PLAY',2)]);click('row1_cc',41);click('row1_channel',16);click('row1_enabled',1);click('row1_teston');c.routingchannel(16);assert.deepEqual(midi().at(-1),[191,41,127]);
  click('setupRun',1);assert.equal(c.config.run,true);click('setupRun',0);assert.equal(c.config.run,false);
  for(const b of Object.values(panelBoxes))if(b.presentation){const [x,y,w,h]=b.presentation_rect;assert.ok(x>=0&&y>=0&&x+w<=1080&&y+h<=640);}
 });
-test('shared MIDI arbiter forwards configured CC only on All Channels and stops setup on legacy takeover',()=>{
+test('shared MIDI arbiter requires matching explicit channel and stops setup on legacy takeover',()=>{
  const hw=[],oldOut=[],old=vm.createContext({Task:c.Task,Date:c.Date,arrayfromargs:v=>Array.from(v),outlet(...v){oldOut.push(v);if(v[0]===0)hw.push(JSON.parse(JSON.stringify(v[1])));if(v[0]===6)c.suspend();}});
  vm.runInContext(fs.readFileSync(path.join(root,'mld2_led.js'),'utf8'),old);
  c.outlet=(...v)=>{out.push(JSON.parse(JSON.stringify(v)));if(v[0]===0)old.setup_midi(...v[1]);if(v[0]===3)old.setup_claim(v[1]);};
- old.routingtype('LCXL3 1 (MIDI In)');old.routingchannel('All Channels');
- route();snapshot([row('A'),row('B','PLAY',2)]);assign(0,37);assign(1,38,2);c.run(1);
- assert.deepEqual(hw,[[190,37,127],[177,38,127]]);assert.equal(old.armed,false);assert.ok(oldOut.some(v=>v[0]===7&&v[1]==='set'&&v[2]===0));
- old.arm(1);assert.equal(c.config.run,false);assert.equal(c.active,false);assert.equal(old.setupOwned,false);assert.deepEqual(hw.slice(-2),[[190,37,0],[177,38,0]]);
+ old.routingtype('LCXL3 1 (MIDI In)');old.routingchannel('15');
+ route();snapshot([row('A'),row('B','PLAY',2)]);assign(0,37);assign(1,38);c.run(1);
+ assert.deepEqual(hw,[[190,37,127],[190,38,127]]);assert.equal(old.armed,false);assert.ok(oldOut.some(v=>v[0]===7&&v[1]==='set'&&v[2]===0));
+ old.arm(1);assert.equal(c.config.run,false);assert.equal(c.active,false);assert.equal(old.setupOwned,false);assert.deepEqual(hw.slice(-2),[[190,37,0],[190,38,0]]);
  const count=hw.length;old.setup_midi(190,37,127);assert.equal(hw.length,count,'released setup owner cannot transmit');
- old.arm(0);old.setup_claim(1);old.routingchannel('15');old.setup_midi(190,37,127);assert.equal(hw.length,count,'forced channel blocked');
+ old.arm(0);old.setup_claim(1);old.routingchannel('1');old.setup_midi(190,37,127);assert.equal(hw.length,count,'mismatched explicit channel blocked');
  old.routingchannel('All Channels');old.routingtype('LCXL3 1 (DAW In)');old.setup_midi(190,37,127);assert.equal(hw.length,count,'DAW output blocked');
- old.routingtype('LCXL3 1 (MIDI In)');for(const p of [[175,37,1],[192,37,1],[190,128,1],[190,37,-1],[190,37,1.5]])old.setup_midi(...p);assert.equal(hw.length,count,'only valid CC bytes pass');
- old.setup_midi(191,127,127);assert.deepEqual(hw.at(-1),[191,127,127]);
+ old.routingtype('LCXL3 1 (MIDI In)');old.routingchannel('15');for(const p of [[175,37,1],[192,37,1],[190,128,1],[190,37,-1],[190,37,1.5]])old.setup_midi(...p);assert.equal(hw.length,count,'only valid CC bytes pass');
+ old.routingchannel('All Channels');old.setup_midi(191,127,127);assert.equal(hw.length,count,'All Channels remains blocked');old.routingchannel('Channel 16');old.setup_midi(191,127,127);assert.deepEqual(hw.at(-1),[191,127,127]);
 });
 console.log(passed+' multi-Looper LED setup tests passed; native Live persistence/routing still needs verification.');

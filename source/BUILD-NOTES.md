@@ -1,4 +1,4 @@
-# Build notes — 0.12 beta
+# Build notes — 0.12.1 beta
 
 Unfrozen Audio Effect AMXD: little-endian chunks `ampf` (payload `aaaa`), `meta` (four zero bytes), `ptch` (UTF-8 patcher JSON + null byte). Adjacent JS dependencies resolve relative to the device directory. No code signing, Node for Max, native externals or manual Max editing is required by this package.
 
@@ -123,3 +123,10 @@ Persistence uses `getvalueof`/`setvalueof` and `notifyclients` bound to `pattr l
 Primary references: https://docs.cycling74.com/userguide/pattr/ , https://docs.cycling74.com/reference/pattr/ , https://docs.cycling74.com/apiref/js/jsthis/ and https://docs.cycling74.com/reference/live.routing . The Blob attribute layout follows bundled Max's `M4L.PitchScale.bpatch.maxpat`.
 
 Four adjacent JS dependencies are now required. Fifteen new setup tests cover pagination, more than eight Loopers, independent channels/blinks, stale/invalid data, name/ID changes, conflicting addresses, saved-state roundtrip and validation, manual/follow exclusion, asynchronous routing, native graph command dispatch and both engines' shared output arbitration and throttled routing retries after rejected callbacks/reconnection. Route retries are limited to once per second to avoid feedback loops. Native UI, parameter persistence and multichannel routing cannot be proven by these mocks. Build validation adds parameter binding, window bounds, metadata ordering and arbiter wiring checks.
+
+
+0.12.1 corrects a routing assumption in 0.12. User reported no LED change in SETUP, even with manual tests, while the original single-LED test still works. The global setup status was WAITING (no MIDI submitted), and the user confirmed all Looper buttons use channel 15. Requiring an All Channels output option was unsupported: output metadata can contain only numbered channels. A regression fixture reproduces the failure using numbered channels 1–16 without an All item.
+
+Setup now resolves the actual numbered routing channel by display name (15, Ch. 15 or Channel 15), then waits for its confirmation, matching the known working single-LED route. SYNC requires one common channel across all complete enabled assignments; mixed channels are explicitly blocked instead of pretending raw status-byte channels survive the Live bus. Manual tests can individually select their row's channel while SYNC is off. The final MIDI gate independently requires the status-byte channel to match the explicitly confirmed bus channel; All Channels is not accepted. No additional MIDI ports or routing APIs are introduced. Existing version-1 assignment blobs remain compatible. Output route retries remain throttled to once per second.
+
+Global status distinguishes unresolved port, pending explicit channel, unavailable numbered channel and mixed-channel configuration. The per-row Looper state remains a monitor, not proof of MIDI delivery. Three additional setup regressions cover numbered-only channels, mixed-channel refusal/recovery and missing numbered channel diagnostics. Total: 18 setup tests plus 20 legacy LED and 15 core tests. The user-confirmed single-channel hardware path is reused; native 0.12.1 setup delivery still needs a hardware retest.

@@ -1,4 +1,4 @@
-# LCXL3 — Custom CC ON/OFF test (0.12 beta)
+# LCXL3 — Custom CC ON/OFF test (0.12.1 beta)
 
 Cíl: přepnout dvě barvy prvního tlačítka horní řady pod fadery v **Custom Mode 2**, při zachování mapování **channel 15 / CC37 / momentary**. FOLLOW A nově sleduje jediný Looper na stopě **Looper A**.
 
@@ -6,7 +6,7 @@ Původní test zůstává zachovaný. Pro více Looperů použij [LED SETUP](LED
 
 ## Postup
 
-1. Nahraď předchozí instanci novým **MultiLooperDashboard.amxd 0.12 beta**. Všechny čtyři JS soubory musí zůstat vedle `.amxd`; samotná výměna JS nestačí.
+1. Nahraď předchozí instanci novým **MultiLooperDashboard.amxd 0.12.1 beta**. Všechny čtyři JS soubory musí zůstat vedle `.amxd`; samotná výměna JS nestačí.
 2. LCXL3 nech v **Custom Mode 2**. Původní mapování a nastavení Control Surface ponech.
 3. Otevři **LED TEST**. Vypni **LED OUTPUT** i **FOLLOW A**.
 4. V nabídce protokolu vyber **Custom CC15/37 - ON/OFF**.

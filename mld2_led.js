@@ -48,10 +48,12 @@ function setup_claim(n){
     else setupOwned=false;
 }
 function setup_midi(statusByte,cc,value){
-    if(!setupOwned||!/^LCXL3 \d+ \(MIDI In\)$/i.test(portName)||!/^(?:All Channels|All)$/i.test(channelName))return;
+    if(!setupOwned||!/^LCXL3 \d+ \(MIDI In\)$/i.test(portName))return;
     var p=[statusByte,cc,value];
     for(var i=0;i<3;i++)if(typeof p[i]!=="number"||!isFinite(p[i])||Math.floor(p[i])!==p[i])return;
     if(statusByte<176||statusByte>191||cc<0||cc>127||value<0||value>127)return;
+    var channel=/^(?:(?:Ch\.?|Channel)\s*)?(\d{1,2})$/i.exec(channelName);
+    if(!channel||Number(channel[1])!==statusByte-175)return;
     emitPacket(p);
 }
 function reset(){lastColour=null;lastSent=0;followState=null;phaseStarted=0;}

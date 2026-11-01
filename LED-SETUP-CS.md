@@ -1,16 +1,16 @@
-# LED SETUP — více Looperů (0.12 beta)
+# LED SETUP — více Looperů (0.12.1 beta)
 
 Okno nastavuje LED zpětnou vazbu pro CC tlačítka LCXL3 v Custom Mode. Každý Looper musí být na vlastní, jednoznačně pojmenované stopě. Ovládání Looperů zůstává v původním MIDI mapování Live.
 
 ## První nastavení
 
-1. Nahraď předchozí zařízení novým **MultiLooperDashboard.amxd 0.12 beta**. Vedle něj musí zůstat **všechny čtyři JS soubory**, včetně nového `mld2_led_setup.js`.
+1. Nahraď předchozí zařízení novým **MultiLooperDashboard.amxd 0.12.1 beta**. Vedle něj musí zůstat **všechny čtyři JS soubory**, včetně nového `mld2_led_setup.js`.
 2. Na zařízení klikni **LED SETUP**. Původní **LED TEST** je stále dostupný i ze setup okna.
-3. Nahoře vyber **LCXL3 1 (MIDI In)**. Jde o výstup do hlavního USB MIDI portu kontroleru, stejně jako u ověřeného ON/OFF testu. Nepoužívej DAW In nebo DIN. Zařízení samo požádá o **All Channels**, aby každý řádek mohl používat vlastní kanál. Pokud tato volba není dostupná nebo potvrzená, zůstane výstup blokovaný a stav ukáže WAITING.
-4. U každého Looperu nastav **CH**, **CC**, **ON**, **OFF** přesně podle Components. Typ je v této verzi pevně CC. Kanály jsou 1–16, CC a hodnoty 0–127. **CC -1 znamená nenastaveno**. Výchozí CH je 15 a ON/OFF 127/0. Nové řádky mají zapnutí vypnuté.
+3. Nahoře vyber **LCXL3 1 (MIDI In)**. Jde o výstup do hlavního USB MIDI portu kontroleru, stejně jako u ověřeného ON/OFF testu. Nepoužívej DAW In nebo DIN. Zařízení samo vybere **konkrétní výstupní kanál** podle přiřazení. Pro tvůj setup jde o **15**. Volba All Channels se nepoužívá. Zprávy se odešlou až po potvrzení správného portu a kanálu.
+4. U každého Looperu nastav **CH**, **CC**, **ON**, **OFF** přesně podle Components. Typ je v této verzi pevně CC. Kanály jsou 1–16, CC a hodnoty 0–127. **Všechny zapnuté řádky pro SYNC musí mít stejný kanál**, u tebe 15. Smíšené kanály se zablokují s hláškou BLOCKED; jednotlivé ruční testy mohou samostatně vybrat kanál svého řádku. **CC -1 znamená nenastaveno**. Výchozí CH je 15 a ON/OFF 127/0. Nové řádky mají zapnutí vypnuté.
 5. S vypnutým **SYNC** vyzkoušej u řádku **TEST ON** a **OFF**. Test funguje i před zapnutím řádku. Musí se změnit správná LED na barvy uložené v Components. Při čekání na směrování se test provede až po potvrzení správného výstupu.
 6. Zapni požadované řádky v **ENABLE** (tlačítko ukazuje ON) a nahoře zapni **SYNC**. Průběžně se sledují všechny zapnuté řádky, včetně dalších stránek. **PREV/NEXT** listuje po osmi řádcích.
-7. Ulož Live Set. Konfigurace zahrnuje společný výstup, všechna přiřazení, jejich zapnutí i stav SYNC. Pokud byl SYNC při uložení zapnutý, po obnovení konfigurace pokračuje, jakmile je potvrzen port/All Channels a přijdou data dashboardu. Nové zařízení má SYNC vypnuté.
+7. Ulož Live Set. Konfigurace zahrnuje společný výstup, všechna přiřazení, jejich zapnutí i stav SYNC. Pokud byl SYNC při uložení zapnutý, po obnovení konfigurace pokračuje, jakmile je potvrzen port a konkrétní společný kanál a přijdou data dashboardu. Nové zařízení má SYNC vypnuté.
 
 Pro Looper A použij dosud ověřené **CH 15 / CC37 / ON 127 / OFF 0**. Další CC neodhaduj podle pořadí tlačítek; převezmi skutečná přiřazení z Components.
 
@@ -45,7 +45,7 @@ MIDI Learn, jiné LED protokoly, dlouhé a dvojité stisky tato verze neobsahuje
 ## Co ověřit v Live
 
 1. Nastav Looper A a další Looper; porovnej všechny čtyři stavy, správné tlačítko a reakci po uvolnění.
-2. Vyzkoušej rozdílné kanály, pokud je ve svém Custom Mode používáš. Nové společné směrování All Channels potřebuje nativní ověření.
+2. Pro všechny zapnuté řádky nastav CH 15. Nahoře při SYNC očekávej „SYNC ON / channel 15“. Pokud čeká, nový stav ukazuje požadovaný i aktuální kanál; chybějící kanál v nabídce je BLOCKED.
 3. Ulož Set, zavři jej a znovu otevři. Zkontroluj port, CC, hodnoty, ENABLE i SYNC. Nativní ukládání této verze přes parametr Live ještě není uživatelem potvrzené.
 4. Přehoď pořadí stop, dočasně odstraň/obnov Looper a ověř, že se nastavení nepřesune na jiné tlačítko. Zkus i jednu duplicitní adresu a pak ji oprav.
 
