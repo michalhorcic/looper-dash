@@ -46,17 +46,18 @@ assert (('audioin',0),('audioout',0)) in rootedges and (('audioin',1),('audioout
 assert all(src[0]=='audioin' for src,dst in rootedges if dst[0]=='audioout')
 led=(root/'mld2_led.js').read_text()
 assert 'LiveAPI' not in re.sub(r'/\*.*?\*/','',led,flags=re.S)
-assert 'outlet(0,[176,37,colour])' in led
+assert 'packet=[176,37,colour]' in led
+assert 'packet=[240,0,32,41,2,21,1,83,37,rgb[0],rgb[1],rgb[2],247]' in led
 assert len(re.findall(r'outlet\(0,',led))==1
 assert 'mld2_led.js' in [d['name'] for d in p['patcher']['dependency_cache']]
-print('PASS isolated optional LED MIDI path, fixed channel 1 / LED 37, unchanged stereo path')
+print('PASS isolated optional LED MIDI path, palette channel 1 / fixed LED 37 / RGB SysEx, unchanged stereo path')
 
 for b in boxes.values():
  if b.get('presentation'):
   x,y,w,h=b['presentation_rect'];assert x>=0 and y>=0 and x+w<=580 and y+h<=169
 for b in ledboxes.values():
  if b.get('presentation'):
-  x,y,w,h=b['presentation_rect'];assert x>=0 and y>=0 and x+w<=580 and y+h<=210
+  x,y,w,h=b['presentation_rect'];assert x>=0 and y>=0 and x+w<=580 and y+h<=250
 assert ledboxes['ledarm']['mode']==1 and ledboxes['ledfollow']['mode']==1
 assert ledboxes['ledarm']['parameter_enable']==0 and ledboxes['ledfollow']['parameter_enable']==0
 print('PASS LED setup fits its own window; Live device strip stays within 169px')
@@ -67,3 +68,9 @@ for control,command in [('ledarm','arm'),('ledfollow','follow')]:
  assert not any(src==(control,1) for src,dst in edges)
  assert ledboxes[control]['outlettype'][0]=='int'
 print('PASS LED toggles use numeric textbutton outlet 0, not text outlet 1')
+
+assert ledboxes['led']['numoutlets']==6
+assert (('ledprotocol',0),('ledprotocolmsg',0)) in edges
+assert ledboxes['ledprotocolmsg']['text']=='prepend protocol'
+assert (('led',5),('ledprotocol',0)) in edges
+print('PASS native protocol selector uses numeric outlet and non-outputting display updates')

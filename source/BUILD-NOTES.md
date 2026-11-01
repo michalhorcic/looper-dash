@@ -1,4 +1,4 @@
-# Build notes — 0.8.1 beta
+# Build notes — 0.9 beta
 
 Unfrozen Audio Effect AMXD: little-endian chunks `ampf` (payload `aaaa`), `meta` (four zero bytes), `ptch` (UTF-8 patcher JSON + null byte). Adjacent JS dependencies resolve relative to the device directory. No code signing, Node for Max, native externals or manual Max editing is required by this package.
 
@@ -37,7 +37,7 @@ Track color reference: https://docs.cycling74.com/apiref/lom/track/#color
 
 Core/UI tests cover dynamic colors, nested/return/master tracks, absent colors, layout switching, pagination, scaled click coordinates and the read-only contract. `node tests/test_ui.cjs /tmp/mld-preview` optionally writes simulated SVG previews for all layouts (square export canvas for Quick Look compatibility); these are not native Max screenshots.
 
-The user confirmed 0.3 works in Live 12 Suite. Version 0.8.1 still needs native Live verification.
+The user confirmed 0.3 works in Live 12 Suite. Version 0.9 still needs native Live verification.
 
 0.5 adds read-only A/B send monitoring for each Looper's host track. Only the first two `mixer_device sends` parameters are read/observed, shared once per host track. Return names/IDs and send parameter IDs participate in topology comparison, while send value changes use existing parameter observers without rescanning. No send C parameter is accessed. Missing returns, missing mixers and unavailable values have a neutral display.
 
@@ -84,3 +84,11 @@ Validation adds seven LED isolation/protocol mock tests and graph checks for the
 0.8.1 fixes two Max integration defects in the initial LED experiment. Native toggle-mode textbutton emits numeric state on outlet 0 and label text on outlet 1; LED OUTPUT and FOLLOW A now use outlet 0. live.routing reports current selections as zero-based indices, so the LED module now resolves them against the available type/channel lists and supports either metadata arrival order. Selector display is synchronized using non-outputting `set` messages. Named callbacks remain tolerated. Unresolved/invalid indices remain blocked.
 
 Three regression tests cover native numeric routing and ordering plus simulated toggle clicks dispatched through the generated patch's actual wiring. Static graph validation also checks the numeric outlet. The previous user test showed an unchanged OFF status; it cannot establish whether LCXL3 DAW colour commands work in Custom Mode 2, since output was never armed correctly.
+
+0.9 adds a separate, explicit manual RGB SysEx protocol selector. Its only frame is `F0 00 20 29 02 15 01 53 25 R G B F7` (hex), where 0x25 is LED 37. Test RGB values: white 32/32/32, green 0/127/0, red 127/0/0, orange 127/40/0, off 0/0/0. All data bytes are 7-bit. The existing single module output/iter/midiout path carries either fixed palette CC or this complete fixed-purpose frame.
+
+Protocol may change only with LED OUTPUT off; attempted changes while armed restore the visible selector. RGB is manual-only; FOLLOW and watchdog never emit RGB automatically. The exact `LCXL3 1 (MIDI In)` destination is additionally accepted ONLY for RGB, never for palette CC. Channel selector 1 remains required for consistent routing, although SysEx itself has no MIDI channel. DIN/other devices remain blocked. No generic SysEx sender, CC15/37, device-mode commands, configuration writes or template uploads are exposed. Disable/deletion may submit a matching RGB off frame.
+
+User hardware result with 0.8.1: DAW palette CC successfully changes LED in DAW mode, and has no visible effect in Custom Mode 2. RGB on either port is unverified. This tests whether the RGB command is treated differently; documentation does not guarantee it. Launchpad X is no longer available to the user and is not a target.
+
+Three additional tests validate complete SysEx framing, RGB values, MIDI-port isolation, manual-only behavior, channel restrictions and native protocol selector reset. Total LED tests: 13.

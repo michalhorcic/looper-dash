@@ -29,7 +29,7 @@
             650,
             25
           ],
-          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.8.1 beta",
+          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.9 beta",
           "fontsize": 18.0,
           "presentation": 1,
           "presentation_rect": [
@@ -618,7 +618,7 @@
               140,
               120,
               580,
-              210
+              250
             ],
             "openinpresentation": 1,
             "default_fontname": "Arial",
@@ -685,7 +685,7 @@
                     550,
                     22
                   ],
-                  "text": "LCXL3 / LOOPER A / EXPERIMENTAL - Custom Mode 2",
+                  "text": "LCXL3 / LOOPER A / CUSTOM MODE 2 / RGB EXPERIMENT",
                   "presentation": 1,
                   "presentation_rect": [
                     12,
@@ -949,8 +949,9 @@
                   ],
                   "text": "js mld2_led.js",
                   "numinlets": 1,
-                  "numoutlets": 5,
+                  "numoutlets": 6,
                   "outlettype": [
+                    "",
                     "",
                     "",
                     "",
@@ -1192,14 +1193,73 @@
                     550,
                     42
                   ],
-                  "text": "DAW In / channel 1 only. No mode switches or CC15/37 output. If colours do not change in Custom Mode 2, stop and report the result.",
+                  "text": "RGB: test DAW In, then MIDI In. Channel 1. No mode changes, template writes or CC15/37. Read the test guide before enabling output.",
                   "fontsize": 11.0,
                   "presentation": 1,
                   "presentation_rect": [
                     12,
-                    164,
+                    194,
                     556,
-                    40
+                    44
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "ledprotocol",
+                  "maxclass": "umenu",
+                  "patching_rect": [
+                    20,
+                    1040,
+                    300,
+                    22
+                  ],
+                  "items": [
+                    "Palette CC - DAW only",
+                    ",",
+                    "RGB SysEx - manual test"
+                  ],
+                  "parameter_enable": 0,
+                  "presentation": 1,
+                  "presentation_rect": [
+                    12,
+                    164,
+                    300,
+                    22
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "ledprotocolmsg",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    340,
+                    1040,
+                    125,
+                    22
+                  ],
+                  "text": "prepend protocol"
+                }
+              },
+              {
+                "box": {
+                  "id": "protocolhint",
+                  "maxclass": "comment",
+                  "patching_rect": [
+                    20,
+                    1080,
+                    556,
+                    22
+                  ],
+                  "text": "Change protocol with LED OUTPUT off.",
+                  "fontsize": 11.0,
+                  "presentation": 1,
+                  "presentation_rect": [
+                    324,
+                    164,
+                    244,
+                    22
                   ]
                 }
               }
@@ -1645,6 +1705,42 @@
                   ],
                   "destination": [
                     "ledrouting",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledprotocol",
+                    0
+                  ],
+                  "destination": [
+                    "ledprotocolmsg",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "ledprotocolmsg",
+                    0
+                  ],
+                  "destination": [
+                    "led",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "led",
+                    5
+                  ],
+                  "destination": [
+                    "ledprotocol",
                     0
                   ]
                 }

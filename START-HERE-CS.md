@@ -1,4 +1,4 @@
-# Multi Looper Dashboard 0.8.1 beta
+# Multi Looper Dashboard 0.9 beta
 
 ## Spuštění — bez úprav v Maxu
 
@@ -6,9 +6,17 @@
 2. V Live 12 Suite přetáhni **`MultiLooperDashboard.amxd` na libovolnou audio stopu**, například novou prázdnou stopu Dashboard.
 3. Na zařízení klikni **OPEN DASHBOARD**. Monitor si Loopery najde sám. Není potřeba přejmenovávat stopy, otevírat editor ani měnit MIDI nastavení.
 
-Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.8.1 zatím nebyly přímo v Live ověřeny.
+Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.9 zatím nebyly přímo v Live ověřeny.
 
-## Co je nové v 0.8.1
+## Co je nové v 0.9
+
+- LED TEST má novou volbu **RGB SysEx - manual test**. Vypni LED OUTPUT, vyber tuto volbu a nech FOLLOW A vypnuté.
+- RGB test cílí pouze první horní tlačítko (LED 37), nejprve přes DAW In a potom přes MIDI In. Neobsahuje přepínání režimů ani zápis Custom Mode a neposílá CC15/37.
+- RGB je zatím pouze ruční test bez automatického sledování. Podpora v Custom Mode 2 není ověřená. U předchozího paletového CC testu uživatel potvrdil fungování v DAW režimu a nulový efekt v Custom Mode 2.
+- Původní paletové CC zprávy zůstávají omezené na DAW In. MIDI In povoluje jen RGB experiment. Launchpad X už uživatel nemá; řešení cílí výhradně LCXL3.
+- Přesný postup je v [LED-TEST-CS.md](LED-TEST-CS.md).
+
+## Opravy 0.8.1
 
 - Opravené zapojení LED OUTPUT / FOLLOW A: přepínače teď předávají číselné 0/1 místo textového popisku.
 - Opravené rozlišení portu/kanálu z číselných indexů vracených `live.routing`. Původní neúspěšný test verze 0.8 kvůli těmto chybám nepotvrzuje omezení hardwaru.
@@ -65,7 +73,7 @@ Skutečné čekání na nahrávání a čtecí hlava nejsou tímto buildem měř
 
 **Bar / Beat / Next bar** jsou vypočtené z transportu pro pevné 4/4. Next bar odpočítává čtvrťové doby k další hranici jednoho taktu; na hranici ukáže 4. Není to odpočet konkrétního požadavku Record. Při zastavení transportu mřížka stojí, i kdyby Looper hrál samostatně. Pro proměnlivé metrum, posunutý začátek skladby, opačný směr nebo změněnou rychlost Looperu není tato mřížka jeho pozicí.
 
-Zařízení pouze čte Live API. Neobsahuje MIDI příjem, zásahy do mapování LCXL3, ovládání transportu ani zápisy do parametrů Looperu. Volitelný LED modul má samostatný MIDI výstup pro jedinou LED na DAW portu LCXL3 a ve výchozím stavu je vypnutý. Audio na hostitelské stopě prochází stereo beze změny úrovně. Pro běžný dashboard nic nenastavuješ na MIDI portech ani v Custom Mode Launch Controlu. LED test vyžaduje ruční výběr DAW MIDI výstupu; postup je v LED-TEST-CS.md.
+Zařízení pouze čte Live API. Neobsahuje MIDI příjem, zásahy do mapování LCXL3, ovládání transportu ani zápisy do parametrů Looperu. Volitelný LED modul má samostatný MIDI výstup pro jedinou LED LCXL3 a ve výchozím stavu je vypnutý. DAW In slouží pro paletové CC a RGB; MIDI In je povolený pouze pro ruční RGB experiment. Audio na hostitelské stopě prochází stereo beze změny úrovně. Pro běžný dashboard nic nenastavuješ na MIDI portech ani v Custom Mode Launch Controlu. LED test vyžaduje ruční výběr DAW MIDI výstupu; postup je v LED-TEST-CS.md.
 
 ## Rychlé vyzkoušení
 

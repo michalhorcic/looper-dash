@@ -1,14 +1,22 @@
 /* Experimental LCXL3 LED feedback. ES5. No LiveAPI, MIDI input, mode switching or mapping writes. */
-autowatch=1;inlets=1;outlets=5;
+autowatch=1;inlets=1;outlets=6;
 var armed=false,following=false,portName="",channelName="",latest=null,received=0;
 var lastColour=null,lastSent=0,watchdog=null,lastStatus="";
 var typeNames=[],channelNames=[],typeChoice=null,channelChoice=null;
 var colours={STOP:1,PLAY:21,RECORD:5,OVERDUB:9};
+var ledProtocol=0, rgbColours={0:[0,0,0],1:[32,32,32],21:[0,127,0],5:[127,0,0],9:[127,40,0]};
 function argsText(args){return arrayfromargs(args).join(" ");}
 function status(s){if(s!==lastStatus){lastStatus=s;outlet(1,"set",s);}}
-function validPort(){
+function dawPort(){
     // These are the DAW output aliases in the user's Live MIDI settings.
     return /^LCXL3 1 \(DAW In\)$/i.test(portName)||/^Launch_Control_XL_3 Output \(LCXL3 1(?: \(DAW In\))?\)$/i.test(portName);
+}
+function midiPort(){return /^LCXL3 1 \(MIDI In\)$/i.test(portName);}
+function validPort(){return dawPort()||(ledProtocol===1&&midiPort());}
+function protocol(n){
+    n=Number(n);if(n!==0&&n!==1)return;
+    if(armed){outlet(5,"set",ledProtocol);status("Disable LED OUTPUT before changing protocol.");return;}
+    ledProtocol=n;reset();outlet(5,"set",ledProtocol);show();
 }
 function validChannel(){return /^(?:1|Ch\.?\s*1|Channel\s+1)$/i.test(channelName);}
 function ready(){return validPort()&&validChannel();}
@@ -16,8 +24,14 @@ function sendColour(colour,force){
     if(!ready())return false;
     var now=Date.now();if(!force&&colour===lastColour&&now-lastSent<500)return true;
     // DAW LED address 37 is upper fader-button row, first from left.
-    // This is channel 1 on DAW In, NEVER the Custom Mode's channel 15.
-    outlet(0,[176,37,colour]);lastColour=colour;lastSent=now;return true;
+    // Palette uses channel 1 / DAW In; RGB is channel-less. Neither sends the mapped channel 15 CC.
+    var packet;
+    if(ledProtocol===1){
+        var rgb=rgbColours[colour];if(!rgb)return false;
+        // Novation RGB LED command only: no mode/template/configuration writes.
+        packet=[240,0,32,41,2,21,1,83,37,rgb[0],rgb[1],rgb[2],247];
+    }else packet=[176,37,colour];
+    outlet(0,packet);lastColour=colour;lastSent=now;return true;
 }
 function reset(){lastColour=null;lastSent=0;}
 // live.routing reports current selections as zero-based indices; tolerate names too.
@@ -44,8 +58,11 @@ function routingchannel(){channelChoice=selection(arguments);refreshNames();rese
 function choose_type(n){typeChoice=null;channelChoice=null;portName="";channelName="";channelNames=[];reset();outlet(4,"type",Number(n));show();}
 function choose_channel(n){channelChoice=null;channelName="";reset();outlet(4,"channel",Number(n));show();}
 function show(){
-    if(!armed){status("LED output OFF. Select the LCXL3 DAW In output and channel 1.");return;}
-    if(!ready()){status("BLOCKED: output="+(portName||"unresolved")+", channel="+(channelName||"unresolved")+". Choose LCXL3 DAW In / channel 1.");return;}
+    if(!armed){status("LED output OFF. "+(ledProtocol===1?"RGB SysEx: select LCXL3 DAW In or MIDI In; keep FOLLOW off.":"Palette CC: select LCXL3 DAW In and channel 1."));return;}
+    if(!ready()){status("BLOCKED: output="+(portName||"unresolved")+", channel="+(channelName||"unresolved")+". "+(ledProtocol===1?"RGB allows LCXL3 DAW In or MIDI In / channel 1.":"Palette requires LCXL3 DAW In / channel 1."));return;}
+    if(ledProtocol===1){
+        status(following?"RGB TEST BLOCKED: turn FOLLOW A off. RGB is manual-only until hardware is validated.":"ARMED RGB: manual colour test on "+portName+". Remain in Custom Mode 2.");return;
+    }
     if(!following){status("ARMED: test WHITE / GREEN / RED / ORANGE. Then enable FOLLOW A. Custom Mode 2 is experimental.");return;}
     update();
 }
@@ -62,14 +79,15 @@ function testcolour(name){
     if(!armed||!ready()){show();return;}
     if(following){status("Disable FOLLOW A before testing a colour.");return;}
     if(palette[name]===undefined)return;
-    sendColour(palette[name],true);status("TEST "+name+" sent to DAW LED 37. Check the physical button in Custom Mode 2.");
+    sendColour(palette[name],true);
+    status(ledProtocol===1?"TEST RGB "+name+" submitted to "+portName+" / LED 37 (13 SysEx bytes). Check the physical LED.":"TEST "+name+" sent to DAW LED 37. Check the physical button in Custom Mode 2.");
 }
 function snapshot(){
     try{latest=JSON.parse(argsText(arguments));received=Date.now();if(armed&&following)update();}
     catch(e){latest=null;received=0;if(armed&&following)update();}
 }
 function update(){
-    if(!armed||!following||!ready())return;
+    if(!armed||!following||!ready()||ledProtocol===1)return;
     if(!latest||Date.now()-received>1500){sendColour(0,false);status("FOLLOW: dashboard data unavailable / stale; LED off.");return;}
     var matches=[],rows=latest.rows||[];
     for(var i=0;i<rows.length;i++)if(rows[i].track==="Looper A")matches.push(rows[i]);

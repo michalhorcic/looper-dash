@@ -81,4 +81,27 @@ test('built patch connects numeric textbutton output to arm/follow and updates s
  snapshot();clickToggle('ledfollow',1);assert.equal(c.following,true);assert.deepEqual(midi().at(-1),[176,37,21]);
  clickToggle('ledarm',0);assert.equal(c.armed,false);assert.deepEqual(midi().at(-1),[176,37,0]);
 });
+test('RGB SysEx on DAW output encodes only the documented single LED command',()=>{
+ route();c.protocol(1);assert.deepEqual(midi(),[],'choosing RGB does not send');c.arm(1);
+ for(const [name,rgb] of [['WHITE',[32,32,32]],['GREEN',[0,127,0]],['RED',[127,0,0]],['ORANGE',[127,40,0]]]){
+  c.testcolour(name);assert.deepEqual(midi().at(-1),[240,0,32,41,2,21,1,83,37,...rgb,247]);
+ }
+ c.arm(0);assert.deepEqual(midi().at(-1),[240,0,32,41,2,21,1,83,37,0,0,0,247]);
+ assert.ok(midi().every(p=>p.length===13&&p[0]===240&&p.at(-1)===247&&p.slice(1,-1).every(v=>Number.isInteger(v)&&v>=0&&v<=127)));
+});
+test('MIDI In permits manual RGB only, never palette CC, follow or repeated snapshot output',()=>{
+ route('LCXL3 1 (MIDI In)');c.arm(1);c.testcolour('RED');assert.deepEqual(midi(),[]);
+ c.arm(0);c.protocol(1);c.arm(1);c.testcolour('RED');assert.equal(midi().length,1);assert.equal(midi()[0][0],240);
+ c.follow(1);const n=midi().length;for(let i=0;i<5;i++){now+=600;snapshot('RECORD');c.check();}assert.equal(midi().length,n);
+ c.testcolour('GREEN');assert.equal(midi().length,n,'manual RGB blocked while FOLLOW is on');
+ c.follow(0);c.testcolour('GREEN');assert.equal(midi().length,n+1);c.notifydeleted();assert.equal(midi().at(-1)[0],240);
+ c.protocol(0);c.arm(1);c.testcolour('GREEN');assert.equal(midi().at(-1)[0],240,'switching back to palette cannot send CC on MIDI In');
+});
+test('RGB transport rejects other devices, channel 15, invalid protocols and changes while armed',()=>{
+ c.protocol(1);
+ for(const port of ['LCXL3 1 (To DIN Out)','LCXL3 2 (MIDI In)','Unrelated device']){route(port);c.arm(1);c.testcolour('RED');assert.deepEqual(midi(),[]);c.arm(0);}
+ route('LCXL3 1 (MIDI In)','15');c.arm(1);c.testcolour('RED');assert.deepEqual(midi(),[]);c.arm(0);
+ c.protocol(7);assert.equal(c.ledProtocol,1);route();c.arm(1);c.protocol(0);assert.equal(c.ledProtocol,1);assert.ok(out.some(x=>x[0]===5&&x[1]==='set'&&x[2]===1));
+ c.testcolour('RED');assert.equal(midi().at(-1)[0],240);c.arm(0);c.protocol(0);assert.equal(c.ledProtocol,0);
+});
 console.log(passed+' LED isolation/protocol tests passed; Custom Mode 2 hardware behavior remains unverified.');
