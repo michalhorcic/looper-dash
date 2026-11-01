@@ -1,4 +1,4 @@
-# Build notes — 0.11 beta
+# Build notes — 0.12 beta
 
 Unfrozen Audio Effect AMXD: little-endian chunks `ampf` (payload `aaaa`), `meta` (four zero bytes), `ptch` (UTF-8 patcher JSON + null byte). Adjacent JS dependencies resolve relative to the device directory. No code signing, Node for Max, native externals or manual Max editing is required by this package.
 
@@ -25,9 +25,11 @@ python3 source/build.py
 node --check mld2_core.js
 node --check mld2_ui.js
 node --check mld2_led.js
+node --check mld2_led_setup.js
 node tests/test_core.cjs
 node tests/test_ui.cjs
 node tests/test_led.cjs
+node tests/test_led_setup.cjs
 python3 tests/validate_build.py
 ```
 
@@ -106,3 +108,18 @@ Protocol changes still require output off. Existing palette and RGB routes remai
 The Custom watchdog checks every 25 ms and refreshes unchanged output at 100 ms intervals to recover from local button redraw without reading MIDI input. Scheduler load and MIDI delivery can add latency. State/freshness/route checks run before every output. Missing, ambiguous, inactive, unknown or stale (>1500 ms) target falls to configured Off and resets blink phase. Recovery starts a fresh phase. FOLLOW off submits Off and stops automatic output; armed manual tests remain available. Output off/deletion submits Off when route is valid and frees the timer. Route loss blocks output. RGB remains manual-only and palette timing stays 500 ms.
 
 Test window, controls and route restrictions are preserved, and both switches remain off on load. No long/double-press logic, MIDI input, mapping changes or Live writes are added. New clock-driven mock coverage checks exact blink boundaries, repeated snapshots, distinct state transitions, 100 ms refresh, custom values, manual/follow exclusion, stale/invalid data recovery, route loss, follow off, disable and deletion. Total LED tests: 20. Automatic feedback needs hardware validation; only the manual colour feedback path is user-verified.
+
+
+0.12 adds `mld2_led_setup.js` and a native 1080x640 LED SETUP window with eight reusable rows plus pagination. One Looper per uniquely named host track is required; multiple detected rows sharing a track name are explicitly ambiguous. Each assignment has channel 1–16, CC (-1 unset, otherwise 0–127), 7-bit On/Off values and enabled flag. All discoveries start unset/disabled. The union of discovered names and stored assignments preserves missing rows; CLEAR removes settings. Reordering and new runtime IDs do not affect bindings. Renames deliberately create a new unset row plus the old missing row; no automatic transfer by name similarity or stale runtime ID.
+
+The shared destination is an explicitly selected `LCXL3 <number> (MIDI In)` name, restored by exact name instead of an index. Only these main USB ports appear in the new menu; All Channels must be confirmed by live.routing before packets are allowed, so each packet's status byte can select its assignment's channel. No route is chosen for a fresh, unconfigured device. A saved enabled SYNC resumes only after restoring the chosen route, with missing/stale targets going to configured Off. Native All Channels delivery requires hardware validation.
+
+The setup engine emits only channel CC On/Off packets. They pass through `setup_midi` in the existing LED module, which independently requires setup ownership, the main LCXL3 USB destination, All Channels, and three valid CC bytes. The existing module remains the sole source of raw bytes reaching iter/midiout. Protocol tests and setup take exclusive ownership: claiming setup clears/disarms legacy LED OUTPUT and synchronizes its toggle; legacy output arming suspends setup, clears its previously sent addresses and stops its timer. Routing metadata fanout has explicit order: legacy arbiter first, setup second, so a manual test cannot be dropped because the final gate has stale metadata. Existing audio and read-only API wiring remain unchanged. No MIDI input/Learn, Looper commands, mapping edits or long/double-press handling.
+
+Per-assignment blink state reuses the 0.11 semantics (1/4 Hz; 100ms refresh; 25ms low-priority Task). Duplicate enabled channel/CC addresses are blocked for both assignments. Manual tests require SYNC off and cannot target another enabled assignment's address; they work before enabling their own row. Target edits/disable/clear first submit Off for previously emitted assignments, then recompute follow output. Missing/unavailable/ambiguous/unknown or >1500ms stale data produces Off. Manual tests wait for confirmed routing; no bytes go to an unresolved bus.
+
+Persistence uses `getvalueof`/`setvalueof` and `notifyclients` bound to `pattr ledConfiguration @bindto ledSetupEngine @parameter_enable 1`, with Stored Only Blob parameter type 3 and mapping disabled. A versioned URI-encoded JSON symbol stores only exact destination name, SYNC and validated assignment data, never runtime IDs, blink phases or manual tests. Restore validates the whole blob atomically; malformed data keeps current settings. This is Live parameter state, not js save/embedmessage (which only saves a patcher). Native Set close/reopen behavior still requires a user test.
+
+Primary references: https://docs.cycling74.com/userguide/pattr/ , https://docs.cycling74.com/reference/pattr/ , https://docs.cycling74.com/apiref/js/jsthis/ and https://docs.cycling74.com/reference/live.routing . The Blob attribute layout follows bundled Max's `M4L.PitchScale.bpatch.maxpat`.
+
+Four adjacent JS dependencies are now required. Fifteen new setup tests cover pagination, more than eight Loopers, independent channels/blinks, stale/invalid data, name/ID changes, conflicting addresses, saved-state roundtrip and validation, manual/follow exclusion, asynchronous routing, native graph command dispatch and both engines' shared output arbitration and throttled routing retries after rejected callbacks/reconnection. Route retries are limited to once per second to avoid feedback loops. Native UI, parameter persistence and multichannel routing cannot be proven by these mocks. Build validation adds parameter binding, window bounds, metadata ordering and arbiter wiring checks.

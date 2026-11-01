@@ -1,4 +1,4 @@
-/* MLD 0.11 beta. ES5 for stock Max js. All Live interaction is read-only. */
+/* MLD 0.12 beta. ES5 for stock Max js. All Live interaction is read-only. */
 autowatch=1; inlets=1; outlets=1;
 var song=null, timer=null, refs=[], slots=[], queue=[], events=[], scans=0;
 var ready=false, epoch=0, dirty=false, scanAt=0, lastFallback=0, lastContext=0;
@@ -194,14 +194,14 @@ function publish(){
             raw:p?{name:p.name,value:p.value,display:p.display}:null,grid_bars:referenceBars[String(s.id)]||4,
             parameter_count:s.parameters.length});
     }
-    outlet(0,"snapshot",JSON.stringify({version:"0.11 beta",status:message,rows:rows,transport:transportData,
+    outlet(0,"snapshot",JSON.stringify({version:"0.12 beta",status:message,rows:rows,transport:transportData,
         count:rows.length,scans:scans,dropped:dropped,wall_ms:Date.now(),pending:"unknown",phase:"unavailable"}));
 }
 function gridlength(deviceId,bars){bars=Number(bars);if(bars!==4&&bars!==8)return;for(var i=0;i<slots.length;i++)if(slots[i].id===Number(deviceId)){referenceBars[String(deviceId)]=bars;publish();return;}}
 function mark(){log({kind:"marker",label:arrayfromargs(arguments).join(" ")||"User marker",transport:transportData});}
 function export_report(){
     var path=arrayfromargs(arguments).join(" ");if(!path)return;
-    var r={schema:"mld-diagnostic-2",version:"0.11 beta",created_at:new Date().toISOString(),
+    var r={schema:"mld-diagnostic-2",version:"0.12 beta",created_at:new Date().toISOString(),
         status:message,transport:transportData,loopers:slots,initial_inventory:inventory,events:events,dropped_events:dropped,
         timing:"Observer wall times; transport sampled later in a low-priority Task. Not sample accurate.",
         state_semantics:"Native parameter text, not validated as active versus requested state.",

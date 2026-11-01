@@ -40,7 +40,7 @@ assert [src for src,dst in edges if dst[0]=='ledout']==[('ledbytes',0)]
 assert [src for src,dst in edges if dst[0]=='ledbytes']==[('led',0)]
 assert ledboxes['led']['text']=='js mld2_led.js' and ledboxes['ledrouting']['text']=='live.routing'
 assert (('js',0),('ledwindow',0)) in rootedges
-assert (('commands',2),('led',0)) in edges
+assert (('commands',3),('led',0)) in edges
 assert (('led',4),('ledrouting',0)) in edges
 assert (('audioin',0),('audioout',0)) in rootedges and (('audioin',1),('audioout',1)) in rootedges
 assert all(src[0]=='audioin' for src,dst in rootedges if dst[0]=='audioout')
@@ -70,7 +70,7 @@ for control,command in [('ledarm','arm'),('ledfollow','follow')]:
  assert ledboxes[control]['outlettype'][0]=='int'
 print('PASS LED toggles use numeric textbutton outlet 0, not text outlet 1')
 
-assert ledboxes['led']['numoutlets']==6
+assert ledboxes['led']['numoutlets']==8
 assert (('ledprotocol',0),('ledprotocolmsg',0)) in edges
 assert ledboxes['ledprotocolmsg']['text']=='prepend protocol'
 assert (('led',5),('ledprotocol',0)) in edges
@@ -89,3 +89,27 @@ for ident,initial in [('onvalue',127),('offvalue',0)]:
  assert ((ident,0),(ident+'msg',0)) in edges
  assert ((ident+'msg',0),('led',0)) in edges
 print('PASS native Custom ON/OFF test controls, 7-bit values and initialization')
+
+# Multiple configured channels reach the existing sole midiout via a gated arbiter.
+assert ledboxes['setup']['text']=='js mld2_led_setup.js'
+assert ledboxes['setup']['varname']=='ledSetupEngine'
+assert ledboxes['setupstate']['parameter_enable']==1
+assert ledboxes['setupstate']['parameter_mappable']==0
+assert '@bindto ledSetupEngine' in ledboxes['setupstate']['text']
+assert ledboxes['setupstate']['saved_attribute_attributes']['valueof']['parameter_type']==3
+assert ledboxes['setupstate']['saved_attribute_attributes']['valueof']['parameter_invisible']==1
+for pair in [(('commands',3),('setup',0)),(('setup',0),('setupmidimsg',0)),(('setupmidimsg',0),('led',0)),(('setup',1),('setupwindow',0)),(('setupwindow',0),('setup',0)),(('setup',3),('setupclaimmsg',0)),(('setupclaimmsg',0),('led',0)),(('led',6),('setup',0)),(('led',7),('ledarm',0))]:assert pair in edges
+assert ledboxes['setupmidimsg']['text']=='prepend setup_midi'
+assert ledboxes['setupclaimmsg']['text']=='prepend setup_claim'
+for outlet in range(4):
+ fanout=[l['patchline'] for l in ledpanel['lines'] if l['patchline']['source']==['ledrouting'+str(outlet),0]]
+ assert {e['destination'][0]:e['order'] for e in fanout}=={'led':0,'setup':1}
+setupboxes={b['box']['id']:b['box'] for b in ledboxes['setupwindow']['patcher']['boxes']}
+for b in setupboxes.values():
+ if b.get('presentation'):
+  x,y,w,h=b['presentation_rect'];assert x>=0 and y>=0 and x+w<=1080 and y+h<=640
+assert 'mld2_led_setup.js' in [d['name'] for d in p['patcher']['dependency_cache']]
+setupsource=(root/'mld2_led_setup.js').read_text()
+assert 'LiveAPI' not in re.sub(r'/\*.*?\*/','',setupsource,flags=re.S)
+assert 'getvalueof' in setupsource and 'setvalueof' in setupsource and 'notifyclients()' in setupsource
+print('PASS multi-Looper setup window, blob persistence, metadata ordering and shared MIDI arbiter')

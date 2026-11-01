@@ -1,5 +1,5 @@
 /* Experimental LCXL3 LED feedback. ES5. No LiveAPI, MIDI input, mode switching or mapping writes. */
-autowatch=1;inlets=1;outlets=6;
+autowatch=1;inlets=1;outlets=8;
 var armed=false,following=false,portName="",channelName="",latest=null,received=0;
 var lastColour=null,lastSent=0,watchdog=null,lastStatus="";
 var typeNames=[],channelNames=[],typeChoice=null,channelChoice=null;
@@ -7,6 +7,7 @@ var colours={STOP:1,PLAY:21,RECORD:5,OVERDUB:9};
 var ledProtocol=0, rgbColours={0:[0,0,0],1:[32,32,32],21:[0,127,0],5:[127,0,0],9:[127,40,0]};
 var onValue=127,offValue=0;
 var followState=null,phaseStarted=0;
+var setupOwned=false;
 function argsText(args){return arrayfromargs(args).join(" ");}
 function status(s){if(s!==lastStatus){lastStatus=s;outlet(1,"set",s);}}
 function dawPort(){
@@ -39,7 +40,19 @@ function sendColour(colour,force){
         // Novation RGB LED command only: no mode/template/configuration writes.
         packet=[240,0,32,41,2,21,1,83,37,rgb[0],rgb[1],rgb[2],247];
     }else packet=[176,37,colour];
-    outlet(0,packet);lastColour=colour;lastSent=now;return true;
+    emitPacket(packet);lastColour=colour;lastSent=now;return true;
+}
+function emitPacket(packet){outlet(0,packet);}
+function setup_claim(n){
+    if(Number(n)===1){arm(0);outlet(7,"set",0);setupOwned=true;}
+    else setupOwned=false;
+}
+function setup_midi(statusByte,cc,value){
+    if(!setupOwned||!/^LCXL3 \d+ \(MIDI In\)$/i.test(portName)||!/^(?:All Channels|All)$/i.test(channelName))return;
+    var p=[statusByte,cc,value];
+    for(var i=0;i<3;i++)if(typeof p[i]!=="number"||!isFinite(p[i])||Math.floor(p[i])!==p[i])return;
+    if(statusByte<176||statusByte>191||cc<0||cc>127||value<0||value>127)return;
+    emitPacket(p);
 }
 function reset(){lastColour=null;lastSent=0;followState=null;phaseStarted=0;}
 // live.routing reports current selections as zero-based indices; tolerate names too.
@@ -83,6 +96,7 @@ function show(){
 function startWatchdog(){if(!watchdog){watchdog=new Task(check,this);watchdog.interval=ledProtocol===2?25:500;watchdog.repeat();}}
 function arm(n){
     var next=Number(n)===1;
+    if(next&&setupOwned)outlet(6,"suspend");
     if(!next&&armed&&lastColour!==null)sendColour(0,true);
     armed=next;reset();if(armed)startWatchdog();else if(watchdog){watchdog.cancel();watchdog.freepeer();watchdog=null;}
     show();
