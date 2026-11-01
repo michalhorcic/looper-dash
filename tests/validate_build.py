@@ -132,7 +132,7 @@ fanout=[l['patchline'] for l in ledpanel['lines'] if l['patchline']['source']==[
 assert {e['destination'][0]:e['order'] for e in fanout}=={'actions':0,'led':1,'setup':2}
 actions=(root/'mld2_actions.js').read_text()
 assert not re.search(r'\.set\s*\(',actions)
-assert sorted(re.findall(r'\.call\s*\(\s*"([^"]+)"',actions))==['clear','str_for_value']
+assert sorted(re.findall(r'\.call\s*\(\s*"([^"]+)"',actions))==['clear','stop','str_for_value']
 assert 'mld2_actions.js' in [d['name'] for d in p['patcher']['dependency_cache']]
 for i in range(4):
  assert setupboxes['row'+str(i)+'_stopcc']['minimum']==-1
@@ -141,7 +141,7 @@ for i in range(4):
 print('PASS routed Stop MIDI input, opt-in hold UI, cancellable deferred Clear and read-only core separation')
 setupedges=[(tuple(l['patchline']['source']),tuple(l['patchline']['destination'])) for l in ledboxes['setupwindow']['patcher']['lines']]
 for i in range(4):
- for control,command in [('stopcc','cc'),('stopon','on'),('stopoff','off'),('stopenabled','enabled'),('stopclear','clear')]:
+ for control,command in [('stopcc','cc'),('stopon','on'),('stopoff','off'),('stopinputOn','inputOn'),('stopinputOff','inputOff'),('stopenabled','enabled'),('stopclear','clear')]:
   ident='row'+str(i)+'_'+control
   assert setupboxes[ident+'msg']['text']=='prepend stopedit '+str(i)+' '+command
   assert ((ident,0),(ident+'msg',0)) in setupedges

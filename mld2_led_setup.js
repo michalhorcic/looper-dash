@@ -1,6 +1,6 @@
 /* LCXL3 CC feedback and Stop-hold gesture. ES5. Clear is delegated to the guarded action module. */
 autowatch=1;inlets=1;outlets=7;
-var config={version:2,port:"",input:"",holdMs:1500,run:false,assignments:[]};
+var config={version:3,port:"",input:"",holdMs:1500,run:false,assignments:[]};
 var latest=null,received=0,rows=[],groups={},items=[],page=0,pageSize=4;
 var types=[],channels=[],typeChoice=null,channelChoice=null,portOptions=[];
 var portName="",channelName="",pendingType=null,pendingChannel=null;
@@ -23,8 +23,8 @@ function outputChannel(){
 function channelIndex(n){for(var i=0;i<channels.length;i++)if(channelNumber(channels[i])===n)return i;return -1;}
 function key(s){return "$"+s;}
 function assignment(track){for(var i=0;i<config.assignments.length;i++)if(config.assignments[i].track===track)return config.assignments[i];return null;}
-function stopDefaults(track){var m=/^Looper ([ABC])$/.exec(track);return {cc:m?45+m[1].charCodeAt(0)-65:-1,on:127,off:0,enabled:false,clear:false};}
-function defaults(track){return {track:track,channel:15,cc:-1,on:127,off:0,enabled:false,stop:stopDefaults(track)};}
+function stopDefaults(track){var m=/^Looper ([ABC])$/.exec(track);return {cc:m?45+m[1].charCodeAt(0)-65:-1,on:127,off:0,inputOn:127,inputOff:0,enabled:false,clear:false};}
+function defaults(track){return {track:track,channel:15,cc:-1,on:track==="Looper A"?126:127,off:track==="Looper A"?1:0,enabled:false,stop:stopDefaults(track)};}
 function target(a,role){if(role!=="stop")return a;return {track:a.track,channel:a.channel,cc:a.stop.cc,on:a.stop.on,off:a.stop.off,enabled:a.stop.enabled,role:"stop"};}
 function stopComplete(a){return a&&a.stop&&complete(target(a,"stop"));}
 function bufferState(row){
@@ -202,14 +202,14 @@ function render(){
     ui("setupStatus","set",status);
     for(i=0;i<pageSize;i++){
         var track=items[page*pageSize+i],prefix="row"+i+"_",exists=track!==undefined;
-        var fields=["label","channel","cc","on","off","enabled","teston","testoff","forget","status","stoplabel","stopcc","stopon","stopoff","stopenabled","stopclear","stopteston","stoptestoff","stopstatus"];
+        var fields=["label","channel","cc","on","off","enabled","teston","testoff","forget","status","stoplabel","stopcc","stopon","stopoff","stopinputOn","stopinputOff","stopinputOnlabel","stopinputOfflabel","stopenabled","stopclear","stopteston","stoptestoff","stopstatus"];
         for(var j=0;j<fields.length;j++)ui(prefix+fields[j],"hidden",exists?0:1);
         if(!exists)continue;
         var a=assignment(track)||defaults(track),g=groups[key(track)]||[];
         ui(prefix+"label","set",track+" / "+(g.length===1?String(g[0].name||"Looper"):g.length?g.length+" Loopers":"not detected"));
         ui(prefix+"status","set",rowStatus(track));
         ui(prefix+"stopstatus","set",stopStatus(track));
-        ui(prefix+"stopcc","set",a.stop.cc);ui(prefix+"stopon","set",a.stop.on);ui(prefix+"stopoff","set",a.stop.off);
+        ui(prefix+"stopcc","set",a.stop.cc);ui(prefix+"stopon","set",a.stop.on);ui(prefix+"stopoff","set",a.stop.off);ui(prefix+"stopinputOn","set",a.stop.inputOn);ui(prefix+"stopinputOff","set",a.stop.inputOff);
         ui(prefix+"stopenabled","set",a.stop.enabled?1:0);ui(prefix+"stopclear","set",a.stop.clear?1:0);
         for(j=0;j<5;j++){var field=["channel","cc","on","off","enabled"][j];ui(prefix+field,"set",field==="enabled"?(a.enabled?1:0):a[field]);}
     }
@@ -226,15 +226,20 @@ function setvalueof(v){
     try{
         if(typeof v!=="string"||v.indexOf("mldled1:")!==0)throw new Error("format");
         var c=JSON.parse(decodeURIComponent(v.slice(8)));
-        if(!c||(c.version!==1&&c.version!==2)||typeof c.run!=="boolean"||!(c.port===""||allowedPort(c.port))||!Array.isArray(c.assignments)||c.assignments.length>2000)throw new Error("config");
-        if(c.version===2&&(!(c.input===""||allowedInput(c.input))||!integer(c.holdMs,500,5000)))throw new Error("input / hold");
-        var clean={version:2,port:c.port,input:c.version===2?c.input:"",holdMs:c.version===2?c.holdMs:1500,run:c.run,assignments:[]},seen={};
+        if(!c||(c.version!==1&&c.version!==2&&c.version!==3)||typeof c.run!=="boolean"||!(c.port===""||allowedPort(c.port))||!Array.isArray(c.assignments)||c.assignments.length>2000)throw new Error("config");
+        if(c.version>=2&&(!(c.input===""||allowedInput(c.input))||!integer(c.holdMs,500,5000)))throw new Error("input / hold");
+        var clean={version:3,port:c.port,input:c.version>=2?c.input:"",holdMs:c.version>=2?c.holdMs:1500,run:c.run,assignments:[]},seen={};
         for(var i=0;i<c.assignments.length;i++){
             var a=c.assignments[i];
             if(!a||typeof a.track!=="string"||!a.track.length||a.track.length>1024||seen[key(a.track)]||!integer(a.channel,1,16)||!integer(a.cc,-1,127)||!integer(a.on,0,127)||!integer(a.off,0,127)||typeof a.enabled!=="boolean")throw new Error("assignment");
             var st=c.version===1?stopDefaults(a.track):a.stop;
             if(!st||!integer(st.cc,-1,127)||!integer(st.on,0,127)||!integer(st.off,0,127)||typeof st.enabled!=="boolean"||typeof st.clear!=="boolean")throw new Error("stop assignment");
-            seen[key(a.track)]=true;clean.assignments.push({track:a.track,channel:a.channel,cc:a.cc,on:a.on,off:a.off,enabled:a.enabled,stop:{cc:st.cc,on:st.on,off:st.off,enabled:st.enabled,clear:st.clear}});
+            var inputOn=c.version>=3?st.inputOn:st.on,inputOff=c.version>=3?st.inputOff:st.off;
+            if(!integer(inputOn,0,127)||!integer(inputOff,0,127))throw new Error("stop input values");
+            var ledOn=a.on,ledOff=a.off;
+            // Only migrate the exact A mapping demonstrated faulty by this user's native trace.
+            if(c.version<3&&a.track==="Looper A"&&a.channel===15&&a.cc===37){if(ledOn===127)ledOn=126;if(ledOff===0)ledOff=1;}
+            seen[key(a.track)]=true;clean.assignments.push({track:a.track,channel:a.channel,cc:a.cc,on:ledOn,off:ledOff,enabled:a.enabled,stop:{cc:st.cc,on:st.on,off:st.off,inputOn:inputOn,inputOff:inputOff,enabled:st.enabled,clear:st.clear}});
         }
         clearAll();stop();release();config=clean;pendingType=null;pendingChannel=null;inputPendingType=null;inputPendingChannel=null;rebuild();notice="";
         if(config.run){claim();reconcileRoute();start();}tick();
@@ -247,11 +252,12 @@ function notifydeleted(){clearAll();stop();release();}
 // Routed MIDI input is separate from the LED output bus. Clear gestures are opt-in per row.
 var inputTypes=[],inputChannels=[],inputOptions=[],inputTypeChoice=null,inputChannelChoice=null;
 var inputName="",inputChannelName="",inputPendingType=null,inputPendingChannel=null,inputTypeAt=0,inputChannelAt=0;
-var held={},releaseReady={},gestureSerial=0,gestureResult="",lastInput="No CC received",inputCount=0;
+var held={},pressed={},pendingActions={},releaseReady={},gestureSerial=0,gestureResult="",lastInput="No CC received",inputCount=0;
+var inputBytes=0,rawCCCount=0,lastRawCC="No raw CC received";
 var midiStatus=0,midiData=[],inSysex=false;
 function allowedInput(s){return typeof s==="string"&&/^LCXL3 \d+ \(MIDI Out\)$/i.test(s);}
 function inputReady(){var n=outputChannel();return config.run&&ready()&&allowedInput(config.input)&&inputTypes.indexOf(config.input)>=0&&inputName===config.input&&n>0&&channelNumber(inputChannelName)===n;}
-function cancelHolds(){held={};releaseReady={};midiStatus=0;midiData=[];inSysex=false;outlet(5,"cancel");}
+function cancelHolds(){held={};pressed={};pendingActions={};releaseReady={};midiStatus=0;midiData=[];inSysex=false;outlet(5,"cancel");}
 function inputtypes(){inputTypes=arrayfromargs(arguments);renderInputMenu();refreshInput();reconcileInput();render();}
 function inputchannels(){inputChannels=arrayfromargs(arguments);refreshInput();reconcileInput();render();}
 function inputtype(){inputTypeChoice=selection(arguments);refreshInput();reconcileInput();render();}
@@ -286,7 +292,7 @@ function reconcileInput(){
 function renderInputStatus(){
     var index=0;for(var i=0;i<inputOptions.length;i++)if(inputOptions[i]===config.input)index=i+1;
     ui("setupInput","set",index);
-    ui("inputStatus","set",(inputReady()?"INPUT READY ch"+outputChannel():"INPUT NOT ARMED: "+(inputName||"select input")+" / "+(inputChannelName||"unresolved"))+" | "+inputCount+" CC | "+lastInput+(gestureResult?" | "+gestureResult:""));
+    ui("inputStatus","set",(inputReady()?"INPUT ROUTED ch"+outputChannel():"INPUT NOT ARMED: "+(inputName||"select input")+" / "+(inputChannelName||"unresolved"))+" | "+inputBytes+" bytes / "+rawCCCount+" raw CC / "+inputCount+" accepted | "+lastRawCC+(gestureResult?" | "+gestureResult:""));
 }
 function holdseconds(n){
     n=Number(n);var ms=Math.round(n*1000);if(!integer(ms,500,5000))return;
@@ -295,7 +301,7 @@ function holdseconds(n){
 function stopedit(slot,field,value){
     slot=Number(slot);value=Number(value);if(!integer(slot,0,pageSize-1))return;
     var track=items[page*pageSize+slot];if(track===undefined)return;
-    var limits={cc:[-1,127],on:[0,127],off:[0,127],enabled:[0,1],clear:[0,1]};
+    var limits={cc:[-1,127],on:[0,127],off:[0,127],inputOn:[0,127],inputOff:[0,127],enabled:[0,1],clear:[0,1]};
     if(!Object.prototype.hasOwnProperty.call(limits,field)||!integer(value,limits[field][0],limits[field][1]))return;
     var a=assignment(track);if(!a&&config.assignments.length>=2000)return;
     clearAll();if(!a){a=defaults(track);config.assignments.push(a);}
@@ -306,19 +312,20 @@ function stopStatus(track){
     var a=assignment(track),g=groups[key(track)]||[];
     if(!a||!stopComplete(a))return "STOP CC unassigned";
     if(collision(a,"stop"))return "CONFLICT: Stop CC in use";
-    if(!a.stop.enabled)return "Stop LED / Hold disabled";
+    if(!a.stop.enabled)return "Stop control / LED disabled";
     if(g.length!==1)return g.length?"AMBIGUOUS":"MISSING";
     var bs=fresh()?bufferState(g[0]):"unknown";
     var s=bs==="empty"?"EMPTY: On colour":bs==="recorded"?"RECORDED: Off colour":bs==="recording"?"RECORDING: Off colour":"BUFFER UNKNOWN: Off colour";
-    if(!a.stop.clear)return s+" / Hold off";
-    if(a.stop.on===a.stop.off)return s+" / HOLD BLOCKED: On=Off";
+    if(!g[0].stop_available)return s+" / Stop API unavailable";
+    if(a.stop.inputOn===a.stop.inputOff)return s+" / INPUT BLOCKED: IN+ = IN-";
+    if(!a.stop.clear)return s+" / Stop ready, Hold off";
     if(!g[0].clear_available)return s+" / Clear API unavailable";
     var h=held[key(track)];
     return s+(h&&!h.fired?" / HOLD "+Math.min(config.holdMs,Date.now()-h.start)+"ms":!inputReady()?" / input not armed":!releaseReady[key(track)]?" / release Stop to arm":" / Hold ready");
 }
 function midi_byte(v){
     v=Number(v);if(!integer(v,0,255))return;
-    if(!inputReady()){midiStatus=0;midiData=[];inSysex=false;return;}
+    inputBytes++; // Diagnostics count delivery before any gesture/channel gate.
     if(v>=248)return; // MIDI clock / real-time bytes may occur inside another message.
     if(v===240){inSysex=true;midiStatus=0;midiData=[];return;}
     if(v===247){inSysex=false;midiStatus=0;midiData=[];return;}
@@ -328,7 +335,7 @@ function midi_byte(v){
     midiData.push(v);
     var kind=midiStatus&240,needed=kind===192||kind===208?1:2;
     if(midiData.length===needed){
-        if(kind===176)inputCC((midiStatus&15)+1,midiData[0],midiData[1]);
+        if(kind===176){rawCCCount++;lastRawCC="ch"+((midiStatus&15)+1)+" CC"+midiData[0]+"="+midiData[1];inputCC((midiStatus&15)+1,midiData[0],midiData[1]);}
         midiData=[];
     }
 }
@@ -338,14 +345,18 @@ function inputCC(rawChannel,cc,value){
     if(rawChannel!==1&&rawChannel!==channelNumber(inputChannelName))return;
     inputCount++;lastInput="CC"+cc+"="+value;
     for(var i=0;i<config.assignments.length;i++){
-        var a=config.assignments[i],st=a.stop;if(!st.enabled||!st.clear||!stopComplete(a)||collision(a,"stop")||st.on===st.off||a.channel!==outputChannel()||st.cc!==cc)continue;
+        var a=config.assignments[i],st=a.stop;if(!st.enabled||!stopComplete(a)||collision(a,"stop")||st.inputOn===st.inputOff||a.channel!==outputChannel()||st.cc!==cc)continue;
         var k=key(a.track);
-        if(value===st.off){delete held[k];releaseReady[k]=true;continue;}
-        if(value!==st.on||held[k])continue;
-        if(!releaseReady[k]){gestureResult="Release Stop before starting a hold";continue;}
-        releaseReady[k]=false;
+        if(value===st.inputOff){delete held[k];delete pressed[k];releaseReady[k]=true;continue;}
+        if(value!==st.inputOn||pressed[k])continue;
+        pressed[k]=true;
         var g=groups[k]||[];
-        if(!fresh()||g.length!==1||!validRow(g[0])||!g[0].clear_available){gestureResult="Hold blocked: Looper unavailable / Clear API missing";continue;}
+        if(!fresh()||Date.now()-received>500||g.length!==1||!g[0].available||g[0].active===0||!g[0].stop_available){gestureResult="Stop blocked: target unavailable / Stop API missing";continue;}
+        dispatchAction("stop",g[0]);
+        if(!st.clear)continue;
+        if(!releaseReady[k]){gestureResult="Stop requested; release Stop to arm Hold Clear";continue;}
+        releaseReady[k]=false;
+        if(!g[0].clear_available){gestureResult="Stop requested; Clear API missing";continue;}
         held[k]={start:Date.now(),fired:false,id:g[0].id,generation:g[0].generation,track:a.track,cc:cc,channel:a.channel};
         gestureResult="Holding Stop: "+a.track;
     }render();
@@ -358,11 +369,15 @@ function checkHolds(){
         if(Date.now()-h.start<config.holdMs)continue;
         h.fired=true; // Exactly one attempt at threshold; never retrigger while the button remains down.
         if(g[0].state!=="STOP"||!g[0].available||g[0].active===0||!g[0].clear_available){gestureResult="Clear skipped: Looper must already be stopped";continue;}
-        h.token="hold-"+(++gestureSerial)+"-"+Date.now();gestureResult="Clear requested: "+h.track;
-        var request=JSON.stringify({token:h.token,id:h.id,generation:h.generation,track:h.track,at:Date.now()});
-        outlet(5,"authorize",request);outlet(6,"request",request);
+        h.token=dispatchAction("clear",g[0]);
     }
 }
+function dispatchAction(action,row){
+    var token=action+"-"+(++gestureSerial)+"-"+Date.now();
+    var request=JSON.stringify({token:token,action:action,id:row.id,generation:row.generation,track:row.track,at:Date.now()});
+    pendingActions["$"+token]=row.track;gestureResult=(action==="stop"?"Stop":"Clear")+" requested: "+row.track;
+    outlet(5,"authorize",request);outlet(6,"request",request);return token;
+}
 function clear_result(){
-    try{var r=JSON.parse(textArgs(arguments));for(var k in held)if(held[k].token===r.token){gestureResult=String(r.message);render();return;}}catch(e){}
+    try{var r=JSON.parse(textArgs(arguments));if(Object.prototype.hasOwnProperty.call(pendingActions,"$"+r.token)){delete pendingActions["$"+r.token];gestureResult=String(r.message);render();}}catch(e){}
 }

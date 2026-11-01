@@ -117,8 +117,8 @@ test('nested Loopers share only one pair of host send observers; dirty snapshots
 });
 test('deletion cleans all subscriptions and Task',()=>{setup();c.init();flush();const timer=c.timer;c.notifydeleted();assert.ok(timer.cancelled&&timer.freed);assert.equal(c.refs.length,0);});
 test('buffer length is observed independently of State, exported live and absent API stays unknown',()=>{
- const {song}=setup(),t=track('Looper A'),l=looper();l.props.loop_length=0;l.functions=['clear'];t.children.devices=[l];song.children.tracks=[t];c.init();flush();c.tick();
- assert.equal(JSON.parse(outputs.at(-1)[2]).rows[0].loop_length,0);assert.equal(JSON.parse(outputs.at(-1)[2]).rows[0].clear_available,true);
+ const {song}=setup(),t=track('Looper A'),l=looper();l.props.loop_length=0;l.functions=['clear','stop'];t.children.devices=[l];song.children.tracks=[t];c.init();flush();c.tick();
+ assert.equal(JSON.parse(outputs.at(-1)[2]).rows[0].loop_length,0);assert.equal(JSON.parse(outputs.at(-1)[2]).rows[0].clear_available,true);assert.equal(JSON.parse(outputs.at(-1)[2]).rows[0].stop_available,true);
  l.props.loop_length=16;changed(l,'loop_length');c.tick();assert.equal(JSON.parse(outputs.at(-1)[2]).rows[0].loop_length,16);
  l.props.loop_length=0;changed(l,'loop_length');c.tick();assert.equal(JSON.parse(outputs.at(-1)[2]).rows[0].loop_length,0);
  delete l.props.loop_length;delete l.functions;c.rescan();flush();c.tick();assert.equal(JSON.parse(outputs.at(-1)[2]).rows[0].loop_length,null);

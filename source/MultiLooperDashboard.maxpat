@@ -29,7 +29,7 @@
             650,
             25
           ],
-          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.13 beta",
+          "text": "MULTI LOOPER  /  AUTO DASHBOARD  /  0.13.2 beta",
           "fontsize": 18.0,
           "presentation": 1,
           "presentation_rect": [
@@ -1753,8 +1753,8 @@
                             130,
                             26
                           ],
-                          "text": "SYNC",
-                          "texton": "SYNC ON",
+                          "text": "SYNC / CTRL",
+                          "texton": "SYNC / CTRL ON",
                           "mode": 1,
                           "parameter_enable": 0,
                           "varname": "setupRun",
@@ -2031,7 +2031,7 @@
                             48,
                             20
                           ],
-                          "text": "ON",
+                          "text": "LED+",
                           "fontsize": 11.0,
                           "presentation": 1,
                           "presentation_rect": [
@@ -2052,7 +2052,7 @@
                             48,
                             20
                           ],
-                          "text": "OFF",
+                          "text": "LED-",
                           "fontsize": 11.0,
                           "presentation": 1,
                           "presentation_rect": [
@@ -2492,17 +2492,17 @@
                           "patching_rect": [
                             12,
                             252,
-                            260,
+                            60,
                             38
                           ],
-                          "text": "STOP / HOLD CLEAR (same CH)",
+                          "text": "STOP",
                           "varname": "row0_stoplabel",
                           "fontsize": 11.0,
                           "presentation": 1,
                           "presentation_rect": [
                             12,
                             252,
-                            260,
+                            60,
                             38
                           ]
                         }
@@ -2527,6 +2527,132 @@
                             250,
                             42
                           ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopinputOnlabel",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            78,
+                            254,
+                            30,
+                            22
+                          ],
+                          "text": "IN+",
+                          "varname": "row0_stopinputOnlabel",
+                          "fontsize": 10.0,
+                          "presentation": 1,
+                          "presentation_rect": [
+                            78,
+                            254,
+                            30,
+                            22
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopinputOn",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            110,
+                            252,
+                            48,
+                            26
+                          ],
+                          "varname": "row0_stopinputOn",
+                          "minimum": 0,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            110,
+                            252,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopinputOnmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            110,
+                            1380,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 0 inputOn"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopinputOfflabel",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            164,
+                            254,
+                            30,
+                            22
+                          ],
+                          "text": "IN-",
+                          "varname": "row0_stopinputOfflabel",
+                          "fontsize": 10.0,
+                          "presentation": 1,
+                          "presentation_rect": [
+                            164,
+                            254,
+                            30,
+                            22
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopinputOff",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            196,
+                            252,
+                            48,
+                            26
+                          ],
+                          "varname": "row0_stopinputOff",
+                          "minimum": 0,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            196,
+                            252,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row0_stopinputOffmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            196,
+                            1380,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 0 inputOff"
                         }
                       },
                       {
@@ -3211,17 +3337,17 @@
                           "patching_rect": [
                             12,
                             356,
-                            260,
+                            60,
                             38
                           ],
-                          "text": "STOP / HOLD CLEAR (same CH)",
+                          "text": "STOP",
                           "varname": "row1_stoplabel",
                           "fontsize": 11.0,
                           "presentation": 1,
                           "presentation_rect": [
                             12,
                             356,
-                            260,
+                            60,
                             38
                           ]
                         }
@@ -3246,6 +3372,132 @@
                             250,
                             42
                           ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopinputOnlabel",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            78,
+                            358,
+                            30,
+                            22
+                          ],
+                          "text": "IN+",
+                          "varname": "row1_stopinputOnlabel",
+                          "fontsize": 10.0,
+                          "presentation": 1,
+                          "presentation_rect": [
+                            78,
+                            358,
+                            30,
+                            22
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopinputOn",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            110,
+                            356,
+                            48,
+                            26
+                          ],
+                          "varname": "row1_stopinputOn",
+                          "minimum": 0,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            110,
+                            356,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopinputOnmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            110,
+                            1440,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 1 inputOn"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopinputOfflabel",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            164,
+                            358,
+                            30,
+                            22
+                          ],
+                          "text": "IN-",
+                          "varname": "row1_stopinputOfflabel",
+                          "fontsize": 10.0,
+                          "presentation": 1,
+                          "presentation_rect": [
+                            164,
+                            358,
+                            30,
+                            22
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopinputOff",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            196,
+                            356,
+                            48,
+                            26
+                          ],
+                          "varname": "row1_stopinputOff",
+                          "minimum": 0,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            196,
+                            356,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row1_stopinputOffmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            196,
+                            1440,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 1 inputOff"
                         }
                       },
                       {
@@ -3930,17 +4182,17 @@
                           "patching_rect": [
                             12,
                             460,
-                            260,
+                            60,
                             38
                           ],
-                          "text": "STOP / HOLD CLEAR (same CH)",
+                          "text": "STOP",
                           "varname": "row2_stoplabel",
                           "fontsize": 11.0,
                           "presentation": 1,
                           "presentation_rect": [
                             12,
                             460,
-                            260,
+                            60,
                             38
                           ]
                         }
@@ -3965,6 +4217,132 @@
                             250,
                             42
                           ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopinputOnlabel",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            78,
+                            462,
+                            30,
+                            22
+                          ],
+                          "text": "IN+",
+                          "varname": "row2_stopinputOnlabel",
+                          "fontsize": 10.0,
+                          "presentation": 1,
+                          "presentation_rect": [
+                            78,
+                            462,
+                            30,
+                            22
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopinputOn",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            110,
+                            460,
+                            48,
+                            26
+                          ],
+                          "varname": "row2_stopinputOn",
+                          "minimum": 0,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            110,
+                            460,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopinputOnmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            110,
+                            1500,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 2 inputOn"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopinputOfflabel",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            164,
+                            462,
+                            30,
+                            22
+                          ],
+                          "text": "IN-",
+                          "varname": "row2_stopinputOfflabel",
+                          "fontsize": 10.0,
+                          "presentation": 1,
+                          "presentation_rect": [
+                            164,
+                            462,
+                            30,
+                            22
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopinputOff",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            196,
+                            460,
+                            48,
+                            26
+                          ],
+                          "varname": "row2_stopinputOff",
+                          "minimum": 0,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            196,
+                            460,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row2_stopinputOffmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            196,
+                            1500,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 2 inputOff"
                         }
                       },
                       {
@@ -4649,17 +5027,17 @@
                           "patching_rect": [
                             12,
                             564,
-                            260,
+                            60,
                             38
                           ],
-                          "text": "STOP / HOLD CLEAR (same CH)",
+                          "text": "STOP",
                           "varname": "row3_stoplabel",
                           "fontsize": 11.0,
                           "presentation": 1,
                           "presentation_rect": [
                             12,
                             564,
-                            260,
+                            60,
                             38
                           ]
                         }
@@ -4684,6 +5062,132 @@
                             250,
                             42
                           ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row3_stopinputOnlabel",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            78,
+                            566,
+                            30,
+                            22
+                          ],
+                          "text": "IN+",
+                          "varname": "row3_stopinputOnlabel",
+                          "fontsize": 10.0,
+                          "presentation": 1,
+                          "presentation_rect": [
+                            78,
+                            566,
+                            30,
+                            22
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row3_stopinputOn",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            110,
+                            564,
+                            48,
+                            26
+                          ],
+                          "varname": "row3_stopinputOn",
+                          "minimum": 0,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            110,
+                            564,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row3_stopinputOnmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            110,
+                            1560,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 3 inputOn"
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row3_stopinputOfflabel",
+                          "maxclass": "comment",
+                          "patching_rect": [
+                            164,
+                            566,
+                            30,
+                            22
+                          ],
+                          "text": "IN-",
+                          "varname": "row3_stopinputOfflabel",
+                          "fontsize": 10.0,
+                          "presentation": 1,
+                          "presentation_rect": [
+                            164,
+                            566,
+                            30,
+                            22
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row3_stopinputOff",
+                          "maxclass": "number",
+                          "patching_rect": [
+                            196,
+                            564,
+                            48,
+                            26
+                          ],
+                          "varname": "row3_stopinputOff",
+                          "minimum": 0,
+                          "maximum": 127,
+                          "parameter_enable": 0,
+                          "numoutlets": 2,
+                          "outlettype": [
+                            "int",
+                            "bang"
+                          ],
+                          "presentation": 1,
+                          "presentation_rect": [
+                            196,
+                            564,
+                            48,
+                            26
+                          ]
+                        }
+                      },
+                      {
+                        "box": {
+                          "id": "row3_stopinputOffmsg",
+                          "maxclass": "newobj",
+                          "patching_rect": [
+                            196,
+                            1560,
+                            200,
+                            22
+                          ],
+                          "text": "prepend stopedit 3 inputOff"
                         }
                       },
                       {
@@ -5090,7 +5594,7 @@
                             528,
                             24
                           ],
-                          "text": "Stop stays MIDI-mapped in Live. HOLD ON enables Clear while held.",
+                          "text": "Remove Stop CC mappings in Live. Short press = Stop; hold = Clear.",
                           "fontsize": 11.0,
                           "presentation": 1,
                           "presentation_rect": [
@@ -5133,7 +5637,7 @@
                             1056,
                             72
                           ],
-                          "text": "CC -1 = unassigned. SYNC uses one channel (15). STOP row: empty buffer = On colour, recorded/unknown = Off. Enable Stop LED and HOLD ON, select MIDI input, then tap/release Stop once to arm. A held Stop clears once at the threshold only if Looper is already stopped. RESET removes mapping, not audio. Test LEDs with SYNC off.",
+                          "text": "CC -1 = unassigned. LED+/LED- = feedback; IN+/IN- = physical Stop press/release. SYNC uses one channel (15). STOP row: empty buffer = On colour, recorded/unknown = Off. Enable Stop LED and HOLD ON, select MIDI input, then tap/release Stop once to arm. Short press sends Stop. Hold clears once at the threshold only if Looper is already stopped. RESET removes mapping, not audio. Test LEDs with SYNC off.",
                           "fontsize": 12.0,
                           "presentation": 1,
                           "presentation_rect": [
@@ -5509,6 +6013,54 @@
                       {
                         "patchline": {
                           "source": [
+                            "row0_stopinputOn",
+                            0
+                          ],
+                          "destination": [
+                            "row0_stopinputOnmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stopinputOnmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stopinputOff",
+                            0
+                          ],
+                          "destination": [
+                            "row0_stopinputOffmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row0_stopinputOffmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
                             "row0_stopcc",
                             0
                           ],
@@ -5858,6 +6410,54 @@
                         "patchline": {
                           "source": [
                             "row1_forgetmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stopinputOn",
+                            0
+                          ],
+                          "destination": [
+                            "row1_stopinputOnmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stopinputOnmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stopinputOff",
+                            0
+                          ],
+                          "destination": [
+                            "row1_stopinputOffmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row1_stopinputOffmsg",
                             0
                           ],
                           "destination": [
@@ -6229,6 +6829,54 @@
                       {
                         "patchline": {
                           "source": [
+                            "row2_stopinputOn",
+                            0
+                          ],
+                          "destination": [
+                            "row2_stopinputOnmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stopinputOnmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stopinputOff",
+                            0
+                          ],
+                          "destination": [
+                            "row2_stopinputOffmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row2_stopinputOffmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
                             "row2_stopcc",
                             0
                           ],
@@ -6578,6 +7226,54 @@
                         "patchline": {
                           "source": [
                             "row3_forgetmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row3_stopinputOn",
+                            0
+                          ],
+                          "destination": [
+                            "row3_stopinputOnmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row3_stopinputOnmsg",
+                            0
+                          ],
+                          "destination": [
+                            "out",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row3_stopinputOff",
+                            0
+                          ],
+                          "destination": [
+                            "row3_stopinputOffmsg",
+                            0
+                          ]
+                        }
+                      },
+                      {
+                        "patchline": {
+                          "source": [
+                            "row3_stopinputOffmsg",
                             0
                           ],
                           "destination": [

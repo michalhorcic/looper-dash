@@ -7,10 +7,10 @@ function setup(){out=[];now=10000;tasks=[];notifications=0;
  c=vm.createContext({Task,Date:Clock,outlet(...v){out.push(JSON.parse(JSON.stringify(v)));},notifyclients(){notifications++;},arrayfromargs:v=>Array.from(v)});vm.runInContext(source,c);
 }
 function midi(){return out.filter(x=>x[0]===0).map(x=>x[1]);}
-function row(track,state='PLAY',id=1){return {id,generation:1,track,name:'Looper',available:true,active:1,state,loop_length:8,clear_available:true};}
+function row(track,state='PLAY',id=1){return {id,generation:1,track,name:'Looper',available:true,active:1,state,loop_length:8,clear_available:true,stop_available:true};}
 function snapshot(rows=[row('Looper A')]){c.snapshot(JSON.stringify({rows}));}
 function route(channel=15){c.routingtypes('<none>','LCXL3 1 (DAW In)','LCXL3 1 (MIDI In)','LCXL3 1 (To DIN Out)');c.routingchannels('All Channels',...Array.from({length:16},(_,i)=>'Ch. '+(i+1)));c.routingtype(2);c.routingchannel(channel);c.choose_port(1);}
-function assign(slot,cc,channel=15){c.rowedit(slot,'channel',channel);c.rowedit(slot,'cc',cc);c.rowedit(slot,'enabled',1);}
+function assign(slot,cc,channel=15){c.rowedit(slot,'channel',channel);c.rowedit(slot,'cc',cc);c.rowedit(slot,'on',127);c.rowedit(slot,'off',0);c.rowedit(slot,'enabled',1);}
 function saved(){return JSON.parse(decodeURIComponent(c.getvalueof().slice(8)));}
 function restore(config){c.setvalueof('mldled1:'+encodeURIComponent(JSON.stringify(config)));}
 let passed=0;function test(name,fn){setup();fn();passed++;console.log('PASS '+name);}
@@ -152,7 +152,7 @@ test('shared MIDI arbiter requires matching explicit channel and stops setup on 
 
 function inputroute(){c.inputtypes('<none>','LCXL3 1 (MIDI Out)','LCXL3 1 (DAW Out)');c.inputchannels(...Array.from({length:16},(_,i)=>String(i+1)));c.inputtype(1);c.inputchannel(14);c.choose_input(1);}
 function cc(number,value,channel=15){for(const v of [175+channel,number,value])c.midi_byte(v);}
-function clearRequests(){return out.filter(x=>x[0]===6&&x[1]==='request').map(x=>JSON.parse(x[2]));}
+function clearRequests(){return out.filter(x=>x[0]===6&&x[1]==='request').map(x=>JSON.parse(x[2])).filter(q=>q.action!=='stop');}
 function stopSetup(){route();snapshot([row('Looper A','STOP')]);assign(0,37);c.stopedit(0,'enabled',1);c.stopedit(0,'clear',1);inputroute();c.run(1);cc(45,0);out=[];}
 function stopped(){snapshot([row('Looper A','STOP')]);}
 function waitHold(ms){while(ms>0){const step=Math.min(ms,250);now+=step;stopped();ms-=step;}}
@@ -170,7 +170,7 @@ test('momentary Stop hold fires once at 1500 ms while down; short tap never clea
  assert.equal(clearRequests()[0].id,1);assert.equal(clearRequests()[0].track,'Looper A');
  cc(45,127);waitHold(2000);assert.equal(clearRequests().length,1,'repeated On and continued hold cannot retrigger');
  cc(45,0);cc(45,127);waitHold(1500);assert.equal(clearRequests().length,2);
- assert.equal(out.filter(x=>x[0]===5&&x[1]==='authorize').length,2);
+ assert.equal(out.filter(x=>x[0]===5&&x[1]==='authorize'&&JSON.parse(x[2]).action==='clear').length,2);
 });
 test('Clear requires release priming, matching input/CC, unique target and STOP at threshold',()=>{
  stopSetup();c.cancelHolds();cc(45,127);waitHold(1500);assert.deepEqual(clearRequests(),[],'reconnect/arming must see release before a new hold');
@@ -194,8 +194,38 @@ test('Stop address conflicts with any enabled Play or Stop address are blocked',
 });
 test('v1 saved settings migrate without arming Clear; v2 persists input, hold and Stop mapping',()=>{
  c.setvalueof('mldled1:'+encodeURIComponent(JSON.stringify({version:1,port:'LCXL3 1 (MIDI In)',run:false,assignments:[{track:'Looper A',channel:15,cc:37,on:127,off:0,enabled:true}]})));
- assert.equal(c.config.version,2);assert.equal(c.config.assignments[0].stop.cc,45);assert.equal(c.config.assignments[0].stop.clear,false);assert.equal(c.config.assignments[0].stop.enabled,false);assert.equal(c.config.holdMs,1500);
+ assert.equal(c.config.version,3);assert.equal(c.config.assignments[0].stop.cc,45);assert.equal(c.config.assignments[0].stop.clear,false);assert.equal(c.config.assignments[0].stop.enabled,false);assert.equal(c.config.holdMs,1500);
  snapshot([row('Looper A')]);c.stopedit(0,'enabled',1);c.stopedit(0,'clear',1);c.stopedit(0,'cc',50);c.holdseconds(2);inputroute();const blob=c.getvalueof();setup();c.setvalueof(blob);
  assert.equal(c.config.input,'LCXL3 1 (MIDI Out)');assert.equal(c.config.holdMs,2000);assert.equal(c.config.assignments[0].stop.cc,50);assert.equal(c.config.assignments[0].stop.clear,true);assert.equal(Object.keys(c.held).length,0);
+});
+test('input diagnostics count raw delivery before routing/channel gates without permitting actions',()=>{
+ for(const v of [190,45,127,190,45,0])c.midi_byte(v);
+ assert.equal(c.inputBytes,6);assert.equal(c.rawCCCount,2);assert.equal(c.inputCount,0);assert.match(c.lastRawCC,/ch15 CC45=0/);assert.deepEqual(clearRequests(),[]);
+ stopSetup();const before=c.rawCCCount,accepted=c.inputCount;cc(45,127,2);
+ assert.equal(c.rawCCCount,before+1);assert.equal(c.inputCount,accepted);assert.match(c.lastRawCC,/ch2 CC45=127/);assert.deepEqual(clearRequests(),[]);
+});
+test('Stop is requested once per press, including first press, with Hold off and without clearing',()=>{
+ stopSetup();c.stopedit(0,'clear',0);out=[];cc(45,127);cc(45,127);now+=100;stopped();
+ const stops=()=>out.filter(x=>x[0]===6&&x[1]==='request').map(x=>JSON.parse(x[2])).filter(q=>q.action==='stop');
+ assert.equal(stops().length,1);assert.equal(stops()[0].id,1);assert.equal(stops()[0].track,'Looper A');assert.deepEqual(clearRequests(),[]);
+ cc(45,0);cc(45,127);assert.equal(stops().length,2);waitHold(2000);assert.deepEqual(clearRequests(),[]);
+ c.clear_result(JSON.stringify({token:stops()[1].token,ok:true,message:'Stop sent: Looper A'}));assert.equal(c.gestureResult,'Stop sent: Looper A');
+});
+test('LED feedback alone never requests Stop or Clear, including repeated Looper A playback',()=>{
+ stopSetup();out=[];
+ for(const state of ['RECORD','PLAY','OVERDUB','PLAY','STOP','PLAY']){now+=100;snapshot([row('Looper A',state)]);c.tick();}
+ assert.ok(midi().some(p=>p[1]===37));assert.ok(midi().some(p=>p[1]===45));assert.equal(out.filter(x=>x[0]===6).length,0);
+});
+test('A feedback migration changes only proven CC37 case; B/C and Stop input values remain intact',()=>{
+ const assignments=['Looper A','Looper B','Looper C'].map((track,i)=>({track,channel:15,cc:37+i,on:127,off:0,enabled:true,stop:{cc:45+i,on:127,off:0,enabled:true,clear:true}}));
+ c.setvalueof('mldled1:'+encodeURIComponent(JSON.stringify({version:2,port:'LCXL3 1 (MIDI In)',input:'LCXL3 1 (MIDI Out)',holdMs:1500,run:false,assignments})));
+ const a=saved().assignments;assert.deepEqual(a.map(x=>[x.on,x.off]),[[126,1],[127,0],[127,0]]);assert.ok(a.every(x=>x.stop.inputOn===127&&x.stop.inputOff===0));
+ assert.deepEqual([c.defaults('Looper A').on,c.defaults('Looper A').off],[126,1]);assert.deepEqual([c.defaults('Looper B').on,c.defaults('Looper B').off],[127,0]);
+ const blob=c.getvalueof();setup();c.setvalueof(blob);assert.equal(c.config.version,3);assert.equal(c.config.assignments[0].on,126);
+});
+test('Stop input edges remain physical 127/0 when LED feedback is 126/1',()=>{
+ stopSetup();c.stopedit(0,'on',126);c.stopedit(0,'off',1);cc(45,0);out=[];
+ cc(45,127);waitHold(1500);assert.equal(clearRequests().length,1);
+ assert.ok(midi().filter(p=>p[1]===45).every(p=>[1,126].includes(p[2])));assert.equal(c.config.assignments[0].stop.inputOn,127);assert.equal(c.config.assignments[0].stop.inputOff,0);
 });
 console.log(passed+' multi-Looper LED setup / Stop-hold tests passed; native input and Clear still need verification.');

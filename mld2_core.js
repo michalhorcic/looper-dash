@@ -1,4 +1,4 @@
-/* MLD 0.13 beta. ES5 for stock Max js. All Live interaction is read-only. */
+/* MLD 0.13.2 beta. ES5 for stock Max js. All Live interaction is read-only. */
 autowatch=1; inlets=1; outlets=1;
 var song=null, timer=null, refs=[], slots=[], queue=[], events=[], scans=0;
 var ready=false, epoch=0, dirty=false, scanAt=0, lastFallback=0, lastContext=0;
@@ -76,6 +76,7 @@ function readLooper(d,track,trail,path,old){
         class_name:str(d,"class_name"),class_display_name:str(d,"class_display_name"),available:true};
     s.loop_length=has(d,"property","loop_length")?number(d,"loop_length",null):null;
     s.clear_available=has(d,"function","clear");
+    s.stop_available=has(d,"function","stop");
     if(has(d,"property","loop_length"))observe(d,"loop_length","device",s,"loop_length");
     if(referenceBars[key]===undefined)referenceBars[key]=old?old.grid_bars:4;
     var props=["loop_length","record_length_index","record_length_list","overdub_after_record","tempo"];
@@ -192,25 +193,25 @@ function publish(){
                 position:valid&&send.max>send.min?Math.max(0,Math.min(1,(send.value-send.min)/(send.max-send.min))):null};
         });
         rows.push({id:s.id,track:s.track,track_color:s.track_color,name:s.name,trail:s.trail,active:s.active,
-            generation:epoch,loop_length:typeof s.loop_length==="number"&&isFinite(s.loop_length)&&s.loop_length>=0?s.loop_length:null,clear_available:s.clear_available,
+            generation:epoch,loop_length:typeof s.loop_length==="number"&&isFinite(s.loop_length)&&s.loop_length>=0?s.loop_length:null,clear_available:s.clear_available,stop_available:s.stop_available,
             sends:sends,
             available:s.available&&!dirty,state:s.available&&!dirty?statusLabel(p):"RECONNECTING",
             raw:p?{name:p.name,value:p.value,display:p.display}:null,grid_bars:referenceBars[String(s.id)]||4,
             parameter_count:s.parameters.length});
     }
-    outlet(0,"snapshot",JSON.stringify({version:"0.13 beta",status:message,rows:rows,transport:transportData,
+    outlet(0,"snapshot",JSON.stringify({version:"0.13.2 beta",status:message,rows:rows,transport:transportData,
         count:rows.length,scans:scans,dropped:dropped,wall_ms:Date.now(),pending:"unknown",phase:"unavailable"}));
 }
 function gridlength(deviceId,bars){bars=Number(bars);if(bars!==4&&bars!==8)return;for(var i=0;i<slots.length;i++)if(slots[i].id===Number(deviceId)){referenceBars[String(deviceId)]=bars;publish();return;}}
 function mark(){log({kind:"marker",label:arrayfromargs(arguments).join(" ")||"User marker",transport:transportData});}
 function export_report(){
     var path=arrayfromargs(arguments).join(" ");if(!path)return;
-    var r={schema:"mld-diagnostic-2",version:"0.13 beta",created_at:new Date().toISOString(),
+    var r={schema:"mld-diagnostic-2",version:"0.13.2 beta",created_at:new Date().toISOString(),
         status:message,transport:transportData,loopers:slots,initial_inventory:inventory,events:events,dropped_events:dropped,
         timing:"Observer wall times; transport sampled later in a low-priority Task. Not sample accurate.",
         state_semantics:"Native parameter text, not validated as active versus requested state.",
         phase:"Not measured. Per-card 4/8-bar strips are independent transport reference grids.",
-        pending:"Unknown. This monitor is read-only; optional Stop-hold MIDI input and Clear actions use separate modules."};
+        pending:"Unknown. This monitor is read-only; optional routed button Stop / hold Clear actions use separate modules."};
     var f=new File(path,"write","TEXT");if(!f.isopen){message="Export failed: cannot open destination";publish();return;}
     try{f.position=0;f.eof=0;var json=JSON.stringify(r,null,2).replace(/[\u007f-\uffff]/g,function(c){return "\\u"+("0000"+c.charCodeAt(0).toString(16)).slice(-4);});
         var lines=json.split("\n");for(var i=0;i<lines.length;i++)f.writeline(lines[i]);f.close();message="Diagnostic report saved";publish();

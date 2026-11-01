@@ -1,4 +1,4 @@
-/* Explicit Stop-hold Clear action only. No MIDI, routing, parameter setters or automatic transport. */
+/* Explicit button Stop and hold Clear only. No MIDI, routing, parameter setters or global transport. */
 autowatch=1;inlets=1;outlets=1;
 var latest=null,received=0,handled={},permits={};
 function authorize(){try{var q=JSON.parse(arrayfromargs(arguments).join(" "));if(typeof q.token==="string"&&q.token.length<=120)permits["$"+q.token]=JSON.stringify(q);}catch(e){}}
@@ -11,6 +11,8 @@ function request(){
     var q,token="";
     try{
         q=JSON.parse(arrayfromargs(arguments).join(" "));token=String(q.token||"");
+        var action=q.action===undefined?"clear":q.action;
+        if(action!=="clear"&&action!=="stop")throw new Error("unsupported action");
         if(!token||token.length>120||handled["$"+token])return;
         // A token is consumed even when validation fails; a held button never retries a clear.
         handled["$"+token]=true;
@@ -23,9 +25,12 @@ function request(){
         for(var i=0;i<rows.length;i++)if(rows[i].track===q.track)matches.push(rows[i]);
         if(matches.length!==1)throw new Error("missing or ambiguous Looper");
         var row=matches[0];
-        if(row.id!==q.id||row.generation!==q.generation||!row.available||row.active===0||row.state!=="STOP"||row.clear_available!==true)throw new Error("target changed, unavailable, not stopped or Clear API unavailable");
+        if(row.id!==q.id||row.generation!==q.generation||!row.available||row.active===0)throw new Error("target changed or unavailable");
+        if(action==="clear"&&(row.state!=="STOP"||row.clear_available!==true))throw new Error("target not stopped or Clear API unavailable");
+        if(action==="stop"&&row.stop_available!==true)throw new Error("Stop API unavailable");
         var device=new LiveAPI(null,"id "+q.id);
-        if(Number(device.id)!==q.id||String(nativeValue(device,"class_name"))!=="Looper"||Number(nativeValue(device,"is_active"))!==1||!/(?:^|\s)function\s+clear(?:\s|$)/.test(String(device.info)))throw new Error("native Looper / Clear capability not confirmed");
+        if(Number(device.id)!==q.id||String(nativeValue(device,"class_name"))!=="Looper"||Number(nativeValue(device,"is_active"))!==1||!(new RegExp("(?:^|\\s)function\\s+"+action+"(?:\\s|$)")).test(String(device.info)))throw new Error("native Looper / action capability not confirmed");
+        if(action==="stop"){device.call("stop");result(token,true,"Stop sent: "+q.track);return;}
         // Re-read the current native State display immediately before the one allowed write.
         var states=[],parameters=device.get("parameters");
         if(!Array.isArray(parameters)||parameters.length>8192||parameters.length%2!==0)throw new Error("native parameter IDs unavailable");
@@ -41,6 +46,6 @@ function request(){
         var state=Array.isArray(display)?display.join(" "):String(display);
         if(!/^\s*(stop|stopped)\s*$/i.test(state))throw new Error("native Looper is not stopped");
         device.call("clear");result(token,true,"Clear sent: "+q.track);
-    }catch(e){result(token,false,"Clear skipped: "+String(e.message||e));}
+    }catch(e){result(token,false,(action==="stop"?"Stop skipped: ":"Clear skipped: ")+String(e.message||e));}
 }
 function notifydeleted(){latest=null;handled={};permits={};}

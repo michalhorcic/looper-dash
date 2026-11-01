@@ -30,13 +30,13 @@ def build_led_setup():
     box(p,"title","comment",[12,12,1040,26],"LED SETUP / LCXL3 CUSTOM MODE / CC FEEDBACK",presentation=1,presentation_rect=[12,12,1040,26],fontsize=18.0)
     box(p,"setupPort","umenu",[12,46,330,24],items=["Select LCXL3 MIDI In"],varname="setupPort",parameter_enable=0,presentation=1,presentation_rect=[12,46,330,24])
     box(p,"portmsg","newobj",[12,750,150,22],"prepend choose_port");wire(p,"setupPort",0,"portmsg");wire(p,"portmsg",0,"out")
-    for ident,label,x,w,command,mode in [("setupRun","SYNC",360,130,"run",1),("prev","PREV",510,60,"turnpage -1",0),("next","NEXT",580,60,"turnpage 1",0),("legacy","LED TEST",920,148,"legacy",0)]:
+    for ident,label,x,w,command,mode in [("setupRun","SYNC / CTRL",360,130,"run",1),("prev","PREV",510,60,"turnpage -1",0),("next","NEXT",580,60,"turnpage 1",0),("legacy","LED TEST",920,148,"legacy",0)]:
         box(p,ident,"textbutton",[x,46,w,26],text=label,texton=label+" ON" if mode else label,mode=mode,parameter_enable=0,varname=ident,numoutlets=3,outlettype=["int" if mode else "bang","","int"],presentation=1,presentation_rect=[x,46,w,26])
         box(p,ident+"msg","newobj" if mode else "message",[x,790,w,22],"prepend "+command if mode else command)
         wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"out")
     box(p,"setupPage","comment",[650,48,260,22],"0 / 0",varname="setupPage",presentation=1,presentation_rect=[650,48,260,22])
     box(p,"setupStatus","comment",[12,112,1056,28],"SYNC OFF. Settings are saved with the Live Set.",varname="setupStatus",fontsize=12.0,presentation=1,presentation_rect=[12,112,1056,28])
-    for label,x,w in [("TRACK / LOOPER",12,260),("CH",278,48),("CC",338,48),("ON",398,48),("OFF",458,48),("ENABLE",520,64),("STATUS",814,250)]:
+    for label,x,w in [("TRACK / LOOPER",12,260),("CH",278,48),("CC",338,48),("LED+",398,48),("LED-",458,48),("ENABLE",520,64),("STATUS",814,250)]:
         box(p,"heading"+str(x),"comment",[x,186,w,20],label,fontsize=11.0,presentation=1,presentation_rect=[x,186,w,20])
     for i in range(4):
         prefix="row"+str(i)+"_";y=212+i*104
@@ -52,8 +52,14 @@ def build_led_setup():
             box(p,ident,"textbutton",[x,y,w,26],text="OFF" if mode else label,texton="ON" if mode else label,mode=mode,varname=ident,parameter_enable=0,numoutlets=3,outlettype=["int" if mode else "bang","","int"],presentation=1,presentation_rect=[x,y,w,26])
             box(p,ident+"msg","newobj" if mode else "message",[x,880+i*60,200,22],"prepend "+command if mode else command)
             wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"out")
-        box(p,prefix+"stoplabel","comment",[12,y+40,260,38],"STOP / HOLD CLEAR (same CH)",varname=prefix+"stoplabel",fontsize=11.0,presentation=1,presentation_rect=[12,y+40,260,38])
+        box(p,prefix+"stoplabel","comment",[12,y+40,60,38],"STOP",varname=prefix+"stoplabel",fontsize=11.0,presentation=1,presentation_rect=[12,y+40,60,38])
         box(p,prefix+"stopstatus","comment",[814,y+40,250,42],"",varname=prefix+"stopstatus",fontsize=11.0,presentation=1,presentation_rect=[814,y+40,250,42])
+        for field,label,labelx,x in [("inputOn","IN+",78,110),("inputOff","IN-",164,196)]:
+            ident=prefix+"stop"+field
+            box(p,ident+"label","comment",[labelx,y+42,30,22],label,varname=ident+"label",fontsize=10.0,presentation=1,presentation_rect=[labelx,y+42,30,22])
+            box(p,ident,"number",[x,y+40,48,26],varname=ident,minimum=0,maximum=127,parameter_enable=0,numoutlets=2,outlettype=["int","bang"],presentation=1,presentation_rect=[x,y+40,48,26])
+            box(p,ident+"msg","newobj",[x,1380+i*60,200,22],"prepend stopedit "+str(i)+" "+field)
+            wire(p,ident,0,ident+"msg");wire(p,ident+"msg",0,"out")
         for field,x,minimum,maximum in [("cc",338,-1,127),("on",398,0,127),("off",458,0,127)]:
             ident=prefix+"stop"+field
             box(p,ident,"number",[x,y+40,48,26],varname=ident,minimum=minimum,maximum=maximum,parameter_enable=0,numoutlets=2,outlettype=["int","bang"],presentation=1,presentation_rect=[x,y+40,48,26])
@@ -69,9 +75,9 @@ def build_led_setup():
     box(p,"holdlabel","comment",[360,82,94,22],"HOLD seconds",fontsize=11.0,presentation=1,presentation_rect=[360,82,94,22])
     box(p,"holdSeconds","flonum",[458,80,66,24],minimum=0.5,maximum=5.0,varname="holdSeconds",parameter_enable=0,numoutlets=2,outlettype=["float","bang"],presentation=1,presentation_rect=[458,80,66,24])
     box(p,"holdmsg","newobj",[458,1750,150,22],"prepend holdseconds");wire(p,"holdSeconds",0,"holdmsg");wire(p,"holdmsg",0,"out")
-    box(p,"holdhint","comment",[540,80,528,24],"Stop stays MIDI-mapped in Live. HOLD ON enables Clear while held.",fontsize=11.0,presentation=1,presentation_rect=[540,80,528,24])
+    box(p,"holdhint","comment",[540,80,528,24],"Remove Stop CC mappings in Live. Short press = Stop; hold = Clear.",fontsize=11.0,presentation=1,presentation_rect=[540,80,528,24])
     box(p,"inputStatus","comment",[12,142,1056,40],"INPUT NOT ARMED",varname="inputStatus",fontsize=11.0,presentation=1,presentation_rect=[12,142,1056,40])
-    box(p,"help","comment",[12,630,1056,72],"CC -1 = unassigned. SYNC uses one channel (15). STOP row: empty buffer = On colour, recorded/unknown = Off. Enable Stop LED and HOLD ON, select MIDI input, then tap/release Stop once to arm. A held Stop clears once at the threshold only if Looper is already stopped. RESET removes mapping, not audio. Test LEDs with SYNC off.",fontsize=12.0,presentation=1,presentation_rect=[12,630,1056,72])
+    box(p,"help","comment",[12,630,1056,72],"CC -1 = unassigned. LED+/LED- = feedback; IN+/IN- = physical Stop press/release. SYNC uses one channel (15). STOP row: empty buffer = On colour, recorded/unknown = Off. Enable Stop LED and HOLD ON, select MIDI input, then tap/release Stop once to arm. Short press sends Stop. Hold clears once at the threshold only if Looper is already stopped. RESET removes mapping, not audio. Test LEDs with SYNC off.",fontsize=12.0,presentation=1,presentation_rect=[12,630,1056,72])
     return p
 
 def build_led_panel():
@@ -174,7 +180,7 @@ def build_led_panel():
 def build():
     p=patch([100,100,940,650],1)
     p.update({"devicewidth":580.0,"amxdtype":1633771873,"description":"Live monitoring, LCXL3 LED feedback and optional Stop-hold Clear."})
-    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.13 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
+    box(p,"title","comment",[20,10,650,25],"MULTI LOOPER  /  AUTO DASHBOARD  /  0.13.2 beta",fontsize=18.0,presentation=1,presentation_rect=[12,8,560,24])
     box(p,"note","comment",[20,45,800,35],"Automatically finds all Loopers.",presentation=1,presentation_rect=[12,36,560,36])
     for ident,label,x,w in [("open","OPEN DASHBOARD",12,160),("scan","RESCAN",184,90),("report","EXPORT REPORT",286,150),("ledopen","LED TEST",448,120)]:
         box(p,ident,"textbutton",[x,100,w,30],numinlets=1,numoutlets=3,outlettype=["","int",""],text=label,texton=label,

@@ -1,14 +1,14 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
 const source=fs.readFileSync(path.join(__dirname,'../mld2_actions.js'),'utf8');
 let c,now,out,calls,native,latest;
-function row(){return {id:12,generation:3,track:'Looper A',available:true,active:1,state:'STOP',clear_available:true};}
-function setup(){now=10000;out=[];calls=[];native={id:12,className:'Looper',active:1,canClear:true,state:'Stopped',states:1,throwClear:false};latest={rows:[row()]};
+function row(){return {id:12,generation:3,track:'Looper A',available:true,active:1,state:'STOP',clear_available:true,stop_available:true};}
+function setup(){now=10000;out=[];calls=[];native={id:12,className:'Looper',active:1,canClear:true,canStop:true,state:'Stopped',states:1,throwClear:false};latest={rows:[row()]};
  class Clock extends Date{static now(){return now;}}
  class API{constructor(cb,p){const pid=Number(p.slice(3));this.parameter=pid>=1000;this.index=this.parameter?pid-1000:null;this.id=this.parameter?pid:native.id;}
-  get info(){return native.canClear?'property is_active bool\nfunction clear\nchildren parameters DeviceParameter':'property is_active bool';}
+  get info(){return 'property is_active bool'+(native.canClear?'\nfunction clear':'')+(native.canStop?'\nfunction stop':'');}
   get(p){if(this.parameter){if(p==='name'||p==='original_name')return [this.index<native.states?'State':'Feedback'];if(p==='value')return [0];}else{if(p==='parameters')return ['id',1000,'id',1001];if(p==='class_name')return [native.className];if(p==='is_active')return [native.active];}throw Error('unexpected get '+p);}
   getcount(p){assert.equal(p,'parameters');return 2;}
-  call(name,...args){calls.push({name,args});if(name==='str_for_value')return [native.state];assert.equal(name,'clear','only authorized Clear write');if(native.throwClear)throw Error('native failure');return [];}
+  call(name,...args){calls.push({name,args});if(name==='str_for_value')return [native.state];assert.ok(['clear','stop'].includes(name),'only authorized Stop/Clear writes');if(native.throwClear&&name==='clear')throw Error('native failure');return [];}
   set(){throw Error('parameter writes forbidden');}
  }
  c=vm.createContext({LiveAPI:API,Date:Clock,outlet(...v){out.push(JSON.parse(JSON.stringify(v)));},arrayfromargs:v=>Array.from(v)});vm.runInContext(source,c);c.snapshot(JSON.stringify(latest));
@@ -45,5 +45,16 @@ test('native device identity, capability and stopped State are re-read immediate
 test('native errors return failure once without retry or another action',()=>{
  native.throwClear=true;const q=request();assert.equal(writes().length,1);assert.equal(JSON.parse(out.at(-1)[2]).ok,false);
  c.request(JSON.stringify(q));assert.equal(writes().length,1);
+});
+test('explicit Stop works from playback or unknown State without clearing or guessing enum values',()=>{
+ latest.rows[0].state='PLAY';c.snapshot(JSON.stringify(latest));native.state='Playing';request({action:'stop'});
+ assert.equal(calls.filter(x=>x.name==='stop').length,1);assert.equal(writes().length,0);assert.match(JSON.parse(out.at(-1)[2]).message,/Stop sent/);
+ setup();latest.rows[0].state='UNKNOWN';c.snapshot(JSON.stringify(latest));request({action:'stop'});assert.equal(calls.filter(x=>x.name==='stop').length,1);assert.equal(writes().length,0);
+});
+test('Stop also requires a valid permit, matching identity and native capability; unknown actions never execute',()=>{
+ request({action:'stop'},false);assert.equal(calls.length,0);
+ setup();native.canStop=false;request({action:'stop'});assert.equal(calls.length,0);
+ setup();latest.rows[0].stop_available=false;c.snapshot(JSON.stringify(latest));request({action:'stop'});assert.equal(calls.length,0);
+ setup();request({action:'play'});assert.equal(calls.length,0);
 });
 console.log(passed+' guarded Clear action tests passed; no hardware actions executed.');

@@ -1,4 +1,4 @@
-# Multi Looper Dashboard 0.13 beta
+# Multi Looper Dashboard 0.13.2 beta
 
 ## Spuštění — bez úprav v Maxu
 
@@ -8,6 +8,21 @@
 
 Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včetně změny velikosti okna ve verzi 0.9 zatím nebyly přímo v Live ověřeny.
 
+## Oprava LED Looperu A v 0.13.2
+
+- Uživatel ověřil, že **hlavní LED A: LED+ 126 / LED- 1** obnoví správný Rec/Play/Overdub i barvy. Components i nativní Rec/Play mapování zůstává na fyzických **127/0**.
+- Přímý pasivní CoreMIDI záznam před Live ukázal chybějící hrany CC37 s LED 127/0; s LED 126/1 byly opakovaně správné dvojice 127 → 0. B posílal správné dvojice i s původními hodnotami. Přesný důvod odlišnosti A (konfigurace nebo firmware) není určený.
+- Při převodu starší uložené konfigurace se upraví pouze známé přiřazení **Looper A / CH15 / CC37**, z hodnot 127/0 na 126/1. B/C a vlastní nestandardní hodnoty se nemění. Nové přiřazení Looper A začíná 126/1.
+- Sloupce **LED+ / LED-** určují pouze LED zpětnou vazbu. U Stop řádku jsou nová samostatná pole **IN+ / IN-** pro fyzický stisk/uvolnění (u tebe 127/0). Změna LED na 126/1 tak nemění rozpoznávání Stop/Clear.
+- Stop/Clear už byl uživatelem ověřen na B. Jeho funkční LED 127/0 zůstává zachovaná. A s 126/1 byl následně potvrzen i po obnovení výstupního Remote na původní On.
+
+## Oprava a změna ovládání v 0.13.1
+
+- **Stop nyní obsluhuje dashboard.** V Live odstraň pouze mapování Stop pro CC45/46/47, aby jejich stisk i uvolnění prošly do MIDI vstupu. Rec/Play/Overdub mapování ponech. Tato změna byla uživatelem odsouhlasená po ověření, že namapované Stop CC Live spotřebuje, zatímco nenamapovaná tlačítka dorazí.
+- Zapnutý Stop řádek pošle jeden přímý Stop na stisk i s vypnutým HOLD. HOLD ON navíc povoluje jeden Clear po 1,5 s držení, pouze při potvrzeném STOP. Nový Stop funguje už při prvním stisku; před dlouhým Clear je po zapnutí/změně stále potřeba uvolnění.
+- Diagnostika nyní píše **INPUT ROUTED**, což potvrzuje směrování, a zvlášť ukazuje skutečně přijaté bajty, raw CC, poslední kanál/CC/hodnotu a počet zpráv přijatých filtrem.
+- **Historický problém 0.13:** uživatel potvrdil, že její zapnutí narušuje Overdub a může vymazat smyčku; vypnutí pouze této LED ovládání obnoví. Od 0.13.2 je pro A ověřené LED 126/1; s tímto nastavením lze jeho hlavní ENABLE zapnout. Jedna instance a vypnutý starý LED TEST byly ověřené. Softwarový Stop/Clear se ze samotné LED obnovy nevyvolává; návrat MIDI do Remote nebo chování kontroleru vyžaduje nativní diagnostiku.
+
 ## Co je nové v 0.13
 
 - Každý Looper má v LED SETUP druhý řádek **STOP / HOLD CLEAR** s nastavením CC, On/Off, zapnutím Stop LED, ručním testem a přepínačem **HOLD ON/OFF**.
@@ -15,7 +30,7 @@ Verze 0.3 byla uživatelem ověřena v Ableton Live 12 Suite. Nové funkce včet
 - Stop LED: potvrzený prázdný buffer = **On barva**, existující smyčka = **Off barva**. Neznámá délka bufferu = Off a text BUFFER UNKNOWN; STOP samo neznamená prázdnou smyčku.
 - Nový MIDI vstup se vybírá samostatně: **LCXL3 1 (MIDI Out)**. Výstup dál používá **LCXL3 1 (MIDI In)**. Oba vybírají konkrétní kanál 15.
 - Držení Stop **1,5 sekundy** vyvolá jednou Clear, ještě během držení, pokud je cílový Looper potvrzený jako zastavený. Délku lze změnit nahoře v HOLD seconds. Po zapnutí/změně konfigurace nejprve Stop krátce stiskni a uvolni.
-- Krátký Stop stále obsluhuje tvoje MIDI mapování v Live. Dashboard neposílá druhý Stop; nově ovládá pouze explicitně povolený Clear. Rec/Play/Overdub mapování zůstává stejné.
+- Od 0.13.1 krátký Stop obsluhuje dashboard; jeho původní mapování v Live je potřeba odstranit. Dashboard přijme nemapovaný Stop CC a přímo vyvolá Stop nebo explicitně povolený dlouhý Clear. Rec/Play/Overdub mapování zůstává stejné.
 - Okno má čtyři Loopery na stránku, aby se oba řádky vešly. Původní CLEAR pro odstranění přiřazení se nyní jmenuje **RESET**; audio nemaže.
 - Konfigurace starší verze se převede a nový Hold zůstane vypnutý. Nové nastavení včetně vstupu, délky držení a Stop CC se ukládá do Setu.
 - Vedle `.amxd` musí zůstat **všech pět JS souborů**, včetně nového `mld2_actions.js`. Postup: [LED-SETUP-CS.md](LED-SETUP-CS.md).
@@ -96,7 +111,7 @@ Skutečné čekání na nahrávání a čtecí hlava nejsou tímto buildem měř
 
 **Bar / Beat / Next bar** jsou vypočtené z transportu pro pevné 4/4. Next bar odpočítává čtvrťové doby k další hranici jednoho taktu; na hranici ukáže 4. Není to odpočet konkrétního požadavku Record. Při zastavení transportu mřížka stojí, i kdyby Looper hrál samostatně. Pro proměnlivé metrum, posunutý začátek skladby, opačný směr nebo změněnou rychlost Looperu není tato mřížka jeho pozicí.
 
-Monitor pouze čte Live API a nemění audio ani původní MIDI mapování. Volitelný LED SETUP vysílá zpětnou vazbu a od 0.13 může přijímat MIDI pro Stop-hold Clear. Samostatný akční modul smí po výslovně povoleném dlouhém stisku vyvolat Clear konkrétního zastaveného Looperu. Nepřidává automatický Stop ani ovládání transportu. Původní LED TEST zůstává dostupný. Audio prochází stereo beze změny úrovně. Pro běžný dashboard nic nenastavuješ na MIDI portech ani v Components.
+Monitor pouze čte Live API a nemění audio ani původní Rec/Play/Overdub MIDI mapování. Volitelný LED SETUP vysílá zpětnou vazbu a od 0.13 může přijímat MIDI pro Stop-hold Clear. Samostatný akční modul smí po výslovně povoleném dlouhém stisku vyvolat Clear konkrétního zastaveného Looperu. Stop vyvolává pouze nový stisk nakonfigurovaného tlačítka. Globální transport neovládá. Původní LED TEST zůstává dostupný. Audio prochází stereo beze změny úrovně. Pro běžný dashboard nic nenastavuješ na MIDI portech ani v Components.
 
 ## Rychlé vyzkoušení
 
